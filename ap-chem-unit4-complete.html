@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AP Chemistry Unit 4: Chemical Reactions (Complete)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e8e8e8;
+            line-height: 1.6;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        header { text-align: center; padding: 30px 0; border-bottom: 2px solid #e94560; margin-bottom: 30px; }
+        h1 { font-size: 1.8rem; color: #e94560; margin-bottom: 10px; }
+        .subtitle { color: #8892b0; font-size: 1rem; }
+        .exam-countdown {
+            background: linear-gradient(135deg, rgba(233, 69, 96, 0.2), rgba(233, 69, 96, 0.1));
+            border: 1px solid #e94560; border-radius: 10px;
+            padding: 12px 20px; margin-top: 15px; display: inline-block;
+        }
+        .exam-countdown span { color: #e94560; font-weight: bold; }
+        .topics-covered { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 15px; }
+        .topic-pill { background: rgba(233, 69, 96, 0.15); color: #e94560; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; }
+        .student-info { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+        .student-info label { display: block; margin-bottom: 8px; font-weight: 500; }
+        .student-info input, .student-info select {
+            width: 100%; padding: 12px 16px; font-size: 1rem;
+            border: 2px solid #2d3748; border-radius: 8px;
+            background: #1a1a2e; color: #fff; margin-bottom: 15px;
+        }
+        .student-info input:focus, .student-info select:focus { outline: none; border-color: #e94560; }
+        .period-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .period-row > div { display: flex; flex-direction: column; }
+        .difficulty-selection { margin-bottom: 30px; }
+        .difficulty-header { text-align: center; margin-bottom: 20px; }
+        .difficulty-header h2 { color: #e94560; margin-bottom: 10px; }
+        .difficulty-header p { color: #8892b0; font-size: 0.95rem; }
+        .difficulty-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .difficulty-card {
+            background: rgba(255,255,255,0.03); border: 2px solid #2d3748;
+            border-radius: 16px; padding: 24px; cursor: pointer;
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .difficulty-card:hover { transform: translateY(-4px); border-color: #e94560; }
+        .difficulty-card.selected { border-color: #e94560; background: rgba(233, 69, 96, 0.08); }
+        .difficulty-card.completed { border-color: #00d9a5; }
+        .difficulty-card.completed::after {
+            content: '✓ Completed'; position: absolute; top: 10px; right: 10px;
+            background: #00d9a5; color: #fff; padding: 4px 10px;
+            border-radius: 20px; font-size: 0.75rem; font-weight: bold;
+        }
+        .difficulty-icon { font-size: 2.5rem; margin-bottom: 15px; }
+        .difficulty-name { font-size: 1.3rem; font-weight: bold; margin-bottom: 8px; }
+        .difficulty-card.low .difficulty-name { color: #00d9a5; }
+        .difficulty-card.medium .difficulty-name { color: #ffc048; }
+        .difficulty-card.high .difficulty-name { color: #e94560; }
+        .difficulty-desc { color: #8892b0; font-size: 0.9rem; margin-bottom: 15px; }
+        .difficulty-stats { display: flex; justify-content: space-between; padding-top: 15px; border-top: 1px solid #2d3748; font-size: 0.85rem; color: #8892b0; }
+        .best-score { color: #00d9a5; font-weight: bold; }
+        .start-btn {
+            width: 100%; padding: 18px; font-size: 1.2rem; font-weight: bold;
+            background: linear-gradient(135deg, #e94560 0%, #ff6b6b 100%);
+            color: #fff; border: none; border-radius: 12px; cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s; margin-top: 20px;
+        }
+        .start-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(233, 69, 96, 0.4); }
+        .start-btn:disabled { background: #2d3748; color: #8892b0; cursor: not-allowed; transform: none; box-shadow: none; }
+        .quiz-active { display: none; }
+        .quiz-progress {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px; padding: 15px 20px;
+            background: rgba(255,255,255,0.05); border-radius: 10px;
+        }
+        .progress-text { font-weight: 500; }
+        .progress-bar-container { flex: 1; margin: 0 20px; height: 8px; background: #2d3748; border-radius: 4px; overflow: hidden; }
+        .progress-bar { height: 100%; background: linear-gradient(90deg, #e94560, #ff6b6b); border-radius: 4px; transition: width 0.3s; }
+        .difficulty-badge { padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; }
+        .difficulty-badge.low { background: rgba(0, 217, 165, 0.2); color: #00d9a5; }
+        .difficulty-badge.medium { background: rgba(255, 192, 72, 0.2); color: #ffc048; }
+        .difficulty-badge.high { background: rgba(233, 69, 96, 0.2); color: #e94560; }
+        .question-card { background: rgba(255,255,255,0.05); border-radius: 16px; padding: 28px; margin-bottom: 20px; border-left: 4px solid #e94560; }
+        .question-meta { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+        .question-number { background: #e94560; color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; }
+        .question-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+        .tag { padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; }
+        .tag.topic { background: rgba(233, 69, 96, 0.15); color: #e94560; }
+        .tag.standard { background: rgba(0, 217, 165, 0.15); color: #00d9a5; font-family: monospace; }
+        .question-text { font-size: 1.1rem; margin-bottom: 25px; color: #fff; line-height: 1.7; }
+        .question-text .equation { background: rgba(0,0,0,0.3); padding: 10px 16px; border-radius: 8px; margin: 10px 0; font-family: 'Courier New', monospace; font-size: 1rem; display: block; overflow-x: auto; }
+        .question-text .note { font-size: 0.85rem; color: #8892b0; font-style: italic; margin-top: 8px; }
+        .options { display: flex; flex-direction: column; gap: 12px; }
+        .option { display: flex; align-items: flex-start; padding: 14px 18px; background: rgba(255,255,255,0.02); border: 2px solid #2d3748; border-radius: 10px; cursor: pointer; transition: all 0.2s; }
+        .option:hover { background: rgba(233, 69, 96, 0.08); border-color: #e94560; }
+        .option.selected { background: rgba(233, 69, 96, 0.12); border-color: #e94560; }
+        .option input { display: none; }
+        .option-letter { width: 30px; height: 30px; border-radius: 50%; background: #2d3748; display: flex; align-items: center; justify-content: center; margin-right: 14px; font-weight: bold; flex-shrink: 0; font-size: 0.9rem; }
+        .option.selected .option-letter { background: #e94560; color: #fff; }
+        .option-text { padding-top: 3px; font-size: 0.95rem; }
+        .quiz-nav { display: flex; justify-content: space-between; gap: 15px; margin-top: 20px; }
+        .nav-btn { padding: 14px 28px; font-size: 1rem; font-weight: 600; border-radius: 10px; cursor: pointer; transition: all 0.2s; }
+        .nav-btn.secondary { background: transparent; border: 2px solid #e94560; color: #e94560; }
+        .nav-btn.secondary:hover { background: rgba(233, 69, 96, 0.1); }
+        .nav-btn.primary { background: linear-gradient(135deg, #e94560, #ff6b6b); border: none; color: #fff; }
+        .nav-btn.primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(233, 69, 96, 0.3); }
+        .nav-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .results-container { display: none; }
+        .score-card { background: linear-gradient(135deg, rgba(233, 69, 96, 0.15), rgba(233, 69, 96, 0.05)); border: 2px solid #e94560; border-radius: 20px; padding: 35px; text-align: center; margin-bottom: 30px; }
+        .score-display { font-size: 4rem; font-weight: bold; background: linear-gradient(135deg, #e94560, #ff6b6b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .score-label { font-size: 1.1rem; color: #8892b0; margin: 10px 0; }
+        .score-difficulty { display: inline-block; padding: 8px 20px; border-radius: 25px; font-weight: bold; margin-top: 10px; }
+        .score-difficulty.low { background: rgba(0, 217, 165, 0.2); color: #00d9a5; }
+        .score-difficulty.medium { background: rgba(255, 192, 72, 0.2); color: #ffc048; }
+        .score-difficulty.high { background: rgba(233, 69, 96, 0.2); color: #e94560; }
+        .performance-bar { height: 12px; background: #2d3748; border-radius: 6px; margin-top: 20px; overflow: hidden; }
+        .performance-fill { height: 100%; border-radius: 6px; transition: width 1s ease-out; }
+        .section-box { background: rgba(255,255,255,0.05); border-radius: 12px; padding: 24px; margin-bottom: 25px; }
+        .section-box h3 { margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .section-box.standards { border: 1px solid #00d9a5; }
+        .section-box.standards h3 { color: #00d9a5; }
+        .section-box.topics h3 { color: #e94560; }
+        .section-box.videos h3 { color: #ffc048; }
+        .section-box.scores h3 { color: #e94560; }
+        .section-intro { color: #8892b0; font-size: 0.9rem; margin-bottom: 15px; }
+        .standard-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 14px 0; border-bottom: 1px solid #2d3748; gap: 15px; }
+        .standard-row:last-child { border-bottom: none; }
+        .standard-info { flex: 1; }
+        .standard-code { font-weight: bold; color: #00d9a5; font-family: monospace; font-size: 0.9rem; }
+        .standard-desc { color: #ccd6f6; font-size: 0.85rem; margin-top: 3px; }
+        .standard-score { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+        .standard-pct { font-weight: bold; min-width: 40px; text-align: right; font-size: 0.9rem; }
+        .badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; min-width: 80px; text-align: center; }
+        .badge.mastered { background: rgba(0, 217, 165, 0.2); color: #00d9a5; }
+        .badge.developing { background: rgba(255, 192, 72, 0.2); color: #ffc048; }
+        .badge.needs-work { background: rgba(233, 69, 96, 0.2); color: #e94560; }
+        .recommendation-box { background: rgba(255,255,255,0.05); border-radius: 12px; padding: 24px; margin-bottom: 25px; border-left: 4px solid #ffc048; }
+        .recommendation-box h3 { color: #ffc048; margin-bottom: 12px; }
+        .recommendation-box p { color: #ccd6f6; margin-bottom: 15px; }
+        .level-btn { display: inline-block; padding: 10px 20px; background: linear-gradient(135deg, #ffc048, #e94560); color: #fff; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s; font-size: 0.9rem; }
+        .level-btn:hover { transform: translateY(-2px); }
+        .scores-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .score-item { text-align: center; padding: 18px; background: rgba(0,0,0,0.2); border-radius: 10px; }
+        .score-item .level { font-weight: bold; margin-bottom: 6px; font-size: 0.9rem; }
+        .score-item .level.low { color: #00d9a5; }
+        .score-item .level.medium { color: #ffc048; }
+        .score-item .level.high { color: #e94560; }
+        .score-item .score { font-size: 1.4rem; font-weight: bold; }
+        .score-item .score.not-taken { color: #8892b0; font-size: 0.9rem; }
+        .topic-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #2d3748; }
+        .topic-row:last-child { border-bottom: none; }
+        .topic-name { font-weight: 500; font-size: 0.9rem; }
+        .topic-score { display: flex; align-items: center; gap: 10px; }
+        .video-grid { display: grid; gap: 10px; }
+        .video-card { background: rgba(0,0,0,0.3); border-radius: 8px; padding: 14px; border: 1px solid #2d3748; transition: all 0.2s; }
+        .video-card:hover { border-color: #e94560; transform: translateX(4px); }
+        .video-card a { color: #e94560; text-decoration: none; font-weight: 600; display: block; margin-bottom: 4px; font-size: 0.9rem; }
+        .video-card a:hover { text-decoration: underline; }
+        .video-meta { font-size: 0.8rem; color: #8892b0; }
+        .video-tag { display: inline-block; background: rgba(0, 217, 165, 0.15); color: #00d9a5; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; margin-top: 6px; font-family: monospace; }
+        .review-item { padding: 18px; margin-bottom: 12px; border-radius: 10px; border-left: 4px solid; }
+        .review-item.correct { background: rgba(0, 217, 165, 0.08); border-color: #00d9a5; }
+        .review-item.incorrect { background: rgba(233, 69, 96, 0.08); border-color: #e94560; }
+        .review-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; flex-wrap: wrap; gap: 6px; }
+        .review-question { font-weight: 500; color: #fff; flex: 1; font-size: 0.9rem; }
+        .review-tag { font-family: monospace; font-size: 0.75rem; background: rgba(0, 217, 165, 0.15); color: #00d9a5; padding: 2px 6px; border-radius: 4px; }
+        .review-answers { font-size: 0.9rem; }
+        .your-answer { color: #e94560; }
+        .correct-answer { color: #00d9a5; }
+        .explanation { margin-top: 12px; padding: 12px; background: rgba(0,0,0,0.2); border-radius: 6px; font-size: 0.85rem; color: #ccd6f6; }
+        .action-buttons { display: flex; gap: 15px; flex-wrap: wrap; }
+        .action-btn { flex: 1; min-width: 180px; padding: 14px; font-size: 1rem; font-weight: 600; border-radius: 10px; cursor: pointer; transition: all 0.2s; }
+        .action-btn.primary { background: linear-gradient(135deg, #e94560, #ff6b6b); border: none; color: #fff; }
+        .action-btn.secondary { background: transparent; border: 2px solid #e94560; color: #e94560; }
+        .action-btn:hover { transform: translateY(-2px); }
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            h1 { font-size: 1.4rem; }
+            .difficulty-cards { grid-template-columns: 1fr; }
+            .scores-grid { grid-template-columns: 1fr; }
+            .quiz-progress { flex-direction: column; gap: 10px; }
+            .progress-bar-container { width: 100%; margin: 10px 0; }
+            .period-row { grid-template-columns: 1fr; }
+            .standard-row { flex-direction: column; }
+            .standard-score { width: 100%; justify-content: space-between; margin-top: 8px; }
+            .topics-covered { gap: 5px; }
+            .topic-pill { font-size: 0.65rem; padding: 3px 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚗️ AP Chemistry: Unit 4 Complete</h1>
+            <p class="subtitle">Chemical Reactions • All Topics (4.1 - 4.9)</p>
+            <div class="exam-countdown"><span>AP Exam: May 5, 2025</span></div>
+            <div class="topics-covered">
+                <span class="topic-pill">4.1 Intro</span>
+                <span class="topic-pill">4.2 Net Ionic</span>
+                <span class="topic-pill">4.3 Particulate</span>
+                <span class="topic-pill">4.4 Phys/Chem</span>
+                <span class="topic-pill">4.5 Stoichiometry</span>
+                <span class="topic-pill">4.6 Titrations</span>
+                <span class="topic-pill">4.7 Reaction Types</span>
+                <span class="topic-pill">4.8 Acid-Base</span>
+                <span class="topic-pill">4.9 Redox</span>
+            </div>
+        </header>
+        
+        <div id="selection-screen">
+            <div class="student-info">
+                <label for="student-name">Enter your name:</label>
+                <input type="text" id="student-name" placeholder="First and Last Name" autocomplete="off">
+                <div class="period-row">
+                    <div>
+                        <label for="class-period">Class Period:</label>
+                        <select id="class-period">
+                            <option value="">Select Period...</option>
+                            <option value="2">Period 2</option>
+                            <option value="3">Period 3</option>
+                            <option value="5">Period 5</option>
+                            <option value="7">Period 7</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="date">Date:</label>
+                        <input type="date" id="date">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="difficulty-selection">
+                <div class="difficulty-header">
+                    <h2>🎯 Choose Your Challenge Level</h2>
+                    <p>All 9 topics covered at each level. Your best score counts!</p>
+                </div>
+                <div class="difficulty-cards">
+                    <div class="difficulty-card low" data-difficulty="low">
+                        <div class="difficulty-icon">🌱</div>
+                        <div class="difficulty-name">Foundation</div>
+                        <div class="difficulty-desc">27 questions covering all topics at DOK 1-2. Build your foundation.</div>
+                        <div class="difficulty-stats">
+                            <span>27 questions</span>
+                            <span class="best-score" id="low-best">—</span>
+                        </div>
+                    </div>
+                    <div class="difficulty-card medium" data-difficulty="medium">
+                        <div class="difficulty-icon">⚡</div>
+                        <div class="difficulty-name">Standard</div>
+                        <div class="difficulty-desc">18 AP-style questions at DOK 2-3. Calculations and analysis.</div>
+                        <div class="difficulty-stats">
+                            <span>18 questions</span>
+                            <span class="best-score" id="medium-best">—</span>
+                        </div>
+                    </div>
+                    <div class="difficulty-card high" data-difficulty="high">
+                        <div class="difficulty-icon">🔥</div>
+                        <div class="difficulty-name">Challenge</div>
+                        <div class="difficulty-desc">9 FRQ-level problems at DOK 3-4. Multi-step and complex.</div>
+                        <div class="difficulty-stats">
+                            <span>9 questions</span>
+                            <span class="best-score" id="high-best">—</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="start-btn" id="start-btn" disabled>Complete Info Above to Begin</button>
+        </div>
+        
+        <div class="quiz-active" id="quiz-active">
+            <div class="quiz-progress">
+                <span class="progress-text" id="progress-text">Question 1 of 27</span>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progress-bar"></div>
+                </div>
+                <span class="difficulty-badge" id="current-difficulty">Foundation</span>
+            </div>
+            <div id="question-container"></div>
+            <div class="quiz-nav">
+                <button class="nav-btn secondary" id="prev-btn" disabled>← Previous</button>
+                <button class="nav-btn primary" id="next-btn">Next →</button>
+            </div>
+        </div>
+        
+        <div class="results-container" id="results-container"></div>
+    </div>
+
+<script>
+// ==================== CONFIGURATION ====================
+const CONFIG = {
+    courseName: "AP Chemistry",
+    unitName: "Unit 4: Chemical Reactions (Complete 4.1-4.9)"
+};
+
+// ==================== AP CED STANDARDS ====================
+const STANDARDS = {
+    "TRA-1.A": { code: "TRA-1.A", description: "Identify evidence of chemical and physical changes", shortName: "Evidence of Change" },
+    "TRA-1.B": { code: "TRA-1.B", description: "Represent changes with balanced chemical equations", shortName: "Balanced Equations" },
+    "TRA-1.C": { code: "TRA-1.C", description: "Represent reactions as net ionic equations", shortName: "Net Ionic" },
+    "TRA-1.D": { code: "TRA-1.D", description: "Represent changes using particulate models", shortName: "Particulate Models" },
+    "SPQ-4.A": { code: "SPQ-4.A", description: "Explain changes in amounts based on stoichiometry", shortName: "Stoichiometry" },
+    "SPQ-4.B": { code: "SPQ-4.B", description: "Identify limiting reactant and calculate products", shortName: "Limiting Reactant" },
+    "TRA-2.A": { code: "TRA-2.A", description: "Identify a reaction as acid-base, redox, or precipitation", shortName: "Reaction Types" },
+    "TRA-2.B": { code: "TRA-2.B", description: "Identify oxidation and reduction in a reaction", shortName: "Oxidation-Reduction" },
+    "TRA-2.C": { code: "TRA-2.C", description: "Balance redox reactions using half-reactions", shortName: "Balancing Redox" }
+};
+
+// ==================== TOPICS & VIDEOS ====================
+const TOPICS = {
+    "4.1": {
+        name: "4.1 Intro to Reactions",
+        standards: ["TRA-1.A", "TRA-1.B"],
+        videos: [
+            { title: "Introduction to Reactions and Equations", url: "https://youtu.be/KmI627EPza0", channel: "Jeremy Krug", duration: "16:29" },
+            { title: "Balancing Chemical Equations", url: "https://youtu.be/eQf_EAYGo-k", channel: "Professor Dave Explains", duration: "9:57" }
+        ]
+    },
+    "4.2": {
+        name: "4.2 Net Ionic Equations",
+        standards: ["TRA-1.C"],
+        videos: [
+            { title: "Writing Net Ionic Equations", url: "https://youtu.be/K5QDMQIOpmI", channel: "Jeremy Krug", duration: "18:34" },
+            { title: "Solution Chemistry and Net Ionic Equations", url: "https://youtu.be/4KjJcY6dP4I", channel: "Professor Dave Explains", duration: "11:38" }
+        ]
+    },
+    "4.3": {
+        name: "4.3 Particulate Representations",
+        standards: ["TRA-1.D"],
+        videos: [
+            { title: "Representing Reactions", url: "https://youtu.be/3lzI1vO118g", channel: "Jeremy Krug", duration: "12:45" }
+        ]
+    },
+    "4.4": {
+        name: "4.4 Physical vs Chemical Changes",
+        standards: ["TRA-1.A"],
+        videos: [
+            { title: "Physical and Chemical Changes", url: "https://youtu.be/3lzI1vO118g", channel: "Jeremy Krug", duration: "12:45" }
+        ]
+    },
+    "4.5": {
+        name: "4.5 Stoichiometry",
+        standards: ["SPQ-4.A", "SPQ-4.B"],
+        videos: [
+            { title: "Introduction to Stoichiometry", url: "https://youtu.be/pZHDvyv_z0c", channel: "Jeremy Krug", duration: "14:33" },
+            { title: "Limiting Reactant and Percent Yield", url: "https://youtu.be/b7mKXr7LZ3I", channel: "Jeremy Krug", duration: "18:45" },
+            { title: "Limiting Reagents and Percent Yield", url: "https://youtu.be/rESzyhPOJ7I", channel: "Professor Dave Explains", duration: "10:34" }
+        ]
+    },
+    "4.6": {
+        name: "4.6 Titrations",
+        standards: ["SPQ-4.A"],
+        videos: [
+            { title: "Introduction to Titration", url: "https://youtu.be/kxdu490P4Tw", channel: "Jeremy Krug", duration: "15:22" },
+            { title: "Solving Problems with Solution Stoichiometry", url: "https://youtu.be/U9TGx77BWJ8", channel: "Jeremy Krug", duration: "12:18" }
+        ]
+    },
+    "4.7": {
+        name: "4.7 Types of Chemical Reactions",
+        standards: ["TRA-2.A"],
+        videos: [
+            { title: "Types of Chemical Reactions", url: "https://youtu.be/B4khUScKJS8", channel: "Jeremy Krug", duration: "14:12" },
+            { title: "Predicting Products of Reactions", url: "https://youtu.be/HhH15-vkgeY", channel: "Jeremy Krug", duration: "15:22" }
+        ]
+    },
+    "4.8": {
+        name: "4.8 Acid-Base Reactions",
+        standards: ["TRA-2.A"],
+        videos: [
+            { title: "Introduction to Acid-Base Reactions", url: "https://youtu.be/eX7soWYIGv8", channel: "Jeremy Krug", duration: "16:44" }
+        ]
+    },
+    "4.9": {
+        name: "4.9 Oxidation-Reduction Reactions",
+        standards: ["TRA-2.A", "TRA-2.B", "TRA-2.C"],
+        videos: [
+            { title: "Oxidation-Reduction Reactions", url: "https://youtu.be/RySE0dy3Pfs", channel: "Jeremy Krug", duration: "18:33" },
+            { title: "Determining Oxidation State", url: "https://youtu.be/OEvI8yiSnxE", channel: "Jeremy Krug", duration: "12:45" },
+            { title: "Balancing Redox Reactions", url: "https://youtu.be/-aypxLKg9B8", channel: "Jeremy Krug", duration: "22:18" }
+        ]
+    }
+};
+
+// ==================== QUESTION BANK ====================
+const QUESTIONS = {
+    low: [
+        // 4.1 Introduction to Reactions (3 questions)
+        { id: "L1", topic: "4.1", standards: ["TRA-1.A"], question: "Which observation is evidence of a chemical reaction?", options: ["Ice melting", "Gas bubbles forming and color change", "Sugar dissolving", "Water evaporating"], correct: 1, explanation: "Gas production and color change indicate new substances forming - evidence of a chemical change." },
+        { id: "L2", topic: "4.1", standards: ["TRA-1.B"], question: "What type of reaction is 2H₂ + O₂ → 2H₂O?", options: ["Decomposition", "Single replacement", "Synthesis", "Double replacement"], correct: 2, explanation: "Synthesis reactions combine simpler substances into a more complex product." },
+        { id: "L3", topic: "4.1", standards: ["TRA-1.B"], question: "Which represents a decomposition reaction?", options: ["2Na + Cl₂ → 2NaCl", "Zn + CuSO₄ → ZnSO₄ + Cu", "2H₂O → 2H₂ + O₂", "NaCl + AgNO₃ → AgCl + NaNO₃"], correct: 2, explanation: "Decomposition breaks one compound into simpler substances." },
+        
+        // 4.2 Net Ionic Equations (3 questions)
+        { id: "L4", topic: "4.2", standards: ["TRA-1.C"], question: "What is a spectator ion?", options: ["An ion that causes the reaction", "An ion unchanged on both sides", "An ion that precipitates", "An ion that changes oxidation state"], correct: 1, explanation: "Spectator ions appear identical on both sides and don't participate in forming products." },
+        { id: "L5", topic: "4.2", standards: ["TRA-1.C"], question: "Which compound is INSOLUBLE according to solubility rules?", options: ["NaCl", "KNO₃", "AgCl", "NH₄Br"], correct: 2, explanation: "AgCl is insoluble. Silver halides (except AgF) are exceptions to the solubility rules." },
+        { id: "L6", topic: "4.2", standards: ["TRA-1.C"], question: "Which group is ALWAYS soluble?", options: ["Hydroxides", "Sulfates", "Nitrates", "Carbonates"], correct: 2, explanation: "All nitrate compounds are soluble - no exceptions." },
+        
+        // 4.3 Particulate Representations (3 questions)
+        { id: "L7", topic: "4.3", standards: ["TRA-1.D"], question: "In particulate diagrams, atoms of the same element are shown with:", options: ["Different colors", "Same color/symbol", "Random colors", "No pattern"], correct: 1, explanation: "Consistent color/symbol allows identification throughout the diagram." },
+        { id: "L8", topic: "4.3", standards: ["TRA-1.D"], question: "A diagram shows 6 red and 6 blue atoms before, and 6 red-blue pairs after. This demonstrates:", options: ["Mass creation", "Conservation of atoms", "Mass destruction", "Transmutation"], correct: 1, explanation: "Same number of each atom type before and after shows conservation of mass." },
+        { id: "L9", topic: "4.3", standards: ["TRA-1.D"], question: "Gas particles in a particulate model are shown:", options: ["Close together, fixed", "Close, sliding past each other", "Far apart, moving randomly", "Not moving"], correct: 2, explanation: "Gas particles are far apart with lots of empty space, moving randomly." },
+        
+        // 4.4 Physical vs Chemical Changes (3 questions)
+        { id: "L10", topic: "4.4", standards: ["TRA-1.A"], question: "Which is a PHYSICAL change?", options: ["Burning wood", "Rusting iron", "Boiling water", "Digesting food"], correct: 2, explanation: "Boiling only changes state. Water molecules remain H₂O." },
+        { id: "L11", topic: "4.4", standards: ["TRA-1.A"], question: "Chemical changes involve breaking and forming:", options: ["Only intermolecular forces", "Intramolecular bonds", "Only hydrogen bonds", "Only van der Waals forces"], correct: 1, explanation: "Chemical changes break/form bonds within molecules, creating new substances." },
+        { id: "L12", topic: "4.4", standards: ["TRA-1.A"], question: "Dissolving NaCl in water is physical because:", options: ["Heat is released", "Ions can be recovered by evaporation", "Color changes", "New compounds form"], correct: 1, explanation: "No new substances form. Ions separate but can be recovered by evaporation." },
+        
+        // 4.5 Stoichiometry (3 questions)
+        { id: "L13", topic: "4.5", standards: ["SPQ-4.A"], question: "In a balanced equation, coefficients represent:", options: ["Grams", "Moles", "Liters", "Atoms only"], correct: 1, explanation: "Coefficients represent mole ratios - the foundation of stoichiometry." },
+        { id: "L14", topic: "4.5", standards: ["SPQ-4.A"], question: "In N₂ + 3H₂ → 2NH₃, the mole ratio of H₂ to NH₃ is:", options: ["1:2", "3:2", "2:3", "1:1"], correct: 1, explanation: "Coefficients show 3 moles H₂ produce 2 moles NH₃." },
+        { id: "L15", topic: "4.5", standards: ["SPQ-4.B"], question: "The limiting reactant is the one that:", options: ["Is present in largest amount", "Is completely consumed first", "Has largest molar mass", "Is left over"], correct: 1, explanation: "The limiting reactant is used up first and determines maximum product." },
+        
+        // 4.6 Titrations (3 questions)
+        { id: "L16", topic: "4.6", standards: ["SPQ-4.A"], question: "In a titration, the equivalence point is when:", options: ["The indicator changes color", "Moles of acid equal moles of base", "The solution becomes neutral", "The titrant is added"], correct: 1, explanation: "Equivalence point is when stoichiometrically equivalent amounts have reacted." },
+        { id: "L17", topic: "4.6", standards: ["SPQ-4.A"], question: "A buret is used in titrations to:", options: ["Hold the unknown solution", "Precisely measure volume of titrant added", "Mix the solutions", "Heat the solution"], correct: 1, explanation: "The buret allows precise measurement of titrant volume delivered." },
+        { id: "L18", topic: "4.6", standards: ["SPQ-4.A"], question: "An indicator in a titration:", options: ["Neutralizes the acid", "Changes color near the equivalence point", "Measures the pH exactly", "Acts as a catalyst"], correct: 1, explanation: "Indicators change color at specific pH ranges to signal the endpoint." },
+        
+        // 4.7 Types of Chemical Reactions (3 questions)
+        { id: "L19", topic: "4.7", standards: ["TRA-2.A"], question: "A precipitation reaction produces:", options: ["A gas", "An insoluble solid", "Heat only", "A color change only"], correct: 1, explanation: "Precipitation reactions form an insoluble solid (precipitate) from soluble reactants." },
+        { id: "L20", topic: "4.7", standards: ["TRA-2.A"], question: "In Zn + CuSO₄ → ZnSO₄ + Cu, this is a:", options: ["Synthesis", "Decomposition", "Single replacement", "Double replacement"], correct: 2, explanation: "Zinc replaces copper - a single replacement reaction." },
+        { id: "L21", topic: "4.7", standards: ["TRA-2.A"], question: "Double replacement reactions typically produce:", options: ["Only heat", "A precipitate, gas, or water", "A single element", "No products"], correct: 1, explanation: "Double replacement forms a precipitate, gas, or water (driving forces)." },
+        
+        // 4.8 Acid-Base Reactions (3 questions)
+        { id: "L22", topic: "4.8", standards: ["TRA-2.A"], question: "In acid-base reactions, the products are typically:", options: ["Salt and water", "Metal and gas", "Two acids", "Two bases"], correct: 0, explanation: "Acid + Base → Salt + Water (neutralization reaction)." },
+        { id: "L23", topic: "4.8", standards: ["TRA-2.A"], question: "HCl + NaOH → NaCl + H₂O is an example of:", options: ["Redox reaction", "Precipitation", "Neutralization", "Decomposition"], correct: 2, explanation: "Acid reacting with base to form salt and water is neutralization." },
+        { id: "L24", topic: "4.8", standards: ["TRA-2.A"], question: "A strong acid completely:", options: ["Evaporates", "Dissociates in water", "Precipitates", "Decomposes"], correct: 1, explanation: "Strong acids completely dissociate into ions in aqueous solution." },
+        
+        // 4.9 Oxidation-Reduction (3 questions)
+        { id: "L25", topic: "4.9", standards: ["TRA-2.B"], question: "Oxidation involves:", options: ["Gain of electrons", "Loss of electrons", "Gain of protons", "Loss of protons"], correct: 1, explanation: "Oxidation Is Loss (of electrons) - remember OIL RIG." },
+        { id: "L26", topic: "4.9", standards: ["TRA-2.B"], question: "The oxidation state of oxygen in most compounds is:", options: ["+2", "-2", "0", "+1"], correct: 1, explanation: "Oxygen is typically -2 (except in peroxides and OF₂)." },
+        { id: "L27", topic: "4.9", standards: ["TRA-2.A"], question: "In a redox reaction:", options: ["Only oxidation occurs", "Only reduction occurs", "Oxidation and reduction occur together", "Neither occurs"], correct: 2, explanation: "Redox reactions always have both oxidation and reduction - electrons transferred." }
+    ],
+    
+    medium: [
+        // 4.1-4.2 (4 questions)
+        { id: "M1", topic: "4.2", standards: ["TRA-1.C"], question: "What is the net ionic equation when NaCl(aq) and AgNO₃(aq) are mixed?", options: ["Na⁺ + NO₃⁻ → NaNO₃", "Ag⁺(aq) + Cl⁻(aq) → AgCl(s)", "Full molecular equation", "No reaction occurs"], correct: 1, explanation: "Na⁺ and NO₃⁻ are spectators. Only Ag⁺ and Cl⁻ form the AgCl precipitate." },
+        { id: "M2", topic: "4.2", standards: ["TRA-1.C"], question: "For Pb(NO₃)₂(aq) + 2KI(aq) → PbI₂(s) + 2KNO₃(aq), the spectator ions are:", options: ["Pb²⁺ and I⁻", "K⁺ and NO₃⁻", "Pb²⁺ and NO₃⁻", "K⁺ and I⁻"], correct: 1, explanation: "K⁺ and NO₃⁻ appear unchanged - they don't form the PbI₂ precipitate." },
+        { id: "M3", topic: "4.1", standards: ["TRA-1.B"], question: "Balance: __C₃H₈ + __O₂ → __CO₂ + __H₂O. Coefficient for O₂?", options: ["3", "4", "5", "10"], correct: 2, explanation: "C₃H₈ + 5O₂ → 3CO₂ + 4H₂O. Need 10 O atoms (6+4), so 5 O₂." },
+        { id: "M4", topic: "4.2", standards: ["TRA-1.C"], question: "Which should be written molecular (not dissociated) in ionic equations?", options: ["NaCl(aq)", "HNO₃(aq)", "H₂O(l)", "KOH(aq)"], correct: 2, explanation: "Water is always written as H₂O(l). Strong electrolytes are written as ions." },
+        
+        // 4.3-4.4 (2 questions)
+        { id: "M5", topic: "4.3", standards: ["TRA-1.D"], question: "For 2H₂ + O₂ → 2H₂O: If 6 H₂ and 2 O₂ molecules react completely:", options: ["4 H₂O, 1 O₂ left", "4 H₂O, 2 H₂ left", "6 H₂O", "2 H₂O, 4 H₂ left"], correct: 1, explanation: "2 O₂ reacts with 4 H₂ (2:1 ratio), making 4 H₂O. 2 H₂ left over." },
+        { id: "M6", topic: "4.4", standards: ["TRA-1.A"], question: "When NaOH dissolves in water and gets warm, this is:", options: ["Chemical - heat means reaction", "Physical - dissolving with ion-dipole interactions", "Chemical - new bonds form", "Neither"], correct: 1, explanation: "Dissolving is physical even when exothermic. NaOH can be recovered." },
+        
+        // 4.5 Stoichiometry (4 questions)
+        { id: "M7", topic: "4.5", standards: ["SPQ-4.A"], question: "For 2Al + 3Cl₂ → 2AlCl₃: Grams of AlCl₃ from 5.4 g Al?<br><span class='note'>(Al=27, AlCl₃=133.5 g/mol)</span>", options: ["13.35 g", "26.7 g", "40.05 g", "53.4 g"], correct: 1, explanation: "5.4g Al × (1mol/27g) × (2mol AlCl₃/2mol Al) × (133.5g/mol) = 26.7g" },
+        { id: "M8", topic: "4.5", standards: ["SPQ-4.B"], question: "For N₂ + 3H₂ → 2NH₃: 28g N₂ + 9g H₂. Mass of NH₃?<br><span class='note'>(N₂=28, H₂=2, NH₃=17 g/mol)</span>", options: ["17 g", "34 g", "51 g", "68 g"], correct: 1, explanation: "28g N₂ = 1mol; 9g H₂ = 4.5mol. N₂ limiting (needs 3mol H₂). 1mol N₂ → 2mol NH₃ = 34g" },
+        { id: "M9", topic: "4.5", standards: ["SPQ-4.A"], question: "For 2H₂O → 2H₂ + O₂: Liters O₂ at STP from 36g H₂O?<br><span class='note'>(H₂O=18 g/mol, STP=22.4 L/mol)</span>", options: ["11.2 L", "22.4 L", "33.6 L", "44.8 L"], correct: 1, explanation: "36g H₂O = 2mol → 1mol O₂ at STP = 22.4 L" },
+        { id: "M10", topic: "4.5", standards: ["SPQ-4.B"], question: "For 2H₂ + O₂ → 2H₂O: 8g H₂ + 48g O₂. Grams of H₂O?<br><span class='note'>(H₂=2, O₂=32, H₂O=18 g/mol)</span>", options: ["36 g", "54 g", "72 g", "90 g"], correct: 1, explanation: "8g H₂=4mol, 48g O₂=1.5mol. O₂ limiting. 1.5mol O₂ → 3mol H₂O = 54g" },
+        
+        // 4.6 Titrations (2 questions)
+        { id: "M11", topic: "4.6", standards: ["SPQ-4.A"], question: "25.0 mL of 0.100 M HCl is titrated with 0.100 M NaOH. Volume of NaOH needed?", options: ["12.5 mL", "25.0 mL", "50.0 mL", "100 mL"], correct: 1, explanation: "HCl + NaOH is 1:1. Equal molarity means equal volumes: 25.0 mL" },
+        { id: "M12", topic: "4.6", standards: ["SPQ-4.A"], question: "20.0 mL of H₂SO₄ requires 40.0 mL of 0.100 M NaOH. Molarity of H₂SO₄?", options: ["0.050 M", "0.100 M", "0.200 M", "0.400 M"], correct: 1, explanation: "H₂SO₄ + 2NaOH → Na₂SO₄ + 2H₂O. 0.004 mol NaOH = 0.002 mol H₂SO₄. M = 0.002/0.020 = 0.100 M" },
+        
+        // 4.7-4.8 (2 questions)
+        { id: "M13", topic: "4.7", standards: ["TRA-2.A"], question: "Identify the reaction type: 2KBr(aq) + Cl₂(g) → 2KCl(aq) + Br₂(l)", options: ["Synthesis", "Decomposition", "Single replacement (redox)", "Double replacement"], correct: 2, explanation: "Cl₂ replaces Br in KBr - single replacement with electron transfer (redox)." },
+        { id: "M14", topic: "4.8", standards: ["TRA-2.A"], question: "Net ionic equation for HCl(aq) + NaOH(aq) →", options: ["HCl + NaOH → NaCl + H₂O", "H⁺(aq) + OH⁻(aq) → H₂O(l)", "Na⁺ + Cl⁻ → NaCl", "No reaction"], correct: 1, explanation: "Na⁺ and Cl⁻ are spectators. The net ionic is just H⁺ + OH⁻ → H₂O" },
+        
+        // 4.9 Redox (4 questions)
+        { id: "M15", topic: "4.9", standards: ["TRA-2.B"], question: "In Fe₂O₃ + 3CO → 2Fe + 3CO₂, what is oxidized?", options: ["Fe", "O", "C in CO", "Nothing"], correct: 2, explanation: "C goes from +2 (in CO) to +4 (in CO₂) - loses electrons = oxidation" },
+        { id: "M16", topic: "4.9", standards: ["TRA-2.B"], question: "What is the oxidation state of Mn in KMnO₄?", options: ["+2", "+4", "+6", "+7"], correct: 3, explanation: "K is +1, O is -2. (+1) + Mn + 4(-2) = 0, so Mn = +7" },
+        { id: "M17", topic: "4.9", standards: ["TRA-2.B"], question: "In 2Mg + O₂ → 2MgO, the reducing agent is:", options: ["Mg", "O₂", "MgO", "None"], correct: 0, explanation: "Mg loses electrons (is oxidized), so it's the reducing agent." },
+        { id: "M18", topic: "4.9", standards: ["TRA-2.B"], question: "Oxidation state of S in H₂SO₄:", options: ["+2", "+4", "+6", "-2"], correct: 2, explanation: "2(+1) + S + 4(-2) = 0. S = +6" }
+    ],
+    
+    high: [
+        // Complex multi-step problems (9 questions, one per topic)
+        { id: "H1", topic: "4.1", standards: ["TRA-1.B"], question: "Balance in acidic solution: MnO₄⁻ + Fe²⁺ → Mn²⁺ + Fe³⁺. Coefficient for Fe²⁺?", options: ["1", "3", "5", "8"], correct: 2, explanation: "MnO₄⁻ + 8H⁺ + 5e⁻ → Mn²⁺ + 4H₂O and Fe²⁺ → Fe³⁺ + e⁻. Need 5 Fe²⁺ to balance electrons." },
+        
+        { id: "H2", topic: "4.2", standards: ["TRA-1.C"], question: "BaCO₃ precipitate dissolves in HCl with bubbling, but BaSO₄ doesn't dissolve. Why?", options: ["BaSO₄ is more soluble", "BaCO₃ reacts with HCl producing CO₂; BaSO₄ doesn't react", "Error in procedure", "Both should dissolve"], correct: 1, explanation: "BaCO₃ + 2HCl → BaCl₂ + H₂O + CO₂↑. BaSO₄ is extremely insoluble and unreactive with HCl." },
+        
+        { id: "H3", topic: "4.3", standards: ["TRA-1.D", "SPQ-4.B"], question: "Equilibrium 2NO₂ ⇌ N₂O₄ shows 8 NO₂ and 4 N₂O₄. If 2 more N₂O₄ form:", options: ["4 NO₂ and 6 N₂O₄", "6 NO₂ and 5 N₂O₄", "4 NO₂ and 5 N₂O₄", "12 NO₂ and 2 N₂O₄"], correct: 0, explanation: "Each N₂O₄ needs 2 NO₂. Making 2 N₂O₄ consumes 4 NO₂. Result: 8-4=4 NO₂, 4+2=6 N₂O₄" },
+        
+        { id: "H4", topic: "4.4", standards: ["TRA-1.A"], question: "Compare: (1) NaCl dissolving (2) HCl gas dissolving. Which is chemical?", options: ["Both physical", "Both chemical", "Only (2) - HCl donates H⁺ forming H₃O⁺", "Only (1) - ionic bonds break"], correct: 2, explanation: "NaCl dissolving is physical. HCl + H₂O → H₃O⁺ + Cl⁻ is chemical - proton transfer creates H₃O⁺." },
+        
+        { id: "H5", topic: "4.5", standards: ["SPQ-4.A", "SPQ-4.B"], question: "4NH₃ + 5O₂ → 4NO + 6H₂O. 34g NH₃ (MM=17) + 80g O₂ (MM=32). Mass of NO (MM=30)?", options: ["60g NO; 0g excess", "48g NO; 16g O₂ left", "60g NO; 6.8g NH₃ left", "48g NO; 8g O₂ left"], correct: 0, explanation: "34g NH₃=2mol, 80g O₂=2.5mol. Ratio 4:5 means 2mol NH₃ needs 2.5mol O₂. Perfect! 2mol NH₃→2mol NO=60g" },
+        
+        { id: "H6", topic: "4.6", standards: ["SPQ-4.A"], question: "A 0.250 g sample of unknown acid (monoprotic) requires 28.5 mL of 0.100 M NaOH. Molar mass of acid?", options: ["87.7 g/mol", "75.0 g/mol", "100 g/mol", "125 g/mol"], correct: 0, explanation: "mol NaOH = 0.0285 × 0.100 = 0.00285 mol = mol acid. MM = 0.250g / 0.00285mol = 87.7 g/mol" },
+        
+        { id: "H7", topic: "4.7", standards: ["TRA-2.A"], question: "Na₂CO₃ + HCl produces bubbling. Na₂SO₄ + HCl shows no reaction. This is because:", options: ["Sulfates are more soluble", "CO₃²⁻ reacts with H⁺ to form CO₂ gas; SO₄²⁻ doesn't react with H⁺", "Different concentrations", "Na₂SO₄ is already neutral"], correct: 1, explanation: "CO₃²⁻ + 2H⁺ → H₂O + CO₂↑. Carbonate is a base that reacts. Sulfate is not basic." },
+        
+        { id: "H8", topic: "4.8", standards: ["TRA-2.A"], question: "25.0 mL of 0.200 M H₂SO₄ neutralizes 50.0 mL of Ba(OH)₂. Molarity of Ba(OH)₂?", options: ["0.050 M", "0.100 M", "0.200 M", "0.400 M"], correct: 1, explanation: "H₂SO₄ + Ba(OH)₂ → BaSO₄ + 2H₂O. 1:1 ratio. 0.005 mol H₂SO₄ = 0.005 mol Ba(OH)₂. M = 0.005/0.050 = 0.100 M" },
+        
+        { id: "H9", topic: "4.9", standards: ["TRA-2.C"], question: "Balance in basic solution: MnO₄⁻ + C₂O₄²⁻ → MnO₂ + CO₃²⁻. Coefficient for C₂O₄²⁻?", options: ["2", "3", "4", "6"], correct: 1, explanation: "Mn goes +7→+4 (gains 3e⁻). Each C goes +3→+4 (loses 1e⁻), so 2e⁻ per C₂O₄²⁻. Need 3 C₂O₄²⁻ for 6e⁻ total." }
+    ]
+};
+
+// ==================== STATE ====================
+let state = {
+    studentName: "", classPeriod: "", date: "", selectedDifficulty: null,
+    currentQuestionIndex: 0, answers: {},
+    scores: { low: null, medium: null, high: null }
+};
+
+// ==================== INITIALIZATION ====================
+function init() {
+    document.getElementById('date').value = new Date().toISOString().split('T')[0];
+    
+    const saved = sessionStorage.getItem('apChemUnit4Complete');
+    if (saved) {
+        const p = JSON.parse(saved);
+        state.scores = p.scores || state.scores;
+        state.studentName = p.studentName || "";
+        state.classPeriod = p.classPeriod || "";
+        document.getElementById('student-name').value = state.studentName;
+        if (state.classPeriod) document.getElementById('class-period').value = state.classPeriod;
+        updateScoreDisplay();
+    }
+    
+    document.querySelectorAll('.difficulty-card').forEach(c => 
+        c.addEventListener('click', () => selectDifficulty(c.dataset.difficulty)));
+    document.getElementById('student-name').addEventListener('input', checkReady);
+    document.getElementById('class-period').addEventListener('change', checkReady);
+    document.getElementById('start-btn').addEventListener('click', startQuiz);
+    document.getElementById('prev-btn').addEventListener('click', prevQ);
+    document.getElementById('next-btn').addEventListener('click', nextQ);
+}
+
+function saveState() {
+    sessionStorage.setItem('apChemUnit4Complete', JSON.stringify({
+        scores: state.scores, studentName: state.studentName, classPeriod: state.classPeriod
+    }));
+}
+
+function selectDifficulty(d) {
+    state.selectedDifficulty = d;
+    document.querySelectorAll('.difficulty-card').forEach(c => c.classList.remove('selected'));
+    document.querySelector(`[data-difficulty="${d}"]`).classList.add('selected');
+    checkReady();
+}
+
+function checkReady() {
+    const ok = document.getElementById('student-name').value.trim() && 
+               document.getElementById('class-period').value && state.selectedDifficulty;
+    document.getElementById('start-btn').disabled = !ok;
+    document.getElementById('start-btn').textContent = ok ? 
+        `Start ${state.selectedDifficulty === 'low' ? 'Foundation' : state.selectedDifficulty === 'medium' ? 'Standard' : 'Challenge'} Quiz` : 
+        'Complete Info Above to Begin';
+}
+
+function updateScoreDisplay() {
+    ['low', 'medium', 'high'].forEach(d => {
+        const el = document.getElementById(`${d}-best`);
+        const card = document.querySelector(`[data-difficulty="${d}"]`);
+        if (state.scores[d] !== null) {
+            el.textContent = `Best: ${state.scores[d]}%`;
+            card.classList.add('completed');
+        }
+    });
+}
+
+function startQuiz() {
+    state.studentName = document.getElementById('student-name').value.trim();
+    state.classPeriod = document.getElementById('class-period').value;
+    state.date = document.getElementById('date').value;
+    state.currentQuestionIndex = 0;
+    state.answers = {};
+    
+    document.getElementById('selection-screen').style.display = 'none';
+    document.getElementById('quiz-active').style.display = 'block';
+    document.getElementById('results-container').style.display = 'none';
+    
+    const badge = document.getElementById('current-difficulty');
+    badge.className = `difficulty-badge ${state.selectedDifficulty}`;
+    badge.textContent = state.selectedDifficulty === 'low' ? 'Foundation' : 
+                       state.selectedDifficulty === 'medium' ? 'Standard' : 'Challenge';
+    renderQ();
+}
+
+function renderQ() {
+    const qs = QUESTIONS[state.selectedDifficulty];
+    const q = qs[state.currentQuestionIndex];
+    
+    document.getElementById('progress-text').textContent = `Question ${state.currentQuestionIndex + 1} of ${qs.length}`;
+    document.getElementById('progress-bar').style.width = `${((state.currentQuestionIndex + 1) / qs.length) * 100}%`;
+    
+    document.getElementById('question-container').innerHTML = `
+        <div class="question-card">
+            <div class="question-meta">
+                <span class="question-number">Q${state.currentQuestionIndex + 1}</span>
+                <div class="question-tags">
+                    <span class="tag topic">${TOPICS[q.topic].name}</span>
+                    ${q.standards.map(s => `<span class="tag standard">${s}</span>`).join('')}
+                </div>
+            </div>
+            <div class="question-text">${q.question}</div>
+            <div class="options">
+                ${q.options.map((o, i) => `
+                    <label class="option ${state.answers[q.id] === i ? 'selected' : ''}" data-opt="${i}">
+                        <input type="radio" name="q" value="${i}" ${state.answers[q.id] === i ? 'checked' : ''}>
+                        <span class="option-letter">${String.fromCharCode(65 + i)}</span>
+                        <span class="option-text">${o}</span>
+                    </label>
+                `).join('')}
+            </div>
+        </div>
+    `;
+    
+    document.querySelectorAll('.option').forEach(opt => {
+        opt.addEventListener('click', () => {
+            state.answers[q.id] = parseInt(opt.dataset.opt);
+            document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+            opt.classList.add('selected');
+        });
+    });
+    
+    document.getElementById('prev-btn').disabled = state.currentQuestionIndex === 0;
+    document.getElementById('next-btn').textContent = 
+        state.currentQuestionIndex === qs.length - 1 ? 'Submit Quiz' : 'Next →';
+}
+
+function prevQ() { if (state.currentQuestionIndex > 0) { state.currentQuestionIndex--; renderQ(); } }
+
+function nextQ() {
+    const qs = QUESTIONS[state.selectedDifficulty];
+    if (state.currentQuestionIndex === qs.length - 1) submitQuiz();
+    else { state.currentQuestionIndex++; renderQ(); }
+}
+
+function submitQuiz() {
+    const results = grade();
+    if (state.scores[state.selectedDifficulty] === null || results.pct > state.scores[state.selectedDifficulty])
+        state.scores[state.selectedDifficulty] = results.pct;
+    saveState();
+    renderResults(results);
+}
+
+function grade() {
+    const qs = QUESTIONS[state.selectedDifficulty];
+    const r = { diff: state.selectedDifficulty, total: qs.length, correct: 0, topicScores: {}, standardScores: {}, qResults: [] };
+    
+    Object.keys(TOPICS).forEach(t => r.topicScores[t] = { correct: 0, total: 0 });
+    Object.keys(STANDARDS).forEach(s => r.standardScores[s] = { correct: 0, total: 0 });
+    
+    qs.forEach(q => {
+        const ans = state.answers[q.id];
+        const ok = ans === q.correct;
+        if (ok) r.correct++;
+        r.topicScores[q.topic].total++;
+        if (ok) r.topicScores[q.topic].correct++;
+        q.standards.forEach(s => { r.standardScores[s].total++; if (ok) r.standardScores[s].correct++; });
+        r.qResults.push({ q: q.question, topic: q.topic, standards: q.standards, 
+            studentAns: ans !== undefined ? q.options[ans] : "Not answered", 
+            correctAns: q.options[q.correct], ok, expl: q.explanation });
+    });
+    
+    r.pct = Math.round((r.correct / r.total) * 100);
+    return r;
+}
+
+function renderResults(r) {
+    document.getElementById('quiz-active').style.display = 'none';
+    document.getElementById('results-container').style.display = 'block';
+    
+    const diffName = r.diff === 'low' ? 'Foundation' : r.diff === 'medium' ? 'Standard' : 'Challenge';
+    const fillColor = r.pct >= 80 ? '#00d9a5' : r.pct >= 60 ? '#ffc048' : '#e94560';
+    
+    const weakStds = Object.entries(r.standardScores)
+        .filter(([_, s]) => s.total > 0 && (s.correct / s.total) < 0.8)
+        .sort((a, b) => (a[1].correct/a[1].total) - (b[1].correct/b[1].total));
+    
+    let html = `
+        <header><h1>📊 Results</h1>
+        <p class="subtitle">${state.studentName} • Period ${state.classPeriod} • ${diffName}</p></header>
+        
+        <div class="score-card">
+            <div class="score-display">${r.pct}%</div>
+            <div class="score-label">${r.correct} of ${r.total} correct</div>
+            <span class="score-difficulty ${r.diff}">${diffName}</span>
+            <div class="performance-bar"><div class="performance-fill" style="width:${r.pct}%;background:${fillColor}"></div></div>
+        </div>
+        
+        ${getRec(r)}
+        
+        <div class="section-box standards">
+            <h3>📋 AP Standards Mastery</h3>
+            ${Object.entries(r.standardScores).filter(([_, s]) => s.total > 0)
+                .sort((a, b) => (a[1].correct/a[1].total) - (b[1].correct/b[1].total))
+                .map(([code, s]) => {
+                    const pct = Math.round((s.correct / s.total) * 100);
+                    const status = pct >= 80 ? 'mastered' : pct >= 50 ? 'developing' : 'needs-work';
+                    return `<div class="standard-row">
+                        <div class="standard-info">
+                            <div class="standard-code">${code}</div>
+                            <div class="standard-desc">${STANDARDS[code].description}</div>
+                        </div>
+                        <div class="standard-score">
+                            <span class="standard-pct">${pct}%</span>
+                            <span class="badge ${status}">${pct >= 80 ? 'Mastered' : pct >= 50 ? 'Developing' : 'Needs Work'}</span>
+                        </div>
+                    </div>`;
+                }).join('')}
+        </div>
+        
+        <div class="section-box scores">
+            <h3>📈 Your Progress</h3>
+            <div class="scores-grid">
+                ${['low', 'medium', 'high'].map(d => `
+                    <div class="score-item">
+                        <div class="level ${d}">${d === 'low' ? 'Foundation' : d === 'medium' ? 'Standard' : 'Challenge'}</div>
+                        <div class="score ${state.scores[d] === null ? 'not-taken' : ''}">${state.scores[d] !== null ? state.scores[d] + '%' : '—'}</div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+        
+        <div class="section-box topics">
+            <h3>📚 Topic Performance</h3>
+            ${Object.entries(r.topicScores).filter(([_, s]) => s.total > 0).map(([id, s]) => {
+                const pct = Math.round((s.correct / s.total) * 100);
+                return `<div class="topic-row">
+                    <span class="topic-name">${TOPICS[id].name}</span>
+                    <div class="topic-score">
+                        <span>${s.correct}/${s.total}</span>
+                        <span class="badge ${pct >= 80 ? 'mastered' : pct >= 50 ? 'developing' : 'needs-work'}">${pct}%</span>
+                    </div>
+                </div>`;
+            }).join('')}
+        </div>
+    `;
+    
+    if (weakStds.length > 0) {
+        const vids = [];
+        weakStds.forEach(([code]) => {
+            Object.entries(TOPICS).forEach(([_, t]) => {
+                if (t.standards.includes(code)) t.videos.forEach(v => {
+                    if (!vids.find(x => x.title === v.title)) vids.push({...v, std: code});
+                });
+            });
+        });
+        
+        html += `<div class="section-box videos">
+            <h3>🎬 Recommended Videos</h3>
+            <p class="section-intro">Watch these to strengthen standards you're developing:</p>
+            <div class="video-grid">
+                ${vids.slice(0, 10).map(v => `
+                    <div class="video-card">
+                        <a href="${v.url}" target="_blank">${v.title}</a>
+                        <div class="video-meta">${v.channel} • ${v.duration}</div>
+                        <span class="video-tag">${v.std}</span>
+                    </div>
+                `).join('')}
+            </div>
+        </div>`;
+    }
+    
+    html += `<div class="section-box">
+        <h3>📝 Question Review</h3>
+        ${r.qResults.map((qr, i) => `
+            <div class="review-item ${qr.ok ? 'correct' : 'incorrect'}">
+                <div class="review-header">
+                    <span class="review-question">Q${i + 1}: ${qr.q.replace(/<[^>]*>/g, ' ').substring(0, 70)}...</span>
+                    <span class="review-tag">${qr.standards[0]}</span>
+                </div>
+                <div class="review-answers">
+                    ${qr.ok ? `<span class="correct-answer">✓ ${qr.correctAns}</span>` :
+                        `<span class="your-answer">✗ ${qr.studentAns}</span><br>
+                         <span class="correct-answer">✓ ${qr.correctAns}</span>`}
+                </div>
+                <div class="explanation">${qr.expl}</div>
+            </div>
+        `).join('')}
+    </div>
+    
+    <div class="action-buttons">
+        <button class="action-btn primary" onclick="tryAnother()">Try Another Level</button>
+        <button class="action-btn secondary" onclick="retake()">Retake Quiz</button>
+    </div>`;
+    
+    document.getElementById('results-container').innerHTML = html;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function getRec(r) {
+    const p = r.pct, d = r.diff;
+    if (d === 'low') {
+        if (p >= 80) return `<div class="recommendation-box" style="border-color:#00d9a5"><h3>🎉 Strong Foundation!</h3><p>Ready for Standard level!</p><button class="level-btn" onclick="jumpTo('medium')">Try Standard →</button></div>`;
+        if (p >= 60) return `<div class="recommendation-box"><h3>💪 Getting There</h3><p>Review weak standards below, watch videos, try again.</p></div>`;
+        return `<div class="recommendation-box" style="border-color:#e94560"><h3>📖 Keep Building</h3><p>Focus on weak areas. Watch the recommended videos.</p></div>`;
+    }
+    if (d === 'medium') {
+        if (p >= 80) return `<div class="recommendation-box" style="border-color:#00d9a5"><h3>🔥 Ready for Challenge!</h3><p>Push yourself!</p><button class="level-btn" onclick="jumpTo('high')">Try Challenge →</button></div>`;
+        if (p >= 60) return `<div class="recommendation-box"><h3>👍 Solid Progress</h3><p>Review missed standards, then decide your next step.</p></div>`;
+        return `<div class="recommendation-box" style="border-color:#e94560"><h3>📚 Step Back</h3><p>Try Foundation to strengthen basics.</p><button class="level-btn" onclick="jumpTo('low')">Try Foundation</button></div>`;
+    }
+    if (p >= 80) return `<div class="recommendation-box" style="border-color:#00d9a5"><h3>🏆 Outstanding!</h3><p>You've mastered Unit 4!</p></div>`;
+    if (p >= 60) return `<div class="recommendation-box"><h3>⭐ Strong Effort</h3><p>Review explanations. Consider Standard to reinforce.</p></div>`;
+    return `<div class="recommendation-box" style="border-color:#ffc048"><h3>💡 Keep Practicing</h3><p>Try Standard first.</p><button class="level-btn" onclick="jumpTo('medium')">Try Standard</button></div>`;
+}
+
+function tryAnother() {
+    document.getElementById('results-container').style.display = 'none';
+    document.getElementById('selection-screen').style.display = 'block';
+    state.selectedDifficulty = null;
+    updateScoreDisplay();
+    document.querySelectorAll('.difficulty-card').forEach(c => c.classList.remove('selected'));
+    checkReady();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function retake() {
+    state.currentQuestionIndex = 0;
+    state.answers = {};
+    document.getElementById('results-container').style.display = 'none';
+    document.getElementById('quiz-active').style.display = 'block';
+    renderQ();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function jumpTo(lvl) {
+    state.selectedDifficulty = lvl;
+    state.currentQuestionIndex = 0;
+    state.answers = {};
+    document.getElementById('results-container').style.display = 'none';
+    document.getElementById('quiz-active').style.display = 'block';
+    const badge = document.getElementById('current-difficulty');
+    badge.className = `difficulty-badge ${lvl}`;
+    badge.textContent = lvl === 'low' ? 'Foundation' : lvl === 'medium' ? 'Standard' : 'Challenge';
+    renderQ();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
