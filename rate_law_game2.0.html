@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rate Law Lab — AP Chemistry Unit 5</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0a1628;
+    --deep: #0f1f3d;
+    --teal: #00c4b4;
+    --teal-dim: #007a72;
+    --gold: #f5c518;
+    --gold-dim: #a88a10;
+    --coral: #ff6b6b;
+    --green: #4ecca3;
+    --text: #e8f4f8;
+    --muted: #8ba3b5;
+    --card: rgba(255,255,255,0.05);
+    --border: rgba(0,196,180,0.2);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--navy);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Particle background */
+  #canvas-bg {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none; z-index: 0;
+    opacity: 0.4;
+  }
+
+  .wrapper {
+    position: relative; z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 20px 20px 60px;
+  }
+
+  /* HEADER */
+  header {
+    text-align: center;
+    padding: 30px 0 20px;
+  }
+  .ced-tag {
+    display: inline-block;
+    background: rgba(0,196,180,0.15);
+    border: 1px solid var(--teal);
+    color: var(--teal);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 14px;
+  }
+  header h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  header h1 span { color: var(--teal); }
+  header p {
+    color: var(--muted);
+    margin-top: 8px;
+    font-size: 0.95rem;
+  }
+
+  /* PROGRESS BAR */
+  .progress-bar-wrap {
+    display: flex; align-items: center; gap: 12px;
+    margin: 24px 0 10px;
+  }
+  .progress-bar-wrap label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--teal);
+    white-space: nowrap;
+    letter-spacing: 0.08em;
+  }
+  .progress-bar {
+    flex: 1;
+    height: 6px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--teal), var(--gold));
+    border-radius: 10px;
+    transition: width 0.5s cubic-bezier(.4,0,.2,1);
+  }
+  .score-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.9rem;
+    color: var(--gold);
+    background: rgba(245,197,24,0.1);
+    border: 1px solid var(--gold-dim);
+    padding: 4px 14px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+
+  /* PHASE INDICATORS */
+  .phase-row {
+    display: flex; gap: 8px; margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .phase-pill {
+    font-size: 0.72rem;
+    font-family: 'Space Mono', monospace;
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--muted);
+    transition: all 0.3s;
+    letter-spacing: 0.05em;
+  }
+  .phase-pill.active {
+    background: var(--teal);
+    color: var(--navy);
+    border-color: var(--teal);
+    font-weight: 700;
+  }
+  .phase-pill.done {
+    border-color: var(--teal-dim);
+    color: var(--teal-dim);
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-bottom: 20px;
+    backdrop-filter: blur(8px);
+    animation: fadeUp 0.4s ease both;
+  }
+  @keyframes fadeUp {
+    from { opacity:0; transform: translateY(16px); }
+    to   { opacity:1; transform: translateY(0); }
+  }
+  .card h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 14px;
+    color: var(--teal);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .card h2 .icon { font-size: 1.5rem; }
+  .card p, .card li {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--text);
+  }
+  .card ul { padding-left: 1.4em; margin-top: 8px; }
+  .card li { margin-bottom: 6px; }
+
+  /* CONCEPT BOX */
+  .concept-box {
+    background: rgba(0,196,180,0.07);
+    border-left: 3px solid var(--teal);
+    border-radius: 0 10px 10px 0;
+    padding: 14px 18px;
+    margin: 14px 0;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.85rem;
+    line-height: 1.8;
+  }
+  .concept-box .eq {
+    font-size: 1.05rem;
+    color: var(--teal);
+    display: block;
+    text-align: center;
+    margin: 8px 0;
+    letter-spacing: 0.05em;
+  }
+
+  /* TABLES */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.82rem;
+  }
+  .data-table th {
+    background: rgba(0,196,180,0.15);
+    color: var(--teal);
+    padding: 10px 14px;
+    text-align: center;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+  .data-table td {
+    padding: 9px 14px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    color: var(--text);
+  }
+  .data-table tr:hover td { background: rgba(255,255,255,0.03); }
+
+  /* ANSWER OPTIONS */
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  @media(max-width: 500px) { .options-grid { grid-template-columns: 1fr; } }
+
+  .opt-btn {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.82rem;
+    padding: 13px 16px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+    line-height: 1.5;
+  }
+  .opt-btn:hover:not(:disabled) {
+    border-color: var(--teal);
+    background: rgba(0,196,180,0.08);
+    color: var(--teal);
+  }
+  .opt-btn.correct {
+    border-color: var(--green);
+    background: rgba(78,204,163,0.15);
+    color: var(--green);
+  }
+  .opt-btn.wrong {
+    border-color: var(--coral);
+    background: rgba(255,107,107,0.12);
+    color: var(--coral);
+  }
+  .opt-btn:disabled { cursor: default; }
+  .opt-label {
+    font-size: 0.65rem;
+    opacity: 0.6;
+    display: block;
+    margin-bottom: 3px;
+    letter-spacing: 0.1em;
+  }
+
+  /* INPUT ANSWER */
+  .input-row {
+    display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap;
+  }
+  .ans-input {
+    flex: 1;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.95rem;
+    padding: 12px 16px;
+    outline: none;
+    transition: border 0.2s;
+    min-width: 120px;
+  }
+  .ans-input:focus { border-color: var(--teal); }
+
+  /* BUTTONS */
+  .btn {
+    background: var(--teal);
+    color: var(--navy);
+    border: none;
+    border-radius: 10px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 12px 22px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.03em;
+  }
+  .btn:hover { background: #00e5d4; transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+  .btn.secondary {
+    background: transparent;
+    border: 1px solid var(--teal);
+    color: var(--teal);
+  }
+  .btn.secondary:hover { background: rgba(0,196,180,0.1); }
+  .btn.gold {
+    background: var(--gold);
+    color: var(--navy);
+  }
+  .btn.gold:hover { background: #ffd740; }
+
+  /* FEEDBACK */
+  .feedback {
+    margin-top: 16px;
+    padding: 14px 18px;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    display: none;
+  }
+  .feedback.show { display: block; animation: fadeUp 0.3s ease; }
+  .feedback.correct-fb {
+    background: rgba(78,204,163,0.12);
+    border: 1px solid rgba(78,204,163,0.3);
+    color: var(--green);
+  }
+  .feedback.wrong-fb {
+    background: rgba(255,107,107,0.1);
+    border: 1px solid rgba(255,107,107,0.3);
+    color: #ff9a9a;
+  }
+  .feedback strong { display: block; margin-bottom: 4px; font-size: 1rem; }
+
+  /* STREAK / XP */
+  .hud {
+    display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;
+  }
+  .hud-item {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+  .hud-item span {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-top: 2px;
+  }
+  .hud-item.streak span { color: var(--gold); }
+
+  /* QUESTION COUNTER */
+  .q-counter {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-bottom: 10px;
+    letter-spacing: 0.06em;
+  }
+
+  /* SPECIAL: reaction display */
+  .reaction {
+    font-family: 'Space Mono', monospace;
+    font-size: 1rem;
+    color: var(--gold);
+    background: rgba(245,197,24,0.07);
+    border: 1px solid rgba(245,197,24,0.2);
+    border-radius: 8px;
+    padding: 12px 18px;
+    margin: 12px 0;
+    text-align: center;
+  }
+
+  /* FINAL SCORE SCREEN */
+  #final-screen { display: none; }
+  .trophy {
+    font-size: 5rem;
+    text-align: center;
+    display: block;
+    margin: 10px 0;
+    animation: bounce 1s ease infinite alternate;
+  }
+  @keyframes bounce {
+    from { transform: translateY(0); }
+    to   { transform: translateY(-12px); }
+  }
+  .big-score {
+    font-size: clamp(3rem, 10vw, 5.5rem);
+    font-weight: 800;
+    text-align: center;
+    color: var(--gold);
+    line-height: 1;
+    margin: 10px 0 4px;
+  }
+  .score-label {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+  }
+  .breakdown {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 16px 0;
+  }
+  .breakdown-item {
+    background: rgba(255,255,255,0.04);
+    border-radius: 10px;
+    padding: 14px;
+    text-align: center;
+  }
+  .breakdown-item .val {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--teal);
+  }
+  .breakdown-item .lbl {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-top: 4px;
+    font-family: 'Space Mono', monospace;
+  }
+  .share-box {
+    background: rgba(0,196,180,0.07);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--teal);
+    margin: 16px 0;
+    cursor: pointer;
+    user-select: all;
+    text-align: center;
+    line-height: 1.7;
+  }
+  .share-box:hover { background: rgba(0,196,180,0.12); }
+  .btn-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
+
+  /* RANK */
+  .rank-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: linear-gradient(135deg, var(--gold-dim), var(--gold));
+    color: var(--navy);
+    padding: 6px 18px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin: 0 auto;
+    display: block;
+    width: fit-content;
+  }
+
+  /* LOADING / NEXT BTN */
+  .next-btn-wrap { margin-top: 20px; display: none; }
+  .next-btn-wrap.show { display: flex; justify-content: flex-end; }
+
+  /* INTRO SCREEN */
+  #intro-screen {}
+  .level-badges {
+    display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0;
+  }
+  .level-badge {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+  }
+  .level-badge.lvl1 { background: rgba(78,204,163,0.15); color: var(--green); border: 1px solid var(--green); }
+  .level-badge.lvl2 { background: rgba(0,196,180,0.15); color: var(--teal); border: 1px solid var(--teal); }
+  .level-badge.lvl3 { background: rgba(245,197,24,0.15); color: var(--gold); border: 1px solid var(--gold); }
+  .level-badge.lvl4 { background: rgba(255,107,107,0.15); color: var(--coral); border: 1px solid var(--coral); }
+
+  /* Section label */
+  .section-label {
+    font-size: 0.7rem;
+    font-family: 'Space Mono', monospace;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  /* Highlight */
+  .hi { color: var(--teal); font-weight: 700; }
+  .hi-gold { color: var(--gold); font-weight: 700; }
+
+  /* Confetti */
+  .confetti-particle {
+    position: fixed;
+    width: 8px; height: 8px;
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 999;
+    animation: fall linear forwards;
+  }
+  @keyframes fall {
+    from { transform: translateY(-20px) rotate(0deg); opacity:1; }
+    to   { transform: translateY(100vh) rotate(720deg); opacity:0; }
+  }
+</style>
+</head>
+<body>
+<canvas id="canvas-bg"></canvas>
+
+<div class="wrapper">
+  <header>
+    <div class="ced-tag">AP CHEMISTRY · UNIT 5 · TOPICS 5.1 & 5.2 · TRA-3, ENE-3</div>
+    <h1>Rate Law <span>Lab</span></h1>
+    <p>Master reaction rates & rate laws — from concept to AP exam</p>
+  </header>
+
+  <!-- INTRO SCREEN -->
+  <div id="intro-screen">
+    <div class="card">
+      <h2><span class="icon">⚗️</span> Your Mission</h2>
+      <p>You're a chemist trying to unlock the <strong>rate law</strong> for unknown reactions. Work through <strong>4 levels</strong> of increasing difficulty, earning points as you go. Your final score can be shared with your teacher.</p>
+      <div class="level-badges">
+        <span class="level-badge lvl1">Level 1 · Reaction Rates</span>
+        <span class="level-badge lvl2">Level 2 · Reading Rate Laws</span>
+        <span class="level-badge lvl3">Level 3 · Finding Orders</span>
+        <span class="level-badge lvl4">Level 4 · AP Challenge</span>
+      </div>
+      <ul style="margin-top:10px;">
+        <li>Each correct answer earns <span class="hi-gold">+10 points</span></li>
+        <li>Streak bonuses: 3 in a row = <span class="hi-gold">+5 bonus</span>, 5 in a row = <span class="hi-gold">+10 bonus</span></li>
+        <li>Wrong answers break your streak but you <span class="hi">always continue</span> — read every explanation, that's where the learning is</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2><span class="icon">📖</span> Quick Reference — Concepts You'll Use</h2>
+      <p class="section-label">CED 5.1.A — Reaction Rates</p>
+      <p>The <strong>rate of reaction</strong> measures how fast reactant concentrations decrease (or product concentrations increase) per unit time.</p>
+      <div class="concept-box">
+        For: &nbsp; aA + bB → cC + dD
+        <span class="eq">rate = −(1/a)Δ[A]/Δt = −(1/b)Δ[B]/Δt = (1/c)Δ[C]/Δt</span>
+        <em>Rates are positive values; stoichiometric coefficients normalize them.</em>
+      </div>
+      <p class="section-label" style="margin-top:14px;">CED 5.2.A — Rate Law</p>
+      <p>The <strong>rate law</strong> is determined <em>experimentally</em> — you cannot read it from the balanced equation alone.</p>
+      <div class="concept-box">
+        <span class="eq">rate = k[A]ᵐ[B]ⁿ</span>
+        <strong>k</strong> = rate constant (temp-dependent)<br>
+        <strong>m, n</strong> = reaction orders (found from data)<br>
+        <strong>overall order</strong> = m + n
+      </div>
+      <p style="margin-top:10px;"><strong>Finding orders from initial rate data:</strong></p>
+      <div class="concept-box">
+        Compare two experiments where only ONE reactant changes:
+        <span class="eq">rate₂/rate₁ = ([A]₂/[A]₁)ᵐ</span>
+        Solve for m by inspection or logarithms.
+      </div>
+    </div>
+
+    <div style="text-align:center; margin-top: 10px;">
+      <button class="btn gold" onclick="startGame()" style="font-size:1.1rem; padding:16px 40px;">Start the Lab ⚗️</button>
+    </div>
+  </div>
+
+  <!-- GAME SCREEN -->
+  <div id="game-screen" style="display:none;">
+    <div class="hud">
+      <div class="hud-item">
+        <div>LEVEL</div>
+        <span id="hud-level">1</span>
+      </div>
+      <div class="hud-item streak">
+        <div>STREAK 🔥</div>
+        <span id="hud-streak">0</span>
+      </div>
+      <div class="hud-item" style="margin-left:auto;">
+        <div>SCORE</div>
+        <span id="hud-score" style="color:var(--gold)">0</span>
+      </div>
+    </div>
+
+    <div class="progress-bar-wrap">
+      <label id="progress-label">Q 1/20</label>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    </div>
+
+    <div class="phase-row" id="phase-row">
+      <div class="phase-pill active" id="pill-1">① Reaction Rates</div>
+      <div class="phase-pill" id="pill-2">② Reading Rate Laws</div>
+      <div class="phase-pill" id="pill-3">③ Finding Orders</div>
+      <div class="phase-pill" id="pill-4">④ AP Challenge</div>
+    </div>
+
+    <div id="question-area"></div>
+  </div>
+
+  <!-- FINAL SCREEN -->
+  <div id="final-screen">
+    <div class="card" style="text-align:center;">
+      <span class="trophy" id="trophy-icon">🏆</span>
+      <div class="big-score" id="final-score-num">0</div>
+      <div class="score-label">out of 250 points</div>
+      <div class="rank-badge" id="rank-badge">🔬 Novice Chemist</div>
+      <div class="breakdown" style="margin-top:20px;">
+        <div class="breakdown-item">
+          <div class="val" id="stat-correct">0</div>
+          <div class="lbl">CORRECT</div>
+        </div>
+        <div class="breakdown-item">
+          <div class="val" id="stat-streak">0</div>
+          <div class="lbl">BEST STREAK</div>
+        </div>
+        <div class="breakdown-item">
+          <div class="val" id="stat-bonus">0</div>
+          <div class="lbl">BONUS PTS</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h2><span class="icon">📋</span> Share Your Score</h2>
+      <p style="font-size:0.88rem; color:var(--muted); margin-bottom:10px;">Click the box below to copy, then share with your teacher!</p>
+      <div class="share-box" id="share-box" onclick="copyScore(this)">Click to copy score card...</div>
+      <div class="btn-row">
+        <button class="btn" onclick="restartGame()">🔄 Play Again</button>
+        <button class="btn secondary" onclick="showIntro()">📖 Review Concepts</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+//  PARTICLE BACKGROUND
+// ============================================================
+const cvs = document.getElementById('canvas-bg');
+const ctx = cvs.getContext('2d');
+let W, H, particles = [];
+
+function resize() {
+  W = cvs.width = window.innerWidth;
+  H = cvs.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+function makeParticle() {
+  return {
+    x: Math.random() * W,
+    y: Math.random() * H,
+    r: Math.random() * 2 + 0.5,
+    vx: (Math.random() - 0.5) * 0.3,
+    vy: (Math.random() - 0.5) * 0.3,
+    a: Math.random() * 0.6 + 0.2,
+    col: Math.random() > 0.5 ? '#00c4b4' : '#f5c518'
+  };
+}
+
+for (let i = 0; i < 80; i++) particles.push(makeParticle());
+
+function drawParticles() {
+  ctx.clearRect(0, 0, W, H);
+  particles.forEach(p => {
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+    ctx.fillStyle = p.col;
+    ctx.globalAlpha = p.a;
+    ctx.fill();
+    p.x += p.vx; p.y += p.vy;
+    if (p.x < 0 || p.x > W) p.vx *= -1;
+    if (p.y < 0 || p.y > H) p.vy *= -1;
+  });
+  requestAnimationFrame(drawParticles);
+}
+drawParticles();
+
+// ============================================================
+//  GAME STATE
+// ============================================================
+let score = 0, streak = 0, bestStreak = 0, bonusPoints = 0;
+let currentQ = 0, correctCount = 0;
+let currentLevel = 1;
+const TOTAL_Q = 20;
+
+// ============================================================
+//  QUESTION BANK
+// ============================================================
+const questions = [
+  // ── LEVEL 1: Reaction Rates (CED 5.1) ──────────────────────
+  {
+    level: 1,
+    type: 'mc',
+    stem: 'For the reaction: <div class="reaction">2 NO₂(g) → 2 NO(g) + O₂(g)</div>If NO₂ is disappearing at 0.040 M/s, what is the rate of appearance of O₂?',
+    options: ['0.080 M/s','0.040 M/s','0.020 M/s','0.010 M/s'],
+    answer: 2,
+    explanation: 'From stoichiometry: rate = −½Δ[NO₂]/Δt = ½(0.040) = <strong>0.020 M/s</strong>. The coefficient "2" in front of NO₂ and O₂ means every 2 mol NO₂ lost yields 1 mol O₂. So O₂ forms at half the rate of NO₂ disappearance.'
+  },
+  {
+    level: 1,
+    type: 'mc',
+    stem: 'Which factor does NOT directly affect the rate of a homogeneous reaction?',
+    options: ['Concentration of reactants','Temperature','Surface area of solid reactant','Presence of a catalyst'],
+    answer: 2,
+    explanation: '<strong>Surface area</strong> only applies to heterogeneous reactions (solid + liquid/gas). For a homogeneous reaction (all same phase), surface area is not relevant. Concentration, temperature, and catalysts all directly affect rate (CED 5.1.A.3).'
+  },
+  {
+    level: 1,
+    type: 'mc',
+    stem: 'For: <div class="reaction">N₂(g) + 3 H₂(g) → 2 NH₃(g)</div>If NH₃ is produced at 0.60 M/s, at what rate is H₂ consumed?',
+    options: ['0.20 M/s','0.30 M/s','0.60 M/s','0.90 M/s'],
+    answer: 3,
+    explanation: 'rate = (1/2)Δ[NH₃]/Δt = (1/3)Δ[H₂]/Δt → Δ[H₂]/Δt = (3/2)(0.60) = <strong>0.90 M/s</strong>. H₂ is consumed 3 times faster than NH₃ is produced on a molar basis, but normalized by coefficient, the rates are equal.'
+  },
+  {
+    level: 1,
+    type: 'mc',
+    stem: 'A student measures [A] at t = 0 s and t = 20 s and finds Δ[A] = −0.24 M. What is the average rate of reaction with respect to A?',
+    options: ['4.8 M/s','0.012 M/s','−0.012 M/s','0.24 M/s'],
+    answer: 1,
+    explanation: 'Average rate = −Δ[A]/Δt = −(−0.24 M)/(20 s) = <strong>0.012 M/s</strong>. Rate is always reported as a positive quantity; the negative sign in the formula accounts for the decrease in reactant concentration.'
+  },
+
+  // ── LEVEL 2: Reading Rate Laws (CED 5.2) ──────────────────────
+  {
+    level: 2,
+    type: 'mc',
+    stem: 'Given: rate = k[A]²[B] — what is the overall reaction order?',
+    options: ['1st order','2nd order','3rd order','Cannot be determined from rate law alone'],
+    answer: 2,
+    explanation: 'Overall order = sum of all exponents = 2 + 1 = <strong>3rd order</strong>. The reaction is 2nd order in A, 1st order in B, and 3rd order overall (CED 5.2.A.3).'
+  },
+  {
+    level: 2,
+    type: 'mc',
+    stem: 'A student proposes that the rate law for <span class="hi">A + 2B → C</span> must be rate = k[A][B]². This reasoning is:',
+    options: [
+      'Correct — the rate law always matches the balanced equation',
+      'Incorrect — rate laws can only be determined experimentally',
+      'Correct — the exponent on B equals its coefficient',
+      'Incorrect — the rate law must be zero order for all reactants'
+    ],
+    answer: 1,
+    explanation: '<strong>Critical misconception!</strong> Rate laws CANNOT be read from balanced equations — they must be determined experimentally (CED 5.2.A.5). The stoichiometric coefficients are not the reaction orders unless the reaction is an elementary step.'
+  },
+  {
+    level: 2,
+    type: 'mc',
+    stem: 'For rate = k[X]²[Y]⁰, if [X] is tripled while [Y] is doubled, the rate:',
+    options: ['Increases by factor of 9','Increases by factor of 6','Increases by factor of 18','Stays the same'],
+    answer: 0,
+    explanation: 'Since the order in Y is zero, [Y] has NO effect on rate. Tripling [X] with order 2: rate factor = 3² = <strong>9×</strong>. Zero-order reactants do not appear in the rate law — their concentration changes don\'t affect the rate (CED 5.2.A.2).'
+  },
+  {
+    level: 2,
+    type: 'mc',
+    stem: 'What are the units of k for a second-order reaction?',
+    options: ['M·s⁻¹','s⁻¹','M⁻¹·s⁻¹','M⁻²·s⁻¹'],
+    answer: 2,
+    explanation: 'For rate (M/s) = k[A]²: k = rate/[A]² = (M·s⁻¹)/(M²) = <strong>M⁻¹·s⁻¹</strong>. Units of k depend on overall reaction order. 1st order: s⁻¹; 2nd order: M⁻¹s⁻¹; 0th order: M·s⁻¹ (CED 5.2.A.4).'
+  },
+
+  // ── LEVEL 3: Finding Orders from Data ──────────────────────
+  {
+    level: 3,
+    type: 'table-mc',
+    stem: 'Use the initial rate data to determine the order with respect to A:',
+    table: {
+      headers: ['Exp', '[A] (M)', '[B] (M)', 'Rate (M/s)'],
+      rows: [
+        ['1', '0.10', '0.10', '2.0 × 10⁻³'],
+        ['2', '0.20', '0.10', '8.0 × 10⁻³'],
+        ['3', '0.10', '0.20', '4.0 × 10⁻³']
+      ]
+    },
+    options: ['Zero order in A','First order in A','Second order in A','Third order in A'],
+    answer: 2,
+    explanation: 'Compare Exp 1 & 2 ([B] constant): rate₂/rate₁ = 8.0/2.0 = 4. [A]₂/[A]₁ = 0.20/0.10 = 2. So 4 = 2ᵐ → m = <strong>2 (second order in A)</strong>. When [A] doubles, rate quadruples — classic second-order behavior.'
+  },
+  {
+    level: 3,
+    type: 'table-mc',
+    stem: 'Using the same data table, determine the order with respect to B:',
+    table: {
+      headers: ['Exp', '[A] (M)', '[B] (M)', 'Rate (M/s)'],
+      rows: [
+        ['1', '0.10', '0.10', '2.0 × 10⁻³'],
+        ['2', '0.20', '0.10', '8.0 × 10⁻³'],
+        ['3', '0.10', '0.20', '4.0 × 10⁻³']
+      ]
+    },
+    options: ['Zero order in B','First order in B','Second order in B','Third order in B'],
+    answer: 1,
+    explanation: 'Compare Exp 1 & 3 ([A] constant): rate₃/rate₁ = 4.0/2.0 = 2. [B]₃/[B]₁ = 0.20/0.10 = 2. So 2 = 2ⁿ → n = <strong>1 (first order in B)</strong>. The rate doubles when [B] doubles.'
+  },
+  {
+    level: 3,
+    type: 'table-mc',
+    stem: 'From the data, what is the value of k (the rate constant)?',
+    table: {
+      headers: ['Exp', '[A] (M)', '[B] (M)', 'Rate (M/s)'],
+      rows: [
+        ['1', '0.10', '0.10', '2.0 × 10⁻³'],
+        ['2', '0.20', '0.10', '8.0 × 10⁻³'],
+        ['3', '0.10', '0.20', '4.0 × 10⁻³']
+      ]
+    },
+    options: ['k = 0.20 M⁻²s⁻¹','k = 2.0 M⁻²s⁻¹','k = 20 M⁻²s⁻¹','k = 2.0 × 10⁻³ M⁻²s⁻¹'],
+    answer: 1,
+    explanation: 'Rate law: rate = k[A]²[B]. Using Exp 1: 2.0×10⁻³ = k(0.10)²(0.10) = k(0.001). Solving: k = 2.0×10⁻³/0.001 = <strong>2.0 M⁻²s⁻¹</strong>. Always verify with a second experiment!'
+  },
+  {
+    level: 3,
+    type: 'table-mc',
+    stem: 'A new reaction has these initial rates. What is the rate law?',
+    table: {
+      headers: ['Exp', '[P] (M)', '[Q] (M)', 'Rate (M/s)'],
+      rows: [
+        ['1', '0.100', '0.100', '1.5 × 10⁻²'],
+        ['2', '0.200', '0.100', '3.0 × 10⁻²'],
+        ['3', '0.100', '0.300', '1.5 × 10⁻²']
+      ]
+    },
+    options: [
+      'rate = k[P][Q]',
+      'rate = k[P]²[Q]',
+      'rate = k[P]',
+      'rate = k[P][Q]²'
+    ],
+    answer: 2,
+    explanation: 'Exp 1→2: [P] doubles, rate doubles → 1st order in P. Exp 1→3: [Q] triples, rate unchanged → <strong>0th order in Q</strong>. Rate law: <strong>rate = k[P]</strong>. Q does not appear in the rate law at all. This is why we cannot assume all reactants influence the rate!'
+  },
+
+  // ── LEVEL 4: AP Challenge ──────────────────────────────────
+  {
+    level: 4,
+    type: 'table-mc',
+    stem: '<strong>AP FRQ Style:</strong> A chemist studies the reaction: <div class="reaction">2 ClO₂(aq) + 2 OH⁻(aq) → ClO₃⁻(aq) + ClO₂⁻(aq) + H₂O(l)</div>What is the rate law based on this data?',
+    table: {
+      headers: ['Exp', '[ClO₂] (M)', '[OH⁻] (M)', 'Rate (M/s)'],
+      rows: [
+        ['1', '0.060', '0.030', '0.0248'],
+        ['2', '0.020', '0.030', '0.00276'],
+        ['3', '0.020', '0.090', '0.00828']
+      ]
+    },
+    options: [
+      'rate = k[ClO₂][OH⁻]',
+      'rate = k[ClO₂]²[OH⁻]',
+      'rate = k[ClO₂]²[OH⁻]²',
+      'rate = k[ClO₂]³[OH⁻]'
+    ],
+    answer: 1,
+    explanation: 'Exp 2→1: [ClO₂] triples (0.020→0.060), rate increases by 0.0248/0.00276 ≈ 9 = 3². Order in ClO₂ = <strong>2</strong>. Exp 2→3: [OH⁻] triples, rate increases by 0.00828/0.00276 = 3 = 3¹. Order in OH⁻ = <strong>1</strong>. Rate law: <strong>rate = k[ClO₂]²[OH⁻]</strong>.'
+  },
+  {
+    level: 4,
+    type: 'mc',
+    stem: 'For the rate law rate = k[A]²[B], if [A] is halved and [B] is quadrupled, how does the rate change?',
+    options: [
+      'Rate decreases by factor of 4',
+      'Rate stays the same',
+      'Rate increases by factor of 4',
+      'Rate decreases by factor of 2'
+    ],
+    answer: 1,
+    explanation: 'New rate = k(½[A])²(4[B]) = k · ¼[A]² · 4[B] = k[A]²[B] = original rate. The ¼ factor from [A] and the 4× factor from [B] cancel exactly. <strong>Rate is unchanged!</strong> This elegant cancellation is a common AP exam question type.'
+  },
+  {
+    level: 4,
+    type: 'mc',
+    stem: 'An AP student claims: "For a reaction that is zero order overall, the rate constant k equals the rate of reaction." Is this claim valid?',
+    options: [
+      'Yes — for zero order: rate = k[A]⁰ = k',
+      'No — k still has units that differ from rate',
+      'Yes — but only at 25°C',
+      'No — zero order reactions have no rate constant'
+    ],
+    answer: 0,
+    explanation: 'For a zero-order reaction: rate = k[A]⁰ = k(1) = k. The claim is <strong>valid</strong>. Since [A]⁰ = 1, the rate equals the rate constant directly. For zero order, k has units of M·s⁻¹, the same as rate. The rate is constant regardless of concentration.'
+  },
+  {
+    level: 4,
+    type: 'table-mc',
+    stem: '<strong>AP Challenge:</strong> A reaction A + B → products has the data below. Which rate law is consistent AND what is k?',
+    table: {
+      headers: ['Exp', '[A] (M)', '[B] (M)', 'Rate (M/s)'],
+      rows: [
+        ['1', '0.500', '0.500', '0.0150'],
+        ['2', '1.000', '0.500', '0.0600'],
+        ['3', '0.500', '1.000', '0.0300']
+      ]
+    },
+    options: [
+      'rate = k[A]²[B]; k = 0.120 M⁻²s⁻¹',
+      'rate = k[A][B]; k = 0.060 M⁻¹s⁻¹',
+      'rate = k[A]²[B]; k = 0.240 M⁻²s⁻¹',
+      'rate = k[A]²[B]²; k = 0.240 M⁻³s⁻¹'
+    ],
+    answer: 0,
+    explanation: 'Exp 1→2: [A] doubles, rate ×4 → 2nd order in A. Exp 1→3: [B] doubles, rate ×2 → 1st order in B. Rate = k[A]²[B]. k = rate/([A]²[B]) = 0.0150/((0.500)²(0.500)) = 0.0150/0.125 = <strong>0.120 M⁻²s⁻¹</strong>.'
+  },
+  {
+    level: 4,
+    type: 'mc',
+    stem: 'A reaction is run with [A]₀ = 0.80 M and [B]₀ = 0.80 M. The rate law is rate = k[A][B]² with k = 0.50 M⁻²s⁻¹. What is the initial rate?',
+    options: ['0.256 M/s','0.320 M/s','0.512 M/s','0.128 M/s'],
+    answer: 0,
+    explanation: 'rate = k[A][B]² = (0.50)(0.80)(0.80)² = (0.50)(0.80)(0.64) = (0.50)(0.512) = <strong>0.256 M/s</strong>. This is a straightforward plug-and-chug, but watch the order of operations — square [B] before multiplying by k and [A].'
+  },
+  {
+    level: 4,
+    type: 'table-mc',
+    stem: '<strong>Final Boss — AP FRQ Style:</strong> A scientist studies the gas-phase reaction: <div class="reaction">NO(g) + O₃(g) → NO₂(g) + O₂(g)</div>Use the data to find the rate law, calculate k, and predict the rate when [NO] = 0.015 M and [O₃] = 0.015 M.',
+    table: {
+      headers: ['Exp', '[NO] (M)', '[O₃] (M)', 'Initial Rate (M/s)'],
+      rows: [
+        ['1', '0.010', '0.010', '4.4 × 10⁻⁵'],
+        ['2', '0.020', '0.010', '8.8 × 10⁻⁵'],
+        ['3', '0.010', '0.020', '8.8 × 10⁻⁵']
+      ]
+    },
+    options: [
+      'rate = k[NO][O₃]; k = 0.44 M⁻¹s⁻¹; predicted rate = 9.9 × 10⁻⁵ M/s',
+      'rate = k[NO][O₃]; k = 4.4 M⁻¹s⁻¹; predicted rate = 9.9 × 10⁻⁴ M/s',
+      'rate = k[NO]²[O₃]; k = 4.4 × 10⁻¹ M⁻²s⁻¹; predicted rate = 1.5 × 10⁻⁵ M/s',
+      'rate = k[NO][O₃]; k = 0.44 M⁻¹s⁻¹; predicted rate = 2.5 × 10⁻⁵ M/s'
+    ],
+    answer: 1,
+    explanation: 'Exp 1→2: [NO] doubles, rate doubles → 1st order in NO. Exp 1→3: [O₃] doubles, rate doubles → 1st order in O₃. Rate = k[NO][O₃]. k = 4.4×10⁻⁵/(0.010)(0.010) = <strong>0.44 M⁻¹s⁻¹</strong>. Predicted rate = (0.44)(0.015)(0.015) = <strong>9.9 × 10⁻⁵ M/s</strong>. Wait — k = 4.4×10⁻⁵/0.0001 = 0.44, not 4.4. Option A has correct k but different predicted rate — check: (0.44)(0.015)² = 0.44 × 2.25×10⁻⁴ = <strong>9.9 × 10⁻⁵ M/s</strong>. Correct answer is A!'
+  },
+];
+
+// Fix: last question answer should be 0 (option A)
+questions[questions.length - 1].answer = 0;
+
+// ============================================================
+//  GAME LOGIC
+// ============================================================
+let qOrder = [];
+let answered = false;
+
+function shuffle(arr) {
+  return [...arr].sort(() => Math.random() - 0.5);
+}
+
+function startGame() {
+  score = 0; streak = 0; bestStreak = 0; bonusPoints = 0;
+  correctCount = 0; currentQ = 0; currentLevel = 1; answered = false;
+
+  // Arrange questions by level
+  const l1 = shuffle(questions.filter(q => q.level === 1)).slice(0, 4);
+  const l2 = shuffle(questions.filter(q => q.level === 2)).slice(0, 4);
+  const l3 = shuffle(questions.filter(q => q.level === 3)).slice(0, 4);
+  const l4 = questions.filter(q => q.level === 4); // keep all 5 in order for challenge
+  qOrder = [...l1, ...l2, ...l3, ...l4];
+
+  document.getElementById('intro-screen').style.display = 'none';
+  document.getElementById('final-screen').style.display = 'none';
+  document.getElementById('game-screen').style.display = 'block';
+
+  renderHUD();
+  renderQuestion();
+}
+
+function renderHUD() {
+  document.getElementById('hud-level').textContent = currentLevel;
+  document.getElementById('hud-streak').textContent = streak;
+  document.getElementById('hud-score').textContent = score;
+  document.getElementById('progress-label').textContent = `Q ${currentQ + 1}/${qOrder.length}`;
+  document.getElementById('progress-fill').style.width = `${(currentQ / qOrder.length) * 100}%`;
+}
+
+function updatePills(level) {
+  for (let i = 1; i <= 4; i++) {
+    const pill = document.getElementById(`pill-${i}`);
+    pill.className = 'phase-pill';
+    if (i < level) pill.classList.add('done');
+    else if (i === level) pill.classList.add('active');
+  }
+}
+
+function renderQuestion() {
+  if (currentQ >= qOrder.length) { endGame(); return; }
+  const q = qOrder[currentQ];
+  currentLevel = q.level;
+  answered = false;
+  updatePills(currentLevel);
+  renderHUD();
+
+  let html = `<div class="card">
+    <div class="q-counter">QUESTION ${currentQ + 1} of ${qOrder.length} · LEVEL ${q.level}</div>
+    <p style="font-size:0.98rem; line-height:1.7; margin-bottom:4px;">${q.stem}</p>`;
+
+  if (q.table) {
+    html += `<table class="data-table"><thead><tr>`;
+    q.table.headers.forEach(h => html += `<th>${h}</th>`);
+    html += `</tr></thead><tbody>`;
+    q.table.rows.forEach(row => {
+      html += '<tr>';
+      row.forEach(cell => html += `<td>${cell}</td>`);
+      html += '</tr>';
+    });
+    html += `</tbody></table>`;
+  }
+
+  html += `<div class="options-grid">`;
+  q.options.forEach((opt, i) => {
+    const letter = ['A','B','C','D'][i];
+    html += `<button class="opt-btn" id="opt-${i}" onclick="selectAnswer(${i})">
+      <span class="opt-label">OPTION ${letter}</span>${opt}
+    </button>`;
+  });
+  html += `</div>`;
+
+  html += `<div class="feedback" id="feedback"></div>`;
+  html += `<div class="next-btn-wrap" id="next-wrap">
+    <button class="btn" onclick="nextQuestion()">Next Question →</button>
+  </div>`;
+  html += `</div>`;
+
+  document.getElementById('question-area').innerHTML = html;
+  document.getElementById('question-area').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function selectAnswer(idx) {
+  if (answered) return;
+  answered = true;
+  const q = qOrder[currentQ];
+  const correct = idx === q.answer;
+  const fb = document.getElementById('feedback');
+
+  document.querySelectorAll('.opt-btn').forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === q.answer) btn.classList.add('correct');
+    else if (i === idx && !correct) btn.classList.add('wrong');
+  });
+
+  if (correct) {
+    score += 10;
+    correctCount++;
+    streak++;
+    bestStreak = Math.max(bestStreak, streak);
+    let bonus = 0;
+    if (streak === 3) { bonus = 5; bonusPoints += 5; score += 5; }
+    if (streak === 5) { bonus = 10; bonusPoints += 10; score += 10; }
+    if (streak >= 7) { bonus = 15; bonusPoints += 15; score += 15; }
+
+    fb.className = 'feedback correct-fb show';
+    fb.innerHTML = `<strong>✅ Correct! ${streak >= 3 ? `🔥 ${streak} streak — +${bonus} bonus!` : '+10 pts'}</strong>${q.explanation}`;
+    if (streak >= 3) confetti();
+  } else {
+    streak = 0;
+    fb.className = 'feedback wrong-fb show';
+    fb.innerHTML = `<strong>❌ Not quite — here's what you need to know:</strong>${q.explanation}`;
+  }
+
+  renderHUD();
+  document.getElementById('next-wrap').className = 'next-btn-wrap show';
+}
+
+function nextQuestion() {
+  currentQ++;
+  renderQuestion();
+}
+
+function endGame() {
+  document.getElementById('game-screen').style.display = 'none';
+  document.getElementById('final-screen').style.display = 'block';
+
+  const pct = score / 250;
+  let rank, trophy;
+  if (pct >= 0.92) { rank = '🥇 Master Kineticist'; trophy = '🏆'; }
+  else if (pct >= 0.80) { rank = '🥈 Expert Chemist'; trophy = '🎖️'; }
+  else if (pct >= 0.65) { rank = '🥉 Proficient Analyst'; trophy = '⭐'; }
+  else if (pct >= 0.45) { rank = '🔬 Developing Chemist'; trophy = '🔭'; }
+  else { rank = '📚 Apprentice — Keep Studying!'; trophy = '📗'; }
+
+  document.getElementById('trophy-icon').textContent = trophy;
+  document.getElementById('final-score-num').textContent = score;
+  document.getElementById('rank-badge').textContent = rank;
+  document.getElementById('stat-correct').textContent = `${correctCount}/${qOrder.length}`;
+  document.getElementById('stat-streak').textContent = bestStreak;
+  document.getElementById('stat-bonus').textContent = `+${bonusPoints}`;
+
+  const date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const shareText = `⚗️ AP Chemistry — Rate Law Lab Results
+━━━━━━━━━━━━━━━━━━━━━
+📅 Date: ${date}
+🎯 Score: ${score}/250
+✅ Correct: ${correctCount}/${qOrder.length}
+🔥 Best Streak: ${bestStreak}
+⭐ Rank: ${rank.replace(/[🥇🥈🥉🔬📚]/g,'').trim()}
+━━━━━━━━━━━━━━━━━━━━━
+Unit 5 Topics 5.1 & 5.2 · Rate Laws & Reaction Rates`;
+
+  const box = document.getElementById('share-box');
+  box.textContent = shareText;
+  box.dataset.text = shareText;
+
+  if (pct >= 0.80) confetti(80);
+  document.getElementById('final-screen').scrollIntoView({ behavior: 'smooth' });
+}
+
+function copyScore(el) {
+  navigator.clipboard.writeText(el.dataset.text || el.textContent).then(() => {
+    el.style.color = 'var(--green)';
+    el.textContent = '✅ Copied to clipboard!';
+    setTimeout(() => {
+      el.style.color = '';
+      el.textContent = el.dataset.text;
+    }, 2000);
+  }).catch(() => {
+    el.style.color = 'var(--gold)';
+    el.textContent = '📋 Select all text above and copy manually';
+  });
+}
+
+function restartGame() { startGame(); }
+
+function showIntro() {
+  document.getElementById('final-screen').style.display = 'none';
+  document.getElementById('game-screen').style.display = 'none';
+  document.getElementById('intro-screen').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// CONFETTI
+function confetti(count = 40) {
+  const colors = ['#00c4b4', '#f5c518', '#4ecca3', '#ff6b6b', '#7c83fd'];
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-particle';
+    el.style.cssText = `
+      left: ${Math.random() * 100}vw;
+      top: 0;
+      background: ${colors[Math.floor(Math.random() * colors.length)]};
+      width: ${Math.random() * 8 + 4}px;
+      height: ${Math.random() * 8 + 4}px;
+      animation-duration: ${Math.random() * 2 + 2}s;
+      animation-delay: ${Math.random() * 0.5}s;
+      border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+    `;
+    document.body.appendChild(el);
+    el.addEventListener('animationend', () => el.remove());
+  }
+}
+</script>
+</body>
+</html>
