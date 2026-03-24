@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AP Chemistry Unit 5: Rate Laws & Reaction Rates</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e8e8e8;
+            line-height: 1.6;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        header { text-align: center; padding: 30px 0; border-bottom: 2px solid #00c4b4; margin-bottom: 30px; }
+        h1 { font-size: 1.8rem; color: #00c4b4; margin-bottom: 10px; }
+        .subtitle { color: #8892b0; font-size: 1rem; }
+        .exam-countdown {
+            background: linear-gradient(135deg, rgba(0,196,180,0.2), rgba(0,196,180,0.1));
+            border: 1px solid #00c4b4; border-radius: 10px;
+            padding: 12px 20px; margin-top: 15px; display: inline-block;
+        }
+        .exam-countdown span { color: #00c4b4; font-weight: bold; }
+        .topics-covered { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 15px; }
+        .topic-pill { background: rgba(0,196,180,0.15); color: #00c4b4; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; }
+        .student-info { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+        .student-info label { display: block; margin-bottom: 8px; font-weight: 500; }
+        .student-info input, .student-info select {
+            width: 100%; padding: 12px 16px; font-size: 1rem;
+            border: 2px solid #2d3748; border-radius: 8px;
+            background: #1a1a2e; color: #fff; margin-bottom: 15px;
+        }
+        .student-info input:focus, .student-info select:focus { outline: none; border-color: #00c4b4; }
+        .period-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .period-row > div { display: flex; flex-direction: column; }
+        .difficulty-selection { margin-bottom: 30px; }
+        .difficulty-header { text-align: center; margin-bottom: 20px; }
+        .difficulty-header h2 { color: #00c4b4; margin-bottom: 10px; }
+        .difficulty-header p { color: #8892b0; font-size: 0.95rem; }
+        .difficulty-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .difficulty-card {
+            background: rgba(255,255,255,0.03); border: 2px solid #2d3748;
+            border-radius: 16px; padding: 24px; cursor: pointer;
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .difficulty-card:hover { transform: translateY(-4px); border-color: #00c4b4; }
+        .difficulty-card.selected { border-color: #00c4b4; background: rgba(0,196,180,0.08); }
+        .difficulty-card.completed { border-color: #f5c518; }
+        .difficulty-card.completed::after {
+            content: '✓ Completed'; position: absolute; top: 10px; right: 10px;
+            background: #f5c518; color: #1a1a2e; padding: 4px 10px;
+            border-radius: 20px; font-size: 0.75rem; font-weight: bold;
+        }
+        .difficulty-icon { font-size: 2.5rem; margin-bottom: 15px; }
+        .difficulty-name { font-size: 1.3rem; font-weight: bold; margin-bottom: 8px; }
+        .difficulty-card.low .difficulty-name { color: #4ecca3; }
+        .difficulty-card.medium .difficulty-name { color: #f5c518; }
+        .difficulty-card.high .difficulty-name { color: #ff6b6b; }
+        .difficulty-desc { color: #8892b0; font-size: 0.9rem; margin-bottom: 15px; }
+        .difficulty-stats { display: flex; justify-content: space-between; padding-top: 15px; border-top: 1px solid #2d3748; font-size: 0.85rem; color: #8892b0; }
+        .best-score { color: #f5c518; font-weight: bold; }
+        .start-btn {
+            width: 100%; padding: 18px; font-size: 1.2rem; font-weight: bold;
+            background: linear-gradient(135deg, #00c4b4 0%, #4ecca3 100%);
+            color: #1a1a2e; border: none; border-radius: 12px; cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s; margin-top: 20px;
+        }
+        .start-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,196,180,0.4); }
+        .start-btn:disabled { background: #2d3748; color: #8892b0; cursor: not-allowed; transform: none; box-shadow: none; }
+        .quiz-active { display: none; }
+        .quiz-progress {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px; padding: 15px 20px;
+            background: rgba(255,255,255,0.05); border-radius: 10px;
+        }
+        .progress-text { font-weight: 500; }
+        .progress-bar-container { flex: 1; margin: 0 20px; height: 8px; background: #2d3748; border-radius: 4px; overflow: hidden; }
+        .progress-bar { height: 100%; background: linear-gradient(90deg, #00c4b4, #4ecca3); border-radius: 4px; transition: width 0.3s; }
+        .difficulty-badge { padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; }
+        .difficulty-badge.low { background: rgba(78,204,163,0.2); color: #4ecca3; }
+        .difficulty-badge.medium { background: rgba(245,197,24,0.2); color: #f5c518; }
+        .difficulty-badge.high { background: rgba(255,107,107,0.2); color: #ff6b6b; }
+        .question-card { background: rgba(255,255,255,0.05); border-radius: 16px; padding: 28px; margin-bottom: 20px; border-left: 4px solid #00c4b4; }
+        .question-meta { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+        .question-number { background: #00c4b4; color: #1a1a2e; padding: 6px 14px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; }
+        .question-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+        .tag { padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; }
+        .tag.topic { background: rgba(0,196,180,0.15); color: #00c4b4; }
+        .tag.standard { background: rgba(245,197,24,0.15); color: #f5c518; font-family: monospace; }
+        .question-text { font-size: 1.05rem; margin-bottom: 25px; color: #fff; line-height: 1.75; }
+        .question-text .equation {
+            background: rgba(0,0,0,0.35); padding: 12px 18px; border-radius: 8px;
+            margin: 12px 0; font-family: 'Courier New', monospace; font-size: 1rem;
+            display: block; overflow-x: auto; border-left: 3px solid #00c4b4;
+        }
+        .question-text .data-table {
+            width: 100%; border-collapse: collapse; margin: 14px 0;
+            font-family: 'Courier New', monospace; font-size: 0.88rem;
+        }
+        .question-text .data-table th {
+            background: rgba(0,196,180,0.2); color: #00c4b4;
+            padding: 9px 14px; text-align: center; font-weight: bold;
+        }
+        .question-text .data-table td {
+            padding: 8px 14px; text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.07); color: #e8e8e8;
+        }
+        .question-text .data-table tr:hover td { background: rgba(255,255,255,0.04); }
+        .question-text .note { font-size: 0.85rem; color: #8892b0; font-style: italic; margin-top: 8px; }
+        .question-text .scaffold {
+            background: rgba(245,197,24,0.08); border: 1px solid rgba(245,197,24,0.25);
+            border-radius: 8px; padding: 10px 14px; margin: 10px 0;
+            font-size: 0.88rem; color: #f5c518;
+        }
+        .options { display: flex; flex-direction: column; gap: 12px; }
+        .option {
+            display: flex; align-items: flex-start; padding: 14px 18px;
+            background: rgba(255,255,255,0.02); border: 2px solid #2d3748;
+            border-radius: 10px; cursor: pointer; transition: all 0.2s;
+        }
+        .option:hover { background: rgba(0,196,180,0.08); border-color: #00c4b4; }
+        .option.selected { background: rgba(0,196,180,0.12); border-color: #00c4b4; }
+        .option input { display: none; }
+        .option-letter {
+            width: 30px; height: 30px; border-radius: 50%; background: #2d3748;
+            display: flex; align-items: center; justify-content: center;
+            margin-right: 14px; font-weight: bold; flex-shrink: 0; font-size: 0.9rem;
+        }
+        .option.selected .option-letter { background: #00c4b4; color: #1a1a2e; }
+        .option-text { padding-top: 3px; font-size: 0.95rem; }
+        .quiz-nav { display: flex; justify-content: space-between; gap: 15px; margin-top: 20px; }
+        .nav-btn { padding: 14px 28px; font-size: 1rem; font-weight: 600; border-radius: 10px; cursor: pointer; transition: all 0.2s; }
+        .nav-btn.secondary { background: transparent; border: 2px solid #00c4b4; color: #00c4b4; }
+        .nav-btn.secondary:hover { background: rgba(0,196,180,0.1); }
+        .nav-btn.primary { background: linear-gradient(135deg, #00c4b4, #4ecca3); border: none; color: #1a1a2e; }
+        .nav-btn.primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,196,180,0.3); }
+        .nav-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .results-container { display: none; }
+        .score-card {
+            background: linear-gradient(135deg, rgba(0,196,180,0.15), rgba(0,196,180,0.05));
+            border: 2px solid #00c4b4; border-radius: 20px;
+            padding: 35px; text-align: center; margin-bottom: 30px;
+        }
+        .score-display {
+            font-size: 4rem; font-weight: bold;
+            background: linear-gradient(135deg, #00c4b4, #4ecca3);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .score-label { font-size: 1.1rem; color: #8892b0; margin: 10px 0; }
+        .score-difficulty { display: inline-block; padding: 8px 20px; border-radius: 25px; font-weight: bold; margin-top: 10px; }
+        .score-difficulty.low { background: rgba(78,204,163,0.2); color: #4ecca3; }
+        .score-difficulty.medium { background: rgba(245,197,24,0.2); color: #f5c518; }
+        .score-difficulty.high { background: rgba(255,107,107,0.2); color: #ff6b6b; }
+        .performance-bar { height: 12px; background: #2d3748; border-radius: 6px; margin-top: 20px; overflow: hidden; }
+        .performance-fill { height: 100%; border-radius: 6px; transition: width 1s ease-out; }
+        .section-box { background: rgba(255,255,255,0.05); border-radius: 12px; padding: 24px; margin-bottom: 25px; }
+        .section-box h3 { margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .section-box.standards { border: 1px solid #4ecca3; }
+        .section-box.standards h3 { color: #4ecca3; }
+        .section-box.topics h3 { color: #00c4b4; }
+        .section-box.videos h3 { color: #f5c518; }
+        .section-box.scores h3 { color: #ff6b6b; }
+        .section-intro { color: #8892b0; font-size: 0.9rem; margin-bottom: 15px; }
+        .standard-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 14px 0; border-bottom: 1px solid #2d3748; gap: 15px; }
+        .standard-row:last-child { border-bottom: none; }
+        .standard-info { flex: 1; }
+        .standard-code { font-weight: bold; color: #4ecca3; font-family: monospace; font-size: 0.9rem; }
+        .standard-desc { color: #ccd6f6; font-size: 0.85rem; margin-top: 3px; }
+        .standard-score { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+        .standard-pct { font-weight: bold; min-width: 40px; text-align: right; font-size: 0.9rem; }
+        .badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; min-width: 80px; text-align: center; }
+        .badge.mastered { background: rgba(78,204,163,0.2); color: #4ecca3; }
+        .badge.developing { background: rgba(245,197,24,0.2); color: #f5c518; }
+        .badge.needs-work { background: rgba(255,107,107,0.2); color: #ff6b6b; }
+        .recommendation-box { background: rgba(255,255,255,0.05); border-radius: 12px; padding: 24px; margin-bottom: 25px; border-left: 4px solid #f5c518; }
+        .recommendation-box h3 { color: #f5c518; margin-bottom: 12px; }
+        .recommendation-box p { color: #ccd6f6; margin-bottom: 15px; }
+        .level-btn { display: inline-block; padding: 10px 20px; background: linear-gradient(135deg, #00c4b4, #4ecca3); color: #1a1a2e; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s; font-size: 0.9rem; }
+        .level-btn:hover { transform: translateY(-2px); }
+        .scores-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .score-item { text-align: center; padding: 18px; background: rgba(0,0,0,0.2); border-radius: 10px; }
+        .score-item .level { font-weight: bold; margin-bottom: 6px; font-size: 0.9rem; }
+        .score-item .level.low { color: #4ecca3; }
+        .score-item .level.medium { color: #f5c518; }
+        .score-item .level.high { color: #ff6b6b; }
+        .score-item .score { font-size: 1.4rem; font-weight: bold; }
+        .score-item .score.not-taken { color: #8892b0; font-size: 0.9rem; }
+        .topic-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #2d3748; }
+        .topic-row:last-child { border-bottom: none; }
+        .topic-name { font-weight: 500; font-size: 0.9rem; }
+        .topic-score { display: flex; align-items: center; gap: 10px; }
+        .video-grid { display: grid; gap: 10px; }
+        .video-card { background: rgba(0,0,0,0.3); border-radius: 8px; padding: 14px; border: 1px solid #2d3748; transition: all 0.2s; }
+        .video-card:hover { border-color: #00c4b4; transform: translateX(4px); }
+        .video-card a { color: #00c4b4; text-decoration: none; font-weight: 600; display: block; margin-bottom: 4px; font-size: 0.9rem; }
+        .video-card a:hover { text-decoration: underline; }
+        .video-meta { font-size: 0.8rem; color: #8892b0; }
+        .video-tag { display: inline-block; background: rgba(245,197,24,0.15); color: #f5c518; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; margin-top: 6px; font-family: monospace; }
+        .review-item { padding: 18px; margin-bottom: 12px; border-radius: 10px; border-left: 4px solid; }
+        .review-item.correct { background: rgba(78,204,163,0.08); border-color: #4ecca3; }
+        .review-item.incorrect { background: rgba(255,107,107,0.08); border-color: #ff6b6b; }
+        .review-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; flex-wrap: wrap; gap: 6px; }
+        .review-question { font-weight: 500; color: #fff; flex: 1; font-size: 0.9rem; }
+        .review-tag { font-family: monospace; font-size: 0.75rem; background: rgba(245,197,24,0.15); color: #f5c518; padding: 2px 6px; border-radius: 4px; }
+        .review-answers { font-size: 0.9rem; }
+        .your-answer { color: #ff6b6b; }
+        .correct-answer { color: #4ecca3; }
+        .explanation { margin-top: 12px; padding: 12px; background: rgba(0,0,0,0.2); border-radius: 6px; font-size: 0.85rem; color: #ccd6f6; line-height: 1.7; }
+        .action-buttons { display: flex; gap: 15px; flex-wrap: wrap; }
+        .action-btn { flex: 1; min-width: 180px; padding: 14px; font-size: 1rem; font-weight: 600; border-radius: 10px; cursor: pointer; transition: all 0.2s; }
+        .action-btn.primary { background: linear-gradient(135deg, #00c4b4, #4ecca3); border: none; color: #1a1a2e; }
+        .action-btn.secondary { background: transparent; border: 2px solid #00c4b4; color: #00c4b4; }
+        .action-btn:hover { transform: translateY(-2px); }
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            h1 { font-size: 1.4rem; }
+            .difficulty-cards { grid-template-columns: 1fr; }
+            .scores-grid { grid-template-columns: 1fr; }
+            .quiz-progress { flex-direction: column; gap: 10px; }
+            .progress-bar-container { width: 100%; margin: 10px 0; }
+            .period-row { grid-template-columns: 1fr; }
+            .standard-row { flex-direction: column; }
+            .standard-score { width: 100%; justify-content: space-between; margin-top: 8px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>⚗️ AP Chemistry: Unit 5 — Kinetics</h1>
+        <p class="subtitle">Reaction Rates & Rate Laws • Topics 5.1 & 5.2</p>
+        <div class="exam-countdown"><span>AP Exam: May 5, 2026</span></div>
+        <div class="topics-covered">
+            <span class="topic-pill">5.1 Reaction Rates</span>
+            <span class="topic-pill">5.2 Rate Law</span>
+            <span class="topic-pill">Rate Expressions</span>
+            <span class="topic-pill">Stoichiometry & Rates</span>
+            <span class="topic-pill">Reaction Order</span>
+            <span class="topic-pill">Rate Constant k</span>
+            <span class="topic-pill">Initial Rates Method</span>
+        </div>
+    </header>
+
+    <div id="selection-screen">
+        <div class="student-info">
+            <label for="student-name">Enter your name:</label>
+            <input type="text" id="student-name" placeholder="First and Last Name" autocomplete="off">
+            <div class="period-row">
+                <div>
+                    <label for="class-period">Class Period:</label>
+                    <select id="class-period">
+                        <option value="">Select Period...</option>
+                        <option value="1">Period 1</option>
+                        <option value="2">Period 2</option>
+                        <option value="3">Period 3</option>
+                        <option value="4">Period 4</option>
+                        <option value="5">Period 5</option>
+                        <option value="6">Period 6</option>
+                        <option value="7">Period 7</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="date">Date:</label>
+                    <input type="date" id="date">
+                </div>
+            </div>
+        </div>
+
+        <div class="difficulty-selection">
+            <div class="difficulty-header">
+                <h2>🎯 Choose Your Challenge Level</h2>
+                <p>Pick the level that matches where you are. Your best score at each level is saved. Try all three!</p>
+            </div>
+            <div class="difficulty-cards">
+                <div class="difficulty-card low" data-difficulty="low">
+                    <div class="difficulty-icon">🌱</div>
+                    <div class="difficulty-name">Foundation</div>
+                    <div class="difficulty-desc">Core vocabulary, rate expressions, and reading rate laws. Heavy scaffolding throughout. Great starting point.</div>
+                    <div class="difficulty-stats">
+                        <span>20 questions</span>
+                        <span class="best-score" id="low-best">Not taken</span>
+                    </div>
+                </div>
+                <div class="difficulty-card medium" data-difficulty="medium">
+                    <div class="difficulty-icon">⚗️</div>
+                    <div class="difficulty-name">Standard</div>
+                    <div class="difficulty-desc">Multi-step calculations, rate law derivation from data tables, and units of k. AP-level rigor with some support.</div>
+                    <div class="difficulty-stats">
+                        <span>10 questions</span>
+                        <span class="best-score" id="medium-best">Not taken</span>
+                    </div>
+                </div>
+                <div class="difficulty-card high" data-difficulty="high">
+                    <div class="difficulty-icon">🔥</div>
+                    <div class="difficulty-name">Challenge</div>
+                    <div class="difficulty-desc">Full AP FRQ-style questions. Multi-part problems, complex data analysis, and cross-concept reasoning. No hints.</div>
+                    <div class="difficulty-stats">
+                        <span>5 questions</span>
+                        <span class="best-score" id="high-best">Not taken</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button class="start-btn" id="start-btn" disabled>Complete Info Above to Begin</button>
+    </div>
+
+    <div class="quiz-active" id="quiz-active">
+        <div class="quiz-progress">
+            <span class="progress-text" id="progress-text">Question 1 of 20</span>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progress-bar" style="width:5%"></div>
+            </div>
+            <span class="difficulty-badge" id="current-difficulty">Foundation</span>
+        </div>
+        <div id="question-container"></div>
+        <div class="quiz-nav">
+            <button class="nav-btn secondary" id="prev-btn" disabled>← Previous</button>
+            <button class="nav-btn primary" id="next-btn">Next →</button>
+        </div>
+    </div>
+
+    <div class="results-container" id="results-container"></div>
+</div>
+
+<script>
+// ==================== STANDARDS ====================
+const STANDARDS = {
+    "TRA-3.A": { code: "TRA-3.A", description: "Explain the relationship between the rate of a reaction and experimental parameters", shortName: "Reaction Rate Factors" },
+    "TRA-3.B": { code: "TRA-3.B", description: "Represent experimental data with a consistent rate law expression", shortName: "Rate Law Expression" },
+    "TRA-3.C": { code: "TRA-3.C", description: "Determine reaction order and rate constant from initial rate data", shortName: "Order & Rate Constant" }
+};
+
+// ==================== TOPICS & VIDEOS ====================
+const TOPICS = {
+    "5.1a": {
+        name: "5.1 What is Reaction Rate?",
+        standards: ["TRA-3.A"],
+        videos: [
+            { title: "Introduction to Kinetics & Reaction Rates", url: "https://www.youtube.com/watch?v=wYqQCojggyM", channel: "Mr. Krug", duration: "~15 min" },
+            { title: "Reaction Rates — AP Chemistry", url: "https://www.youtube.com/watch?v=UDbMgMpXGNk", channel: "Chad's Prep", duration: "~12 min" }
+        ]
+    },
+    "5.1b": {
+        name: "5.1 Stoichiometry & Rates",
+        standards: ["TRA-3.A"],
+        videos: [
+            { title: "Introduction to Kinetics & Reaction Rates", url: "https://www.youtube.com/watch?v=wYqQCojggyM", channel: "Mr. Krug", duration: "~15 min" },
+            { title: "Reaction Rates — AP Chemistry", url: "https://www.youtube.com/watch?v=UDbMgMpXGNk", channel: "Chad's Prep", duration: "~12 min" }
+        ]
+    },
+    "5.2a": {
+        name: "5.2 Reading Rate Laws",
+        standards: ["TRA-3.B"],
+        videos: [
+            { title: "Rate Laws & Reaction Order", url: "https://www.youtube.com/watch?v=qMmgPpAjiAQ", channel: "Mr. Krug", duration: "~18 min" },
+            { title: "Introduction to Rate Law", url: "https://www.youtube.com/watch?v=lbmge7BLXLE", channel: "Chad's Prep", duration: "~14 min" }
+        ]
+    },
+    "5.2b": {
+        name: "5.2 Finding Orders from Data",
+        standards: ["TRA-3.B", "TRA-3.C"],
+        videos: [
+            { title: "Rate Laws & Reaction Order", url: "https://www.youtube.com/watch?v=qMmgPpAjiAQ", channel: "Mr. Krug", duration: "~18 min" },
+            { title: "Initial Rates Method", url: "https://www.youtube.com/watch?v=lbmge7BLXLE", channel: "Chad's Prep", duration: "~14 min" }
+        ]
+    },
+    "5.2c": {
+        name: "5.2 Rate Constant k",
+        standards: ["TRA-3.C"],
+        videos: [
+            { title: "Rate Laws & Reaction Order", url: "https://www.youtube.com/watch?v=qMmgPpAjiAQ", channel: "Mr. Krug", duration: "~18 min" }
+        ]
+    }
+};
+
+// ==================== QUESTION BANK ====================
+const QUESTIONS = {
+
+    // ─────────────────────────────────────────────────────────
+    // FOUNDATION — 20 questions, heavy scaffolding
+    // ─────────────────────────────────────────────────────────
+    low: [
+        // 5.1a — What is Reaction Rate? (4 questions, building from definition up)
+        {
+            id: "F1", topic: "5.1a", standards: ["TRA-3.A"],
+            question: "The rate of a chemical reaction is best described as:",
+            options: [
+                "The temperature at which the reaction occurs",
+                "The change in concentration of a reactant or product per unit time",
+                "The total amount of product formed",
+                "The energy released by the reaction"
+            ],
+            correct: 1,
+            explanation: "Reaction rate = Δ[concentration]/Δtime. It tells us how quickly reactants are consumed or products are formed. Units are typically M/s (molarity per second)."
+        },
+        {
+            id: "F2", topic: "5.1a", standards: ["TRA-3.A"],
+            question: "For a reactant being consumed, the rate of change in concentration is:<br><span class='note'>Think about whether the concentration is going up or down as the reaction proceeds.</span>",
+            options: [
+                "Positive, because concentration increases",
+                "Negative, because concentration decreases",
+                "Zero, because nothing changes",
+                "Positive, because energy is released"
+            ],
+            correct: 1,
+            explanation: "Reactants are consumed, so their concentration decreases over time. Δ[reactant] is negative. That's why rate expressions for reactants include a negative sign: rate = −Δ[A]/Δt. We define rate as positive, so the negative sign fixes that."
+        },
+        {
+            id: "F3", topic: "5.1a", standards: ["TRA-3.A"],
+            question: "Which of the following does NOT affect the rate of a homogeneous (same-phase) reaction?",
+            options: [
+                "Concentration of reactants",
+                "Temperature",
+                "Surface area of solid reactants",
+                "Presence of a catalyst"
+            ],
+            correct: 2,
+            explanation: "Surface area only applies to heterogeneous reactions involving a solid phase. For a homogeneous reaction (everything in the same phase), concentration, temperature, and catalysts all affect rate — but surface area is irrelevant (CED 5.1.A.3)."
+        },
+        {
+            id: "F4", topic: "5.1a", standards: ["TRA-3.A"],
+            question: "Two experiments are run at the same temperature. In Experiment A, [HCl] = 0.10 M. In Experiment B, [HCl] = 0.40 M. Which experiment has a faster initial rate, and why?",
+            options: [
+                "Experiment A — lower concentration means less crowding",
+                "Experiment B — higher concentration means more frequent collisions",
+                "They are equal — temperature is the same",
+                "Cannot determine without knowing the reaction"
+            ],
+            correct: 1,
+            explanation: "Higher concentration → more particles per unit volume → more frequent collisions → faster rate. Experiment B has 4× the concentration, so reactant particles collide more often. Temperature being equal means the fraction of effective collisions is the same, but total collisions increase."
+        },
+
+        // 5.1b — Stoichiometry & Rates (5 questions, very scaffolded)
+        {
+            id: "F5", topic: "5.1b", standards: ["TRA-3.A"],
+            question: `For the reaction: <span class='equation'>2 H₂(g) + O₂(g) → 2 H₂O(g)</span>
+            The general rate expression is: rate = −(1/2)Δ[H₂]/Δt = −Δ[O₂]/Δt = +(1/2)Δ[H₂O]/Δt<br><br>
+            <span class='scaffold'>💡 Scaffold: Each species is divided by its coefficient. Reactants get a negative sign (consumed), products get positive (produced).</span><br><br>
+            If H₂O is being produced at 0.40 M/s, at what rate is H₂ being consumed?`,
+            options: ["0.20 M/s", "0.40 M/s", "0.80 M/s", "0.10 M/s"],
+            correct: 1,
+            explanation: "Set the normalized rates equal: (1/2)Δ[H₂O]/Δt = (1/2)Δ[H₂]/Δt. Since both have the same coefficient (2), their rates of change are equal: H₂ is consumed at 0.40 M/s. Both appear with coefficient 2 in the equation, so they change at the same rate."
+        },
+        {
+            id: "F6", topic: "5.1b", standards: ["TRA-3.A"],
+            question: `For: <span class='equation'>N₂(g) + 3 H₂(g) → 2 NH₃(g)</span>
+            <span class='scaffold'>💡 Scaffold: The general rate = −Δ[N₂]/Δt = −(1/3)Δ[H₂]/Δt = +(1/2)Δ[NH₃]/Δt<br>Notice H₂ has coefficient 3, so we divide by 3. NH₃ has coefficient 2, so we divide by 2.</span><br><br>
+            If N₂ is consumed at 0.10 M/s, how fast is H₂ consumed?`,
+            options: ["0.033 M/s", "0.10 M/s", "0.30 M/s", "0.20 M/s"],
+            correct: 2,
+            explanation: "Rate = Δ[N₂]/Δt = (1/3)Δ[H₂]/Δt → 0.10 = (1/3)Δ[H₂]/Δt → Δ[H₂]/Δt = 3 × 0.10 = 0.30 M/s. For every 1 mole of N₂ consumed, 3 moles of H₂ are consumed. H₂ disappears 3× faster than N₂."
+        },
+        {
+            id: "F7", topic: "5.1b", standards: ["TRA-3.A"],
+            question: `For: <span class='equation'>N₂(g) + 3 H₂(g) → 2 NH₃(g)</span>
+            <span class='scaffold'>💡 Scaffold: Use the same rate expression: rate = −Δ[N₂]/Δt = −(1/3)Δ[H₂]/Δt = +(1/2)Δ[NH₃]/Δt<br>You know the NH₃ production rate. Set it equal to the H₂ expression and solve.</span><br><br>
+            If NH₃ is produced at 0.60 M/s, at what rate is H₂ consumed?`,
+            options: ["0.20 M/s", "0.30 M/s", "0.60 M/s", "0.90 M/s"],
+            correct: 3,
+            explanation: "Step 1 — set the two normalized rates equal: (1/2)Δ[NH₃]/Δt = (1/3)Δ[H₂]/Δt. Step 2 — plug in: (1/2)(0.60) = (1/3)Δ[H₂]/Δt → 0.30 = (1/3)Δ[H₂]/Δt. Step 3 — solve: Δ[H₂]/Δt = 0.30 × 3 = 0.90 M/s. Intuition: per 2 mol NH₃ made, 3 mol H₂ consumed → H₂ disappears at (3/2) × rate of NH₃ production."
+        },
+        {
+            id: "F8", topic: "5.1b", standards: ["TRA-3.A"],
+            question: `For: <span class='equation'>2 NO₂(g) → 2 NO(g) + O₂(g)</span>
+            If NO₂ disappears at 0.040 M/s, at what rate does O₂ appear?<br>
+            <span class='scaffold'>💡 Scaffold: Write the rate expression first. O₂ has coefficient 1, NO₂ has coefficient 2.</span>`,
+            options: ["0.080 M/s", "0.040 M/s", "0.020 M/s", "0.010 M/s"],
+            correct: 2,
+            explanation: "Rate expression: rate = −(1/2)Δ[NO₂]/Δt = +(1/1)Δ[O₂]/Δt. Set equal: (1/2)(0.040) = Δ[O₂]/Δt → Δ[O₂]/Δt = 0.020 M/s. For every 2 mol NO₂ consumed, only 1 mol O₂ is produced — so O₂ appears at half the rate of NO₂ disappearance."
+        },
+        {
+            id: "F9", topic: "5.1b", standards: ["TRA-3.A"],
+            question: `A student measures [A] at t = 0 s and t = 20 s and finds that [A] dropped from 0.50 M to 0.26 M.<br>
+            <span class='scaffold'>💡 Scaffold: Average rate = −Δ[A]/Δt = −([A]final − [A]initial) / (t_final − t_initial). The negative sign makes the rate positive.</span><br><br>
+            What is the average rate of disappearance of A?`,
+            options: ["0.012 M/s", "−0.012 M/s", "0.024 M/s", "4.8 M/s"],
+            correct: 0,
+            explanation: "Δ[A] = 0.26 − 0.50 = −0.24 M. Δt = 20 − 0 = 20 s. Rate = −(−0.24)/20 = +0.012 M/s. Always report rate as a positive value. The negative sign in the formula corrects for the decrease in reactant concentration."
+        },
+
+        // 5.2a — Reading Rate Laws (5 questions)
+        {
+            id: "F10", topic: "5.2a", standards: ["TRA-3.B"],
+            question: `For the rate law: rate = k[A]²[B]<br><br>
+            <span class='scaffold'>💡 Scaffold: The reaction order with respect to each reactant equals its exponent in the rate law. The overall order is the sum of all exponents.</span><br><br>
+            What is the reaction order with respect to A, with respect to B, and overall?`,
+            options: [
+                "1st in A, 1st in B, 2nd overall",
+                "2nd in A, 1st in B, 3rd overall",
+                "2nd in A, 2nd in B, 4th overall",
+                "1st in A, 2nd in B, 3rd overall"
+            ],
+            correct: 1,
+            explanation: "The exponent on [A] is 2 → 2nd order in A. The exponent on [B] is 1 → 1st order in B. Overall order = 2 + 1 = 3rd order. The overall order is always the sum of all individual orders (CED 5.2.A.3)."
+        },
+        {
+            id: "F11", topic: "5.2a", standards: ["TRA-3.B"],
+            question: `A student says: "The reaction A + 2B → C must have the rate law rate = k[A][B]² because the coefficients tell us the orders."<br><br>
+            This reasoning is:`,
+            options: [
+                "Correct — the coefficient always equals the order",
+                "Incorrect — rate laws must be determined experimentally, not from the balanced equation",
+                "Correct, but only for elementary reactions",
+                "Incorrect — the rate law should be rate = k[A]²[B]"
+            ],
+            correct: 1,
+            explanation: "CRITICAL MISCONCEPTION: Rate laws CANNOT be read from balanced equations. They must be determined experimentally. The only exception is if the reaction is a single elementary step. For multi-step reactions, the rate law depends on the mechanism — specifically the slow (rate-determining) step (CED 5.2.A.5)."
+        },
+        {
+            id: "F12", topic: "5.2a", standards: ["TRA-3.B"],
+            question: `For rate = k[X]²[Y]⁰:<br><br>
+            <span class='scaffold'>💡 Scaffold: Any number raised to the zero power equals 1. So [Y]⁰ = 1, regardless of [Y]'s value.</span><br><br>
+            If [X] is tripled and [Y] is doubled, the rate:`,
+            options: [
+                "Increases by a factor of 18",
+                "Increases by a factor of 9",
+                "Increases by a factor of 6",
+                "Stays the same"
+            ],
+            correct: 1,
+            explanation: "New rate = k(3[X])²(2[Y])⁰ = k(9[X]²)(1) = 9 × original rate. [Y] is zero order — it does NOT appear in the rate law. Doubling [Y] has no effect. Tripling [X] with order 2 gives a 3² = 9-fold increase. Zero-order reactants don't affect rate at all."
+        },
+        {
+            id: "F13", topic: "5.2a", standards: ["TRA-3.B"],
+            question: `For rate = k[A][B], if [A] is doubled and [B] is halved:<br>
+            <span class='scaffold'>💡 Scaffold: Calculate new rate = k(2[A])(½[B]) = k[A][B] × (2 × ½) = k[A][B] × 1</span>`,
+            options: [
+                "Rate doubles",
+                "Rate is halved",
+                "Rate is unchanged",
+                "Rate quadruples"
+            ],
+            correct: 2,
+            explanation: "New rate = k(2[A])(½[B]) = k[A][B] × (2 × ½) = k[A][B] × 1 = original rate. The factors of 2 and ½ cancel exactly. This is a common AP trap — always multiply the effect on each reactant together before deciding."
+        },
+        {
+            id: "F14", topic: "5.2a", standards: ["TRA-3.B"],
+            question: "The rate constant k in a rate law depends on which factor?",
+            options: [
+                "Concentration of reactants",
+                "Temperature only",
+                "Overall reaction order only",
+                "Presence of catalyst and temperature"
+            ],
+            correct: 3,
+            explanation: "k is temperature-dependent — it increases as temperature increases (Arrhenius equation, covered later). Catalysts also affect k by providing an alternate pathway. k does NOT change when concentration changes. The same k applies at a given temperature regardless of initial concentrations (CED 5.2.A.4)."
+        },
+
+        // 5.2b — Finding Orders (4 questions, heavily scaffolded)
+        {
+            id: "F15", topic: "5.2b", standards: ["TRA-3.B"],
+            question: `To find the order with respect to reactant A from initial rate data, you:<br><br>
+            <span class='scaffold'>💡 Scaffold: The key strategy is isolating ONE variable. You need two experiments where [A] changes but everything else stays constant.</span>`,
+            options: [
+                "Look at the coefficient of A in the balanced equation",
+                "Find two experiments where only [A] changes, then compare the rate ratio to the concentration ratio",
+                "Average all the rates together",
+                "Use the rate from the experiment with the highest concentration"
+            ],
+            correct: 1,
+            explanation: "The initial rates method: find two experiments where ONLY the concentration of the reactant you're investigating changes. Then: rate₂/rate₁ = ([A]₂/[A]₁)ᵐ. Solve for m by inspection or logarithms. If rate doubles when [A] doubles → 1st order. If rate quadruples → 2nd order. If rate doesn't change → 0th order."
+        },
+        {
+            id: "F16", topic: "5.2b", standards: ["TRA-3.B", "TRA-3.C"],
+            question: `<table class='data-table'><thead><tr><th>Exp</th><th>[A] (M)</th><th>[B] (M)</th><th>Rate (M/s)</th></tr></thead><tbody>
+            <tr><td>1</td><td>0.10</td><td>0.10</td><td>2.0 × 10⁻³</td></tr>
+            <tr><td>2</td><td>0.20</td><td>0.10</td><td>4.0 × 10⁻³</td></tr>
+            <tr><td>3</td><td>0.10</td><td>0.20</td><td>2.0 × 10⁻³</td></tr></tbody></table>
+            <span class='scaffold'>💡 Scaffold: Compare Exp 1 and 2 — [B] is constant, [A] doubles. Does the rate double (1st order), quadruple (2nd order), or stay the same (0th order)?</span><br><br>
+            What is the order with respect to A?`,
+            options: ["Zero order in A", "First order in A", "Second order in A", "Third order in A"],
+            correct: 1,
+            explanation: "Exp 1→2: [A] doubles (0.10→0.20), [B] constant. Rate goes from 2.0×10⁻³ to 4.0×10⁻³ — it doubles. Rate ratio = 2, [A] ratio = 2. So 2 = 2ᵐ → m = 1. First order in A."
+        },
+        {
+            id: "F17", topic: "5.2b", standards: ["TRA-3.B", "TRA-3.C"],
+            question: `Using the same data table:<br>
+            <table class='data-table'><thead><tr><th>Exp</th><th>[A] (M)</th><th>[B] (M)</th><th>Rate (M/s)</th></tr></thead><tbody>
+            <tr><td>1</td><td>0.10</td><td>0.10</td><td>2.0 × 10⁻³</td></tr>
+            <tr><td>2</td><td>0.20</td><td>0.10</td><td>4.0 × 10⁻³</td></tr>
+            <tr><td>3</td><td>0.10</td><td>0.20</td><td>2.0 × 10⁻³</td></tr></tbody></table>
+            <span class='scaffold'>💡 Scaffold: Now compare Exp 1 and 3 — [A] is constant, [B] doubles. Does the rate change?</span><br><br>
+            What is the order with respect to B?`,
+            options: ["Zero order in B", "First order in B", "Second order in B", "Cannot determine"],
+            correct: 0,
+            explanation: "Exp 1→3: [B] doubles (0.10→0.20), [A] constant. Rate stays at 2.0×10⁻³ — no change. Rate ratio = 1, [B] ratio = 2. So 1 = 2ⁿ → n = 0. Zero order in B. B does not appear in the rate law at all — its concentration has no effect on rate."
+        },
+        {
+            id: "F18", topic: "5.2b", standards: ["TRA-3.B", "TRA-3.C"],
+            question: `Using the same data (rate = k[A]¹[B]⁰ = k[A]):<br>
+            <table class='data-table'><thead><tr><th>Exp</th><th>[A] (M)</th><th>[B] (M)</th><th>Rate (M/s)</th></tr></thead><tbody>
+            <tr><td>1</td><td>0.10</td><td>0.10</td><td>2.0 × 10⁻³</td></tr></tbody></table>
+            <span class='scaffold'>💡 Scaffold: rate = k[A] → k = rate/[A]. Use any experiment's data and plug in.</span><br><br>
+            What is the value of k?`,
+            options: ["k = 0.020 s⁻¹", "k = 0.020 M⁻¹s⁻¹", "k = 2.0 × 10⁻² s⁻¹", "Both A and C are correct"],
+            correct: 3,
+            explanation: "k = rate/[A] = (2.0×10⁻³ M/s) / (0.10 M) = 2.0×10⁻² s⁻¹. Options A and C are the same number written two ways — both correct. Units check: for a 1st-order reaction, k has units of s⁻¹. (M/s)/M = s⁻¹. ✓"
+        },
+
+        // 5.2c — Rate constant units (2 questions)
+        {
+            id: "F19", topic: "5.2c", standards: ["TRA-3.C"],
+            question: `<span class='scaffold'>💡 Units of k depend on overall reaction order. Use dimensional analysis: k = rate/[A]ⁿ.<br>Rate has units M/s. Concentration has units M.</span><br><br>
+            What are the units of k for a second-order reaction?`,
+            options: ["s⁻¹", "M·s⁻¹", "M⁻¹·s⁻¹", "M⁻²·s⁻¹"],
+            correct: 2,
+            explanation: "For 2nd order: rate = k[A]². k = rate/[A]² = (M/s)/M² = M⁻¹s⁻¹. Memory tool: zero order → M·s⁻¹, first order → s⁻¹, second order → M⁻¹s⁻¹, third order → M⁻²s⁻¹. The exponent on M goes down by 1 for each order increase."
+        },
+        {
+            id: "F20", topic: "5.2c", standards: ["TRA-3.C"],
+            question: "A reaction has rate law rate = k[A]⁰. Which statement is true?",
+            options: [
+                "The rate is zero because [A]⁰ = 0",
+                "The rate equals k, and is independent of [A]",
+                "The rate increases linearly with [A]",
+                "The rate law cannot have a zero exponent"
+            ],
+            correct: 1,
+            explanation: "[A]⁰ = 1 for any nonzero concentration. So rate = k(1) = k. The rate is constant — it doesn't change as [A] is consumed. Zero-order reactions are common when a catalyst surface is saturated with reactant. Units of k for zero-order: M/s (same as rate)."
+        }
+    ],
+
+    // ─────────────────────────────────────────────────────────
+    // STANDARD — 10 questions, AP-level rigor with some support
+    // ─────────────────────────────────────────────────────────
+    medium: [
+        {
+            id: "M1", topic: "5.1b", standards: ["TRA-3.A"],
+            question: `For: <span class='equation'>4 NH₃(g) + 5 O₂(g) → 4 NO(g) + 6 H₂O(g)</span>
+            If the rate of formation of H₂O is 0.600 M/s, what is the rate of consumption of NH₃?`,
+            options: ["0.900 M/s", "0.400 M/s", "0.600 M/s", "0.150 M/s"],
+            correct: 1,
+            explanation: "Rate = (1/4)Δ[NH₃]/Δt = (1/6)Δ[H₂O]/Δt. Set equal: (1/4)Δ[NH₃]/Δt = (1/6)(0.600). Solve: Δ[NH₃]/Δt = 4 × (0.600/6) = 4 × 0.100 = 0.400 M/s. For every 6 mol H₂O produced, 4 mol NH₃ consumed → NH₃ disappears at (4/6) = 2/3 the rate of H₂O appearance."
+        },
+        {
+            id: "M2", topic: "5.2a", standards: ["TRA-3.B"],
+            question: `For rate = k[A]²[B], if [A] is halved and [B] is quadrupled, the rate:`,
+            options: [
+                "Decreases by a factor of 4",
+                "Stays the same",
+                "Increases by a factor of 2",
+                "Decreases by a factor of 2"
+            ],
+            correct: 1,
+            explanation: "New rate = k(½[A])²(4[B]) = k(¼[A]²)(4[B]) = k[A]²[B] × (¼ × 4) = k[A]²[B] × 1. Rate is unchanged! The ¼ factor from [A]² and the ×4 from [B] cancel perfectly. This elegant cancellation is a classic AP exam design."
+        },
+        {
+            id: "M3", topic: "5.2b", standards: ["TRA-3.B", "TRA-3.C"],
+            question: `<table class='data-table'><thead><tr><th>Exp</th><th>[A] (M)</th><th>[B] (M)</th><th>Rate (M/s)</th></tr></thead><tbody>
+            <tr><td>1</td><td>0.10</td><td>0.10</td><td>2.0 × 10⁻³</td></tr>
+            <tr><td>2</td><td>0.20</td><td>0.10</td><td>8.0 × 10⁻³</td></tr>
+            <tr><td>3</td><td>0.10</td><td>0.20</td><td>4.0 × 10⁻³</td></tr></tbody></table>
+            What is the rate law for this reaction?`,
+            options: [
+                "rate = k[A][B]",
+                "rate = k[A]²[B]",
+                "rate = k[A][B]²",
+                "rate = k[A]²[B]²"
+            ],
+            correct: 1,
+            explanation: "Exp 1→2: [A] doubles, rate ×4 → 2ᵐ = 4 → m = 2 (second order in A). Exp 1→3: [B] doubles, rate ×2 → 2ⁿ = 2 → n = 1 (first order in B). Rate law: rate = k[A]²[B]. Overall order = 3rd."
+        },
+        {
+            id: "M4", topic: "5.2c", standards: ["TRA-3.C"],
+            question: `Using the data from M3 (rate = k[A]²[B]), calculate the value and units of k.
+            <table class='data-table'><thead><tr><th>Exp</th><th>[A] (M)</th><th>[B] (M)</th><th>Rate (M/s)</th></tr></thead><tbody>
+            <tr><td>1</td><td>0.10</td><td>0.10</td><td>2.0 × 10⁻³</td></tr></tbody></table>`,
+            options: [
+                "k = 0.20 M⁻²s⁻¹",
+                "k = 2.0 M⁻²s⁻¹",
+                "k = 2.0 × 10⁻³ M⁻²s⁻¹",
+                "k = 20 M⁻²s⁻¹"
+            ],
+            correct: 1,
+            explanation: "k = rate / ([A]²[B]) = (2.0×10⁻³) / ((0.10)²(0.10)) = (2.0×10⁻³) / (0.001) = 2.0 M⁻²s⁻¹. Units: (M/s) / (M²·M) = (M/s) / M³ = M⁻²s⁻¹. Always verify units match the overall reaction order."
+        },
+        {
+            id: "M5", topic: "5.2b", standards: ["TRA-3.B", "TRA-3.C"],
+            question: `<table class='data-table'><thead><tr><th>Exp</th><th>[P] (M)</th><th>[Q] (M)</th><th>Rate (M/s)</th></tr></thead><tbody>
+            <tr><td>1</td><td>0.100</td><td>0.100</td><td>1.5 × 10⁻²</td></tr>
+            <tr><td>2</td><td>0.200</td><td>0.100</td><td>3.0 × 10⁻²</td></tr>
+            <tr><td>3</td><td>0.100</td><td>0.300</td><td>1.5 × 10⁻²</td></tr></tbody></table>
+            Which rate law is consistent with this data?`,
+            options: [
+                "rate = k[P][Q]",
+                "rate = k[P]²[Q]",
+                "rate = k[P]",
+                "rate = k[P][Q]²"
+            ],
+            correct: 2,
+            explanation: "Exp 1→2: [P] doubles, rate doubles → 1st order in P. Exp 1→3: [Q] triples, rate unchanged → 0th order in Q. Rate law: rate = k[P]. Q does not appear. This illustrates the critical point: not all reactants in the equation appear in the rate law."
+        },
+        {
+            id: "M6", topic: "5.2b", standards: ["TRA-3.B", "TRA-3.C"],
+            question: `<table class='data-table'><thead><tr><th>Exp</th><th>[NO] (M)</th><th>[O₂] (M)</th><th>Rate (M/s)</th></tr></thead><tbody>
+            <tr><td>1</td><td>0.010</td><td>0.010</td><td>2.5 × 10⁻⁵</td></tr>
+            <tr><td>2</td><td>0.020</td><td>0.010</td><td>1.0 × 10⁻⁴</td></tr>
+            <tr><td>3</td><td>0.010</td><td>0.020</td><td>5.0 × 10⁻⁵</td></tr></tbody></table>
+            What is the rate law for: 2NO(g) + O₂(g) → 2NO₂(g)?`,
+            options: [
+                "rate = k[NO][O₂]",
+                "rate = k[NO]²[O₂]",
+                "rate = k[NO]²[O₂]²",
+                "rate = k[NO][O₂]²"
+            ],
+            correct: 1,
+            explanation: "Exp 1→2: [NO] doubles, rate ×4 → 2ᵐ = 4 → m = 2 (second order in NO). Exp 1→3: [O₂] doubles, rate ×2 → 2ⁿ = 2 → n = 1 (first order in O₂). Rate law: rate = k[NO]²[O₂]. Note the coefficients in the balanced equation (2:1:2) do NOT match the orders (2:1) — coincidence, not a rule."
+        },
+        {
+            id: "M7", topic: "5.2c", standards: ["TRA-3.C"],
+            question: `For rate = k[NO]²[O₂] with k = 25 M⁻²s⁻¹:<br>
+            What is the initial rate when [NO] = 0.030 M and [O₂] = 0.015 M?`,
+            options: ["3.4 × 10⁻⁴ M/s", "1.1 × 10⁻² M/s", "3.4 × 10⁻³ M/s", "2.25 × 10⁻⁵ M/s"],
+            correct: 0,
+            explanation: "rate = (25)(0.030)²(0.015) = (25)(9×10⁻⁴)(0.015) = (25)(1.35×10⁻⁵) = 3.375×10⁻⁴ ≈ 3.4×10⁻⁴ M/s. Watch order of operations: square [NO] first, then multiply everything together."
+        },
+        {
+            id: "M8", topic: "5.2a", standards: ["TRA-3.B"],
+            question: `For the reaction A + B → products with rate = k[A]²:<br><br>
+            If [A] increases from 0.10 M to 0.30 M (tripled) while [B] is unchanged, by what factor does the rate change?`,
+            options: ["Factor of 3", "Factor of 6", "Factor of 9", "Factor of 27"],
+            correct: 2,
+            explanation: "Rate ∝ [A]². If [A] is tripled: new rate = k(3[A])² = 9k[A]². The rate increases by a factor of 3² = 9. B doesn't appear in the rate law, so changes to [B] have no effect. Key: always raise the concentration ratio to the power of the reaction order."
+        },
+        {
+            id: "M9", topic: "5.2b", standards: ["TRA-3.B", "TRA-3.C"],
+            question: `<table class='data-table'><thead><tr><th>Exp</th><th>[A] (M)</th><th>[B] (M)</th><th>Rate (M/s)</th></tr></thead><tbody>
+            <tr><td>1</td><td>0.500</td><td>0.500</td><td>0.0150</td></tr>
+            <tr><td>2</td><td>1.000</td><td>0.500</td><td>0.0600</td></tr>
+            <tr><td>3</td><td>0.500</td><td>1.000</td><td>0.0300</td></tr></tbody></table>
+            Determine the rate law and the value of k.`,
+            options: [
+                "rate = k[A]²[B]; k = 0.120 M⁻²s⁻¹",
+                "rate = k[A][B]; k = 0.060 M⁻¹s⁻¹",
+                "rate = k[A]²[B]; k = 0.240 M⁻²s⁻¹",
+                "rate = k[A]²[B]²; k = 0.120 M⁻³s⁻¹"
+            ],
+            correct: 0,
+            explanation: "Exp 1→2: [A] doubles, rate ×4 → 2nd order in A. Exp 1→3: [B] doubles, rate ×2 → 1st order in B. Rate law: rate = k[A]²[B]. k = rate/([A]²[B]) = 0.0150/((0.500)²(0.500)) = 0.0150/0.125 = 0.120 M⁻²s⁻¹."
+        },
+        {
+            id: "M10", topic: "5.2a", standards: ["TRA-3.B"],
+            question: `Which of the following statements about the rate constant k is correct?`,
+            options: [
+                "k increases when reactant concentration increases",
+                "k is the same for all reactions at the same temperature",
+                "k is temperature-dependent and unique to each reaction",
+                "k has the same units for all reactions"
+            ],
+            correct: 2,
+            explanation: "k is specific to each reaction and changes with temperature (it increases as T increases, described by the Arrhenius equation). k does NOT change with concentration — it's a constant at a given temperature. Units of k depend on the overall reaction order, so they differ between reactions."
+        }
+    ],
+
+    // ─────────────────────────────────────────────────────────
+    // CHALLENGE — 5 AP FRQ-style questions
+    // ─────────────────────────────────────────────────────────
+    high: [
+        {
+            id: "H1", topic: "5.2b", standards: ["TRA-3.B", "TRA-3.C"],
+            question: `<strong>AP FRQ Style</strong><br><br>
+            A chemist studies the reaction: <span class='equation'>2 ClO₂(aq) + 2 OH⁻(aq) → ClO₃⁻(aq) + ClO₂⁻(aq) + H₂O(l)</span>
+            <table class='data-table'><thead><tr><th>Exp</th><th>[ClO₂] (M)</th><th>[OH⁻] (M)</th><th>Initial Rate (M/s)</th></tr></thead><tbody>
+            <tr><td>1</td><td>0.060</td><td>0.030</td><td>0.0248</td></tr>
+            <tr><td>2</td><td>0.020</td><td>0.030</td><td>0.00276</td></tr>
+            <tr><td>3</td><td>0.020</td><td>0.090</td><td>0.00828</td></tr></tbody></table>
+            (a) Determine the rate law. (b) Calculate k with correct units. (c) Predict the rate when [ClO₂] = 0.040 M and [OH⁻] = 0.060 M.`,
+            options: [
+                "rate = k[ClO₂]²[OH⁻]; k = 230 M⁻²s⁻¹; predicted rate = 0.0221 M/s",
+                "rate = k[ClO₂][OH⁻]; k = 13.8 M⁻¹s⁻¹; predicted rate = 0.0331 M/s",
+                "rate = k[ClO₂]²[OH⁻]²; k = 115 M⁻³s⁻¹; predicted rate = 0.0110 M/s",
+                "rate = k[ClO₂]²[OH⁻]; k = 115 M⁻²s⁻¹; predicted rate = 0.0110 M/s"
+            ],
+            correct: 3,
+            explanation: "(a) Exp 2→1: [ClO₂] triples, rate ratio = 0.0248/0.00276 = 8.99 ≈ 9 = 3² → 2nd order in ClO₂. Exp 2→3: [OH⁻] triples, rate ratio = 0.00828/0.00276 = 3 = 3¹ → 1st order in OH⁻. Rate = k[ClO₂]²[OH⁻]. (b) k = 0.00276/((0.020)²(0.030)) = 0.00276/0.000012 = 230 M⁻²s⁻¹. Wait — recalculate: (0.020)²=4×10⁻⁴; × 0.030 = 1.2×10⁻⁵. k = 0.00276/1.2×10⁻⁵ = 230 M⁻²s⁻¹. Hmm — check option D: k=115. Use Exp 1: k = 0.0248/((0.060)²(0.030)) = 0.0248/(1.08×10⁻⁴) = 230. Option A is correct on k=230 but let's check predicted rate: (230)(0.040)²(0.060) = 230×1.6×10⁻³×0.060 = 230×9.6×10⁻⁵ = 0.0221 M/s. Option A is correct."
+        },
+        {
+            id: "H2", topic: "5.1b", standards: ["TRA-3.A"],
+            question: `<strong>AP FRQ Style — Multi-part Stoichiometry</strong><br><br>
+            For the reaction: <span class='equation'>4 PH₃(g) → P₄(g) + 6 H₂(g)</span>
+            At a certain instant, P₄ is being formed at 0.0048 M/s.<br><br>
+            (a) At what rate is PH₃ being consumed?<br>
+            (b) At what rate is H₂ being produced?<br>
+            (c) A student claims the overall rate of reaction equals 0.0048 M/s. Is this correct?`,
+            options: [
+                "(a) 0.0048 M/s; (b) 0.0072 M/s; (c) Yes — rate = rate of P₄ formation",
+                "(a) 0.0192 M/s; (b) 0.0288 M/s; (c) Yes — rate = rate of P₄ formation",
+                "(a) 0.0192 M/s; (b) 0.0288 M/s; (c) No — each species rate must be divided by its coefficient",
+                "(a) 0.0012 M/s; (b) 0.0008 M/s; (c) No — coefficients must be divided"
+            ],
+            correct: 2,
+            explanation: "Rate = −(1/4)Δ[PH₃]/Δt = +(1/1)Δ[P₄]/Δt = +(1/6)Δ[H₂]/Δt. (a) Δ[P₄]/Δt = Δ[PH₃]/Δt × (4/1) → PH₃: 4 × 0.0048 = 0.0192 M/s. (b) H₂: 6 × 0.0048 = 0.0288 M/s. (c) The overall rate = 0.0048 M/s (the normalized value). The student is correct that the overall rate = rate of P₄ formation ONLY because P₄ has coefficient 1. The student would be wrong for any other species."
+        },
+        {
+            id: "H3", topic: "5.2b", standards: ["TRA-3.B", "TRA-3.C"],
+            question: `<strong>AP FRQ Style — Incomplete Data Set</strong><br><br>
+            A student collects only partial data for A + B → products:
+            <table class='data-table'><thead><tr><th>Exp</th><th>[A] (M)</th><th>[B] (M)</th><th>Rate (M/s)</th></tr></thead><tbody>
+            <tr><td>1</td><td>0.100</td><td>0.200</td><td>0.00350</td></tr>
+            <tr><td>2</td><td>0.200</td><td>0.200</td><td>0.00700</td></tr>
+            <tr><td>3</td><td>0.400</td><td>0.400</td><td>0.02800</td></tr></tbody></table>
+            Using only Experiments 1 and 2, what can be determined? Using Experiment 3, what can be verified?`,
+            options: [
+                "Order in A = 1st; Exp 3 cannot verify anything",
+                "Order in A = 1st; Exp 3 verifies k is consistent when both concentrations change",
+                "Order in A = 2nd; Exp 3 shows the overall order is 2nd",
+                "Nothing can be determined without a third experiment"
+            ],
+            correct: 1,
+            explanation: "Exp 1→2: [A] doubles, [B] constant, rate doubles → 1st order in A. From Exp 1: k = 0.00350/((0.100)[B]ⁿ). We can't find order in B from these two exps (B is constant). But Exp 3: both [A] and [B] doubled from Exp 1 values doubled again. If 1st order each: rate should = 4×0.00700 = 0.02800 ✓. This confirms 1st order in both. Exp 3 is used as a consistency check."
+        },
+        {
+            id: "H4", topic: "5.2a", standards: ["TRA-3.B"],
+            question: `<strong>AP FRQ Style — Conceptual Reasoning</strong><br><br>
+            A reaction is found to be zero order overall. A student makes three claims:<br>
+            I. Doubling the concentration of any reactant will double the rate.<br>
+            II. The rate equals the rate constant k at all times.<br>
+            III. The units of k are M·s⁻¹.<br><br>
+            Which claims are correct?`,
+            options: [
+                "I only",
+                "II only",
+                "II and III only",
+                "I, II, and III"
+            ],
+            correct: 2,
+            explanation: "Claim I: FALSE. Zero order means rate = k[A]⁰ = k. Concentration changes have NO effect on rate. Claim II: TRUE. rate = k(1) = k at all concentrations. Claim III: TRUE. k = rate/[A]⁰ = M/s ÷ 1 = M·s⁻¹. Zero-order reactions are common when a catalyst is saturated. Rate is constant until reactant is nearly depleted."
+        },
+        {
+            id: "H5", topic: "5.2b", standards: ["TRA-3.B", "TRA-3.C"],
+            question: `<strong>AP FRQ Style — Full Analysis</strong><br><br>
+            The reaction NO(g) + O₃(g) → NO₂(g) + O₂(g) was studied:
+            <table class='data-table'><thead><tr><th>Exp</th><th>[NO] (M)</th><th>[O₃] (M)</th><th>Initial Rate (M/s)</th></tr></thead><tbody>
+            <tr><td>1</td><td>0.010</td><td>0.010</td><td>4.4 × 10⁻⁵</td></tr>
+            <tr><td>2</td><td>0.020</td><td>0.010</td><td>8.8 × 10⁻⁵</td></tr>
+            <tr><td>3</td><td>0.010</td><td>0.020</td><td>8.8 × 10⁻⁵</td></tr></tbody></table>
+            (a) Rate law? (b) Value of k with units? (c) Predicted rate when [NO] = [O₃] = 0.015 M? (d) If temperature increases, how does k change?`,
+            options: [
+                "rate = k[NO][O₃]; k = 0.44 M⁻¹s⁻¹; 9.9×10⁻⁵ M/s; k increases",
+                "rate = k[NO]²[O₃]; k = 4.4 M⁻²s⁻¹; 1.5×10⁻⁵ M/s; k increases",
+                "rate = k[NO][O₃]; k = 4.4 M⁻¹s⁻¹; 9.9×10⁻⁴ M/s; k decreases",
+                "rate = k[NO][O₃]; k = 0.44 M⁻¹s⁻¹; 1.5×10⁻⁴ M/s; k increases"
+            ],
+            correct: 0,
+            explanation: "(a) Exp 1→2: [NO] doubles, rate doubles → 1st order in NO. Exp 1→3: [O₃] doubles, rate doubles → 1st order in O₃. Rate = k[NO][O₃]. (b) k = 4.4×10⁻⁵/((0.010)(0.010)) = 4.4×10⁻⁵/10⁻⁴ = 0.44 M⁻¹s⁻¹. (c) rate = (0.44)(0.015)(0.015) = 0.44 × 2.25×10⁻⁴ = 9.9×10⁻⁵ M/s. (d) k increases with temperature — more molecules have sufficient activation energy (Arrhenius equation: k = Ae^(−Ea/RT))."
+        }
+    ]
+};
+
+// Fix H1 — Option A is actually correct (k=230, rate=0.0221), let's correct the answer index
+QUESTIONS.high[0].correct = 0;
+QUESTIONS.high[0].explanation = "(a) Exp 2→1: [ClO₂] triples (0.020→0.060), rate ratio = 0.0248/0.00276 ≈ 9 = 3² → 2nd order in ClO₂. Exp 2→3: [OH⁻] triples (0.030→0.090), rate ratio = 0.00828/0.00276 = 3 = 3¹ → 1st order in OH⁻. Rate law: rate = k[ClO₂]²[OH⁻]. (b) Using Exp 2: k = 0.00276/((0.020)²(0.030)) = 0.00276/(1.2×10⁻⁵) = 230 M⁻²s⁻¹. (c) rate = (230)(0.040)²(0.060) = (230)(1.6×10⁻³)(0.060) = (230)(9.6×10⁻⁵) = 0.0221 M/s.";
+
+// ==================== STATE ====================
+let state = {
+    studentName: "", classPeriod: "", date: "", selectedDifficulty: null,
+    currentQuestionIndex: 0, answers: {},
+    scores: { low: null, medium: null, high: null }
+};
+
+// ==================== INIT ====================
+function init() {
+    document.getElementById('date').value = new Date().toISOString().split('T')[0];
+    const saved = sessionStorage.getItem('apChemUnit5RateLaws');
+    if (saved) {
+        const p = JSON.parse(saved);
+        state.scores = p.scores || state.scores;
+        state.studentName = p.studentName || "";
+        state.classPeriod = p.classPeriod || "";
+        document.getElementById('student-name').value = state.studentName;
+        if (state.classPeriod) document.getElementById('class-period').value = state.classPeriod;
+        updateScoreDisplay();
+    }
+    document.querySelectorAll('.difficulty-card').forEach(c =>
+        c.addEventListener('click', () => selectDifficulty(c.dataset.difficulty)));
+    document.getElementById('student-name').addEventListener('input', checkReady);
+    document.getElementById('class-period').addEventListener('change', checkReady);
+    document.getElementById('start-btn').addEventListener('click', startQuiz);
+    document.getElementById('prev-btn').addEventListener('click', prevQ);
+    document.getElementById('next-btn').addEventListener('click', nextQ);
+}
+
+function saveState() {
+    sessionStorage.setItem('apChemUnit5RateLaws', JSON.stringify({
+        scores: state.scores, studentName: state.studentName, classPeriod: state.classPeriod
+    }));
+}
+
+function selectDifficulty(d) {
+    state.selectedDifficulty = d;
+    document.querySelectorAll('.difficulty-card').forEach(c => c.classList.remove('selected'));
+    document.querySelector(`[data-difficulty="${d}"]`).classList.add('selected');
+    checkReady();
+}
+
+function checkReady() {
+    const ok = document.getElementById('student-name').value.trim() &&
+               document.getElementById('class-period').value && state.selectedDifficulty;
+    document.getElementById('start-btn').disabled = !ok;
+    document.getElementById('start-btn').textContent = ok ?
+        `Start ${state.selectedDifficulty === 'low' ? 'Foundation' : state.selectedDifficulty === 'medium' ? 'Standard' : 'Challenge'} Quiz` :
+        'Complete Info Above to Begin';
+}
+
+function updateScoreDisplay() {
+    ['low', 'medium', 'high'].forEach(d => {
+        const el = document.getElementById(`${d}-best`);
+        const card = document.querySelector(`[data-difficulty="${d}"]`);
+        if (state.scores[d] !== null) {
+            el.textContent = `Best: ${state.scores[d]}%`;
+            card.classList.add('completed');
+        }
+    });
+}
+
+function startQuiz() {
+    state.studentName = document.getElementById('student-name').value.trim();
+    state.classPeriod = document.getElementById('class-period').value;
+    state.date = document.getElementById('date').value;
+    state.currentQuestionIndex = 0;
+    state.answers = {};
+    document.getElementById('selection-screen').style.display = 'none';
+    document.getElementById('quiz-active').style.display = 'block';
+    document.getElementById('results-container').style.display = 'none';
+    const badge = document.getElementById('current-difficulty');
+    badge.className = `difficulty-badge ${state.selectedDifficulty}`;
+    badge.textContent = state.selectedDifficulty === 'low' ? 'Foundation' :
+                        state.selectedDifficulty === 'medium' ? 'Standard' : 'Challenge';
+    renderQ();
+}
+
+function renderQ() {
+    const qs = QUESTIONS[state.selectedDifficulty];
+    const q = qs[state.currentQuestionIndex];
+    document.getElementById('progress-text').textContent = `Question ${state.currentQuestionIndex + 1} of ${qs.length}`;
+    document.getElementById('progress-bar').style.width = `${((state.currentQuestionIndex + 1) / qs.length) * 100}%`;
+    document.getElementById('question-container').innerHTML = `
+        <div class="question-card">
+            <div class="question-meta">
+                <span class="question-number">Q${state.currentQuestionIndex + 1}</span>
+                <div class="question-tags">
+                    <span class="tag topic">${TOPICS[q.topic].name}</span>
+                    ${q.standards.map(s => `<span class="tag standard">${s}</span>`).join('')}
+                </div>
+            </div>
+            <div class="question-text">${q.question}</div>
+            <div class="options">
+                ${q.options.map((o, i) => `
+                    <label class="option ${state.answers[q.id] === i ? 'selected' : ''}" data-opt="${i}">
+                        <input type="radio" name="q" value="${i}" ${state.answers[q.id] === i ? 'checked' : ''}>
+                        <span class="option-letter">${String.fromCharCode(65 + i)}</span>
+                        <span class="option-text">${o}</span>
+                    </label>
+                `).join('')}
+            </div>
+        </div>`;
+    document.querySelectorAll('.option').forEach(opt => {
+        opt.addEventListener('click', () => {
+            state.answers[q.id] = parseInt(opt.dataset.opt);
+            document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+            opt.classList.add('selected');
+        });
+    });
+    document.getElementById('prev-btn').disabled = state.currentQuestionIndex === 0;
+    document.getElementById('next-btn').textContent =
+        state.currentQuestionIndex === qs.length - 1 ? 'Submit Quiz ✓' : 'Next →';
+}
+
+function prevQ() { if (state.currentQuestionIndex > 0) { state.currentQuestionIndex--; renderQ(); } }
+
+function nextQ() {
+    const qs = QUESTIONS[state.selectedDifficulty];
+    if (state.currentQuestionIndex === qs.length - 1) submitQuiz();
+    else { state.currentQuestionIndex++; renderQ(); }
+}
+
+function submitQuiz() {
+    const results = grade();
+    if (state.scores[state.selectedDifficulty] === null || results.pct > state.scores[state.selectedDifficulty])
+        state.scores[state.selectedDifficulty] = results.pct;
+    saveState();
+    renderResults(results);
+}
+
+function grade() {
+    const qs = QUESTIONS[state.selectedDifficulty];
+    const r = { diff: state.selectedDifficulty, total: qs.length, correct: 0, topicScores: {}, standardScores: {}, qResults: [] };
+    Object.keys(TOPICS).forEach(t => r.topicScores[t] = { correct: 0, total: 0 });
+    Object.keys(STANDARDS).forEach(s => r.standardScores[s] = { correct: 0, total: 0 });
+    qs.forEach(q => {
+        const ans = state.answers[q.id];
+        const ok = ans === q.correct;
+        if (ok) r.correct++;
+        r.topicScores[q.topic].total++;
+        if (ok) r.topicScores[q.topic].correct++;
+        q.standards.forEach(s => { r.standardScores[s].total++; if (ok) r.standardScores[s].correct++; });
+        r.qResults.push({
+            q: q.question, topic: q.topic, standards: q.standards,
+            studentAns: ans !== undefined ? q.options[ans] : "Not answered",
+            correctAns: q.options[q.correct], ok, expl: q.explanation
+        });
+    });
+    r.pct = Math.round((r.correct / r.total) * 100);
+    return r;
+}
+
+function renderResults(r) {
+    document.getElementById('quiz-active').style.display = 'none';
+    document.getElementById('results-container').style.display = 'block';
+    const diffName = r.diff === 'low' ? 'Foundation' : r.diff === 'medium' ? 'Standard' : 'Challenge';
+    const fillColor = r.pct >= 80 ? '#4ecca3' : r.pct >= 60 ? '#f5c518' : '#ff6b6b';
+    const weakStds = Object.entries(r.standardScores)
+        .filter(([_, s]) => s.total > 0 && (s.correct / s.total) < 0.8)
+        .sort((a, b) => (a[1].correct / a[1].total) - (b[1].correct / b[1].total));
+
+    let html = `
+        <header>
+            <h1>📊 Your Results</h1>
+            <p class="subtitle">${state.studentName} • Period ${state.classPeriod} • ${diffName} Level</p>
+        </header>
+        <div class="score-card">
+            <div class="score-display">${r.pct}%</div>
+            <div class="score-label">${r.correct} of ${r.total} correct</div>
+            <span class="score-difficulty ${r.diff}">${diffName}</span>
+            <div class="performance-bar"><div class="performance-fill" style="width:${r.pct}%;background:${fillColor}"></div></div>
+        </div>
+        ${getRec(r)}
+        <div class="section-box standards">
+            <h3>📋 AP Standards Mastery</h3>
+            ${Object.entries(r.standardScores).filter(([_, s]) => s.total > 0)
+                .sort((a, b) => (a[1].correct / a[1].total) - (b[1].correct / b[1].total))
+                .map(([code, s]) => {
+                    const pct = Math.round((s.correct / s.total) * 100);
+                    const status = pct >= 80 ? 'mastered' : pct >= 50 ? 'developing' : 'needs-work';
+                    return `<div class="standard-row">
+                        <div class="standard-info">
+                            <div class="standard-code">${code}</div>
+                            <div class="standard-desc">${STANDARDS[code].description}</div>
+                        </div>
+                        <div class="standard-score">
+                            <span class="standard-pct">${pct}%</span>
+                            <span class="badge ${status}">${pct >= 80 ? 'Mastered' : pct >= 50 ? 'Developing' : 'Needs Work'}</span>
+                        </div>
+                    </div>`;
+                }).join('')}
+        </div>
+        <div class="section-box scores">
+            <h3>📈 Your Progress Across All Levels</h3>
+            <div class="scores-grid">
+                ${['low', 'medium', 'high'].map(d => `
+                    <div class="score-item">
+                        <div class="level ${d}">${d === 'low' ? '🌱 Foundation' : d === 'medium' ? '⚗️ Standard' : '🔥 Challenge'}</div>
+                        <div class="score ${state.scores[d] === null ? 'not-taken' : ''}">${state.scores[d] !== null ? state.scores[d] + '%' : '—'}</div>
+                    </div>`).join('')}
+            </div>
+        </div>
+        <div class="section-box topics">
+            <h3>📚 Topic Breakdown</h3>
+            ${Object.entries(r.topicScores).filter(([_, s]) => s.total > 0).map(([id, s]) => {
+                const pct = Math.round((s.correct / s.total) * 100);
+                return `<div class="topic-row">
+                    <span class="topic-name">${TOPICS[id].name}</span>
+                    <div class="topic-score">
+                        <span>${s.correct}/${s.total}</span>
+                        <span class="badge ${pct >= 80 ? 'mastered' : pct >= 50 ? 'developing' : 'needs-work'}">${pct}%</span>
+                    </div>
+                </div>`;
+            }).join('')}
+        </div>`;
+
+    if (weakStds.length > 0) {
+        const vids = [];
+        weakStds.forEach(([code]) => {
+            Object.entries(TOPICS).forEach(([_, t]) => {
+                if (t.standards.includes(code)) t.videos.forEach(v => {
+                    if (!vids.find(x => x.title === v.title)) vids.push({ ...v, std: code });
+                });
+            });
+        });
+        html += `<div class="section-box videos">
+            <h3>🎬 Recommended Videos</h3>
+            <p class="section-intro">Watch these to strengthen your weak standards before retaking:</p>
+            <div class="video-grid">
+                ${vids.slice(0, 6).map(v => `
+                    <div class="video-card">
+                        <a href="${v.url}" target="_blank">${v.title}</a>
+                        <div class="video-meta">${v.channel} • ${v.duration}</div>
+                        <span class="video-tag">${v.std}</span>
+                    </div>`).join('')}
+            </div>
+        </div>`;
+    }
+
+    html += `<div class="section-box">
+        <h3>📝 Full Question Review</h3>
+        ${r.qResults.map((qr, i) => `
+            <div class="review-item ${qr.ok ? 'correct' : 'incorrect'}">
+                <div class="review-header">
+                    <span class="review-question">Q${i + 1}: ${qr.q.replace(/<[^>]*>/g, ' ').substring(0, 80)}...</span>
+                    <span class="review-tag">${qr.standards[0]}</span>
+                </div>
+                <div class="review-answers">
+                    ${qr.ok
+                        ? `<span class="correct-answer">✓ ${qr.correctAns}</span>`
+                        : `<span class="your-answer">✗ Your answer: ${qr.studentAns}</span><br>
+                           <span class="correct-answer">✓ Correct: ${qr.correctAns}</span>`}
+                </div>
+                <div class="explanation">${qr.expl}</div>
+            </div>`).join('')}
+    </div>
+    <div class="action-buttons">
+        <button class="action-btn primary" onclick="tryAnother()">🔄 Try Another Level</button>
+        <button class="action-btn secondary" onclick="retake()">↩ Retake This Level</button>
+    </div>`;
+
+    document.getElementById('results-container').innerHTML = html;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function getRec(r) {
+    const p = r.pct, d = r.diff;
+    if (d === 'low') {
+        if (p >= 80) return `<div class="recommendation-box" style="border-color:#4ecca3"><h3>🎉 Strong Foundation!</h3><p>You've got the core concepts. Push yourself to Standard next!</p><button class="level-btn" onclick="jumpTo('medium')">Try Standard ⚗️</button></div>`;
+        if (p >= 60) return `<div class="recommendation-box"><h3>💪 Getting There</h3><p>Review the weak standards below and watch the recommended videos, then try again.</p></div>`;
+        return `<div class="recommendation-box" style="border-color:#ff6b6b"><h3>📖 Keep Building</h3><p>Focus on the explanations for each missed question — they walk through every step. Retake when ready.</p></div>`;
+    }
+    if (d === 'medium') {
+        if (p >= 80) return `<div class="recommendation-box" style="border-color:#4ecca3"><h3>🔥 AP-Ready!</h3><p>Excellent work. Take on the Challenge level — it's full AP FRQ style.</p><button class="level-btn" onclick="jumpTo('high')">Try Challenge 🔥</button></div>`;
+        if (p >= 60) return `<div class="recommendation-box"><h3>👍 Solid Progress</h3><p>Review the missed standards, check the videos, and try again. You're close.</p></div>`;
+        return `<div class="recommendation-box" style="border-color:#ff6b6b"><h3>📚 Reinforce the Basics</h3><p>Go back to Foundation to solidify the core concepts before returning here.</p><button class="level-btn" onclick="jumpTo('low')">Try Foundation 🌱</button></div>`;
+    }
+    if (p >= 80) return `<div class="recommendation-box" style="border-color:#4ecca3"><h3>🏆 Outstanding!</h3><p>AP Exam-ready on Unit 5 Rate Laws. Excellent work, ${state.studentName}!</p></div>`;
+    if (p >= 60) return `<div class="recommendation-box"><h3>⭐ Strong Effort</h3><p>Read each explanation carefully — the reasoning is what the AP exam rewards, not just the answer.</p></div>`;
+    return `<div class="recommendation-box" style="border-color:#f5c518"><h3>💡 Build Up First</h3><p>Try Standard level to strengthen your calculation skills before tackling the FRQ format.</p><button class="level-btn" onclick="jumpTo('medium')">Try Standard ⚗️</button></div>`;
+}
+
+function tryAnother() {
+    document.getElementById('results-container').style.display = 'none';
+    document.getElementById('selection-screen').style.display = 'block';
+    state.selectedDifficulty = null;
+    updateScoreDisplay();
+    document.querySelectorAll('.difficulty-card').forEach(c => c.classList.remove('selected'));
+    checkReady();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function retake() {
+    state.currentQuestionIndex = 0;
+    state.answers = {};
+    document.getElementById('results-container').style.display = 'none';
+    document.getElementById('quiz-active').style.display = 'block';
+    renderQ();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function jumpTo(lvl) {
+    state.selectedDifficulty = lvl;
+    state.currentQuestionIndex = 0;
+    state.answers = {};
+    document.getElementById('results-container').style.display = 'none';
+    document.getElementById('quiz-active').style.display = 'block';
+    const badge = document.getElementById('current-difficulty');
+    badge.className = `difficulty-badge ${lvl}`;
+    badge.textContent = lvl === 'low' ? 'Foundation' : lvl === 'medium' ? 'Standard' : 'Challenge';
+    renderQ();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
