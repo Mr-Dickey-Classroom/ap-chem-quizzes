@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elephant Toothpaste — Catalyst Demo & Kinetics Graphics</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    --navy:#0d1b2a; --navy-mid:#1a2d42; --navy-light:#243d55;
+    --teal:#2ec4b6; --teal-dark:#1a9e93;
+    --gold:#f4a827; --gold-light:#ffd166;
+    --violet:#9b5de5; --violet-light:#c77dff;
+    --coral:#f15025; --mint:#06d6a0;
+    --c10:#3b9ef5; --c15:#2ec4b6; --c20:#f4a827; --c30:#f15025;
+    --uncat:#7a9bbf; --cat:#06d6a0;
+    --text-primary:#e8f0f7; --text-muted:#7a9bbf;
+    --border:rgba(46,196,182,0.2); --card-bg:rgba(26,45,66,0.85);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--navy);color:var(--text-primary);font-family:'DM Sans',sans-serif;min-height:100vh;}
+  body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:radial-gradient(ellipse 60% 40% at 15% 20%,rgba(46,196,182,0.05) 0%,transparent 60%),
+               radial-gradient(ellipse 50% 50% at 85% 80%,rgba(155,93,229,0.05) 0%,transparent 60%);}
+
+  /* HEADER */
+  header{background:linear-gradient(135deg,var(--navy-mid),#162338);border-bottom:2px solid var(--teal);position:relative;overflow:hidden;}
+  header::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 39px,rgba(46,196,182,0.05) 39px 40px);}
+  .header-inner{max-width:1100px;margin:0 auto;padding:22px 30px;position:relative;z-index:1;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px;}
+  .badge{display:inline-flex;align-items:center;gap:6px;background:rgba(46,196,182,0.15);border:1px solid var(--teal);border-radius:4px;padding:3px 11px;font-family:'Space Mono',monospace;font-size:10px;color:var(--teal);letter-spacing:1px;text-transform:uppercase;margin-bottom:7px;}
+  h1{font-family:'Instrument Serif',serif;font-size:clamp(18px,2.5vw,30px);line-height:1.15;}
+  h1 em{font-style:italic;color:var(--teal);}
+  .ced-tag{font-family:'Space Mono',monospace;font-size:10px;color:var(--gold);background:rgba(244,168,39,0.1);border:1px solid rgba(244,168,39,0.3);border-radius:4px;padding:3px 9px;display:inline-block;}
+
+  /* LAYOUT */
+  .main{max-width:1100px;margin:0 auto;padding:24px 28px;position:relative;z-index:1;}
+
+  /* TABS */
+  .tabs{display:flex;gap:2px;margin-bottom:20px;border-bottom:2px solid var(--border);flex-wrap:wrap;}
+  .tab{background:transparent;border:none;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:9px 16px;cursor:pointer;position:relative;transition:color 0.2s;white-space:nowrap;}
+  .tab::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:2px;background:var(--teal);transform:scaleX(0);transition:transform 0.2s;}
+  .tab.active{color:var(--teal);}
+  .tab.active::after{transform:scaleX(1);}
+  .tab:hover:not(.active){color:var(--text-primary);}
+  .panel{display:none;} .panel.active{display:block;}
+
+  /* CARDS */
+  .card{background:var(--card-bg);border:1px solid var(--border);border-radius:10px;padding:18px 20px;backdrop-filter:blur(8px);margin-bottom:16px;}
+  .card-label{font-family:'Space Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--teal);margin-bottom:10px;display:flex;align-items:center;gap:7px;}
+  .card-label::before{content:'';display:inline-block;width:12px;height:2px;background:var(--teal);}
+  h2{font-family:'Instrument Serif',serif;font-size:19px;margin-bottom:8px;}
+  h3{font-size:13px;font-weight:700;color:var(--gold);margin:12px 0 5px;}
+  p{font-size:13px;line-height:1.65;color:#c5d8ea;margin-bottom:7px;}
+
+  /* GRID LAYOUTS */
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+  @media(max-width:750px){.two-col,.three-col{grid-template-columns:1fr;}}
+
+  /* CANVAS CHARTS */
+  .chart-wrap{background:rgba(13,27,42,0.9);border:1px solid var(--border);border-radius:8px;padding:10px;}
+  canvas{display:block;max-width:100%;}
+
+  /* LEGEND */
+  .legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;justify-content:center;}
+  .leg-item{display:flex;align-items:center;gap:5px;font-family:'Space Mono',monospace;font-size:10px;color:var(--text-muted);}
+  .leg-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+  .leg-line{width:20px;height:3px;border-radius:2px;flex-shrink:0;}
+
+  /* STAT BOXES */
+  .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:14px;}
+  .stat-box{background:rgba(13,27,42,0.7);border:1px solid var(--border);border-radius:8px;padding:11px;text-align:center;}
+  .stat-label{font-family:'Space Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:4px;}
+  .stat-value{font-family:'Space Mono',monospace;font-size:17px;font-weight:700;}
+  .stat-unit{font-size:10px;color:var(--text-muted);margin-top:1px;}
+
+  /* EQ BOX */
+  .eq{font-family:'Space Mono',monospace;font-size:11px;background:rgba(13,27,42,0.8);border:1px solid rgba(46,196,182,0.25);border-radius:6px;padding:10px 14px;color:var(--teal);margin:8px 0;line-height:1.85;}
+  .eq .muted{color:var(--text-muted);font-size:10px;}
+
+  /* CALLOUT */
+  .callout{display:flex;gap:10px;padding:11px 13px;border-radius:7px;margin:10px 0;font-size:12.5px;line-height:1.6;}
+  .callout-info{background:rgba(46,196,182,0.07);border-left:3px solid var(--teal);color:#a8d5d1;}
+  .callout-warn{background:rgba(244,168,39,0.07);border-left:3px solid var(--gold);color:#d4b87a;}
+  .callout-danger{background:rgba(241,80,37,0.07);border-left:3px solid var(--coral);color:#e8a090;}
+  .callout-icon{font-size:15px;flex-shrink:0;margin-top:1px;}
+
+  /* CONC SELECTOR */
+  .conc-btns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+  .conc-btn{padding:6px 16px;border-radius:5px;border:1px solid;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;cursor:pointer;transition:all 0.2s;opacity:0.45;}
+  .conc-btn.active{opacity:1;transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,0.3);}
+  .btn-10{border-color:var(--c10);color:var(--c10);background:rgba(59,158,245,0.1);}
+  .btn-10.active{background:rgba(59,158,245,0.2);}
+  .btn-15{border-color:var(--c15);color:var(--c15);background:rgba(46,196,182,0.1);}
+  .btn-15.active{background:rgba(46,196,182,0.2);}
+  .btn-20{border-color:var(--c20);color:var(--c20);background:rgba(244,168,39,0.1);}
+  .btn-20.active{background:rgba(244,168,39,0.2);}
+  .btn-30{border-color:var(--c30);color:var(--c30);background:rgba(241,80,37,0.1);}
+  .btn-30.active{background:rgba(241,80,37,0.2);}
+
+  /* TABLE */
+  .data-table{width:100%;border-collapse:collapse;font-family:'Space Mono',monospace;font-size:11.5px;}
+  .data-table th{background:var(--navy-mid);padding:7px 11px;text-align:left;color:var(--teal);font-size:9.5px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border);}
+  .data-table td{padding:6px 11px;border-bottom:1px solid rgba(46,196,182,0.07);color:var(--text-primary);}
+  .data-table tr:hover td{background:rgba(46,196,182,0.04);}
+
+  /* DEMO STEPS */
+  .step-list{list-style:none;counter-reset:sc;}
+  .step-list li{counter-increment:sc;display:flex;gap:11px;margin-bottom:10px;font-size:12.5px;color:#c5d8ea;line-height:1.6;}
+  .step-list li::before{content:counter(sc);font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:var(--navy);background:var(--teal);border-radius:50%;width:20px;height:20px;flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+
+  /* TUBE VIZ */
+  .tubes-wrap{display:flex;gap:16px;justify-content:center;align-items:flex-end;padding:20px 10px 10px;flex-wrap:wrap;}
+  .tube-group{text-align:center;}
+  .tube-label-top{font-family:'Space Mono',monospace;font-size:10px;color:var(--text-muted);margin-bottom:6px;}
+  .tube-outer{width:52px;border:2px solid rgba(200,220,255,0.35);border-radius:4px;position:relative;overflow:visible;background:rgba(13,27,42,0.5);}
+  .tube-liquid{position:absolute;bottom:0;left:0;right:0;border-radius:0 0 2px 2px;transition:height 0.8s ease;}
+  .tube-foam{position:absolute;left:-4px;right:-4px;border-radius:4px 4px 0 0;transition:all 0.8s ease;opacity:0.9;}
+  .tube-label-bot{font-family:'Space Mono',monospace;font-size:10px;margin-top:6px;}
+  .tube-height-label{font-family:'Space Mono',monospace;font-size:9px;color:var(--text-muted);margin-top:3px;}
+
+  ::-webkit-scrollbar{width:5px;height:5px;}
+  ::-webkit-scrollbar-track{background:var(--navy);}
+  ::-webkit-scrollbar-thumb{background:var(--navy-light);border-radius:3px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div>
+      <div class="badge">⬡ AP Chemistry · Unit 5.11 · Catalysis Demo</div>
+      <h1><em>Elephant Toothpaste</em> — H₂O₂ Decomposition<br>Rate Kinetics &amp; Catalyst Analysis</h1>
+    </div>
+    <div style="text-align:right;">
+      <div class="ced-tag">CED Topic 5.11 · ENE-1.A · TRA-3.A</div>
+      <p style="font-size:11px;color:var(--text-muted);margin-top:4px;">72°F (22.2°C) · KI Catalyst · Pequa H₂O₂</p>
+    </div>
+  </div>
+</header>
+
+<div class="main">
+  <nav class="tabs">
+    <button class="tab active" onclick="showTab('overview',this)">📊 Rate Comparison</button>
+    <button class="tab" onclick="showTab('decay',this)">📈 Concentration vs. Time</button>
+    <button class="tab" onclick="showTab('energy',this)">⚡ Energy Profile</button>
+    <button class="tab" onclick="showTab('foam',this)">🧴 Foam Volume</button>
+    <button class="tab" onclick="showTab('demo',this)">🧪 Demo Guide</button>
+    <button class="tab" onclick="showTab('irl',this)">⚗️ Integrated Rate Laws</button>
+    <button class="tab" onclick="showTab('kisim',this)">🎛️ [KI] Simulator</button>
+    <button class="tab" onclick="showTab('math',this)">🔢 All the Math</button>
+  </nav>
+
+  <!-- ══════════════════════════════════ TAB 1: RATE COMPARISON -->
+  <div id="tab-overview" class="panel active">
+    <div class="stat-grid">
+      <div class="stat-box"><div class="stat-label">k uncatalyzed</div><div class="stat-value" style="color:var(--uncat);">7.5×10⁻⁹</div><div class="stat-unit">s⁻¹ at 72°F</div></div>
+      <div class="stat-box"><div class="stat-label">k' catalyzed (KI)</div><div class="stat-value" style="color:var(--cat);">0.202</div><div class="stat-unit">s⁻¹ at 72°F, [KI]=0.5M</div></div>
+      <div class="stat-box"><div class="stat-label">Rate Enhancement</div><div class="stat-value" style="color:var(--gold);">2.7×10⁷</div><div class="stat-unit">× faster with catalyst</div></div>
+      <div class="stat-box"><div class="stat-label">t½ uncatalyzed</div><div class="stat-value" style="color:var(--uncat);">~2.9</div><div class="stat-unit">years</div></div>
+      <div class="stat-box"><div class="stat-label">t½ catalyzed</div><div class="stat-value" style="color:var(--cat);">3.4</div><div class="stat-unit">seconds</div></div>
+      <div class="stat-box"><div class="stat-label">Eₐ Reduction</div><div class="stat-value" style="color:var(--violet-light);">75→56</div><div class="stat-unit">kJ/mol (−19 kJ/mol)</div></div>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-label">Initial Rate vs. [H₂O₂] Concentration</div>
+        <div class="chart-wrap">
+          <canvas id="rate-bar-chart" width="460" height="260"></canvas>
+        </div>
+        <div class="legend">
+          <div class="leg-item"><div class="leg-line" style="background:var(--uncat);"></div>Uncatalyzed (72°F room)</div>
+          <div class="leg-item"><div class="leg-line" style="background:var(--cat);"></div>KI Catalyzed ([KI]=0.5M)</div>
+        </div>
+        <p style="font-size:11px;color:var(--text-muted);text-align:center;margin-top:6px;">Note: catalyzed rates are ~2.7×10⁷ larger — log scale used</p>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Rate Law Breakdown</div>
+        <h3>Uncatalyzed</h3>
+        <div class="eq">
+          2 H₂O₂(aq) → 2 H₂O(l) + O₂(g)<br>
+          Rate = k[H₂O₂]<br>
+          <span class="muted">k = 7.5×10⁻⁹ s⁻¹ at 22.2°C</span><br>
+          <span class="muted">Eₐ = 75 kJ/mol</span>
+        </div>
+        <h3>KI-Catalyzed (Two-Step Mechanism)</h3>
+        <div class="eq">
+          Step 1 (slow/RDS): H₂O₂ + I⁻ → HOI + OH⁻<br>
+          Step 2 (fast):&nbsp;&nbsp;&nbsp; H₂O₂ + HOI → H₂O + O₂ + I⁻<br>
+          <span class="muted">─────────────────────────────────</span><br>
+          Net: 2 H₂O₂ → 2 H₂O + O₂<br>
+          <span class="muted">I⁻ consumed in Step 1, regenerated in Step 2 → catalyst!</span><br>
+          Rate = k₂[H₂O₂][I⁻] → k' = k₂[I⁻] = 0.202 s⁻¹<br>
+          <span class="muted">Eₐ = 56 kJ/mol</span>
+        </div>
+        <div class="callout callout-info">
+          <span class="callout-icon">💡</span>
+          <span>This is a perfect AP 5.11 example: I⁻ is <strong>consumed in the RDS</strong> (Step 1) and <strong>regenerated in Step 2</strong> — so net [I⁻] is unchanged. HOI is the reaction <strong>intermediate</strong>.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Initial Rate Data Table — All Concentrations</div>
+      <div style="overflow-x:auto;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>H₂O₂ (%)</th>
+              <th>[H₂O₂] (M)</th>
+              <th>Rate_uncat (M/s)</th>
+              <th>Rate_cat (M/s)</th>
+              <th>Rate Ratio (cat/uncat)</th>
+              <th>t½ uncatalyzed</th>
+              <th>t½ catalyzed</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td style="color:var(--c10);font-weight:700;">10%</td><td>3.06 M</td><td>2.30×10⁻⁸</td><td>0.618</td><td style="color:var(--gold);">2.69×10⁷×</td><td>2.9 yr</td><td style="color:var(--cat);">3.4 s</td></tr>
+            <tr><td style="color:var(--c15);font-weight:700;">15%</td><td>4.67 M</td><td>3.52×10⁻⁸</td><td>0.945</td><td style="color:var(--gold);">2.69×10⁷×</td><td>2.9 yr</td><td style="color:var(--cat);">3.4 s</td></tr>
+            <tr><td style="color:var(--c20);font-weight:700;">20%</td><td>6.35 M</td><td>4.78×10⁻⁸</td><td>1.284</td><td style="color:var(--gold);">2.69×10⁷×</td><td>2.9 yr</td><td style="color:var(--cat);">3.4 s</td></tr>
+            <tr><td style="color:var(--c30);font-weight:700;">30%</td><td>9.88 M</td><td>7.43×10⁻⁸</td><td>1.997</td><td style="color:var(--gold);">2.69×10⁷×</td><td>2.9 yr</td><td style="color:var(--cat);">3.4 s</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:11px;color:var(--text-muted);margin-top:6px;">Note: t½ is the same for ALL concentrations because H₂O₂ decomposition is first-order. Higher [H₂O₂] = larger initial rate but same half-life. This is the first-order fingerprint.</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════ TAB 2: DECAY CURVES -->
+  <div id="tab-decay" class="panel">
+    <div class="card">
+      <div class="card-label">Select Concentrations to Display</div>
+      <div class="conc-btns">
+        <button class="conc-btn btn-10 active" onclick="toggleConc(10,this)">10% H₂O₂ (3.06 M)</button>
+        <button class="conc-btn btn-15 active" onclick="toggleConc(15,this)">15% H₂O₂ (4.67 M)</button>
+        <button class="conc-btn btn-20 active" onclick="toggleConc(20,this)">20% H₂O₂ (6.35 M)</button>
+        <button class="conc-btn btn-30 active" onclick="toggleConc(30,this)">30% H₂O₂ (9.88 M)</button>
+      </div>
+      <div class="two-col">
+        <div>
+          <div class="chart-wrap">
+            <canvas id="decay-uncat" width="460" height="260"></canvas>
+          </div>
+          <p style="font-size:11px;color:var(--text-muted);text-align:center;margin-top:5px;">Uncatalyzed — timescale: years. The curves overlap almost perfectly (same k, different [H₂O₂]₀)</p>
+        </div>
+        <div>
+          <div class="chart-wrap">
+            <canvas id="decay-cat" width="460" height="260"></canvas>
+          </div>
+          <p style="font-size:11px;color:var(--text-muted);text-align:center;margin-top:5px;">KI Catalyzed — timescale: seconds. Reaction is essentially complete in ~17 s</p>
+        </div>
+      </div>
+      <div class="legend" style="margin-top:10px;">
+        <div class="leg-item"><div class="leg-dot" style="background:var(--c10);"></div>10%</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--c15);"></div>15%</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--c20);"></div>20%</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--c30);"></div>30%</div>
+      </div>
+    </div>
+    <div class="callout callout-info" style="margin-top:0;">
+      <span class="callout-icon">🔑</span>
+      <span><strong>Key AP insight:</strong> All four curves on each chart have the <em>same half-life</em> — they just start at different heights. This is proof of first-order kinetics. On the catalyzed chart, all concentrations reach ~50% at t = 3.4 s, ~25% at t = 6.8 s, ~12% at t = 10.2 s.</span>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════ TAB 3: ENERGY PROFILE -->
+  <div id="tab-energy" class="panel">
+    <div class="card">
+      <div class="card-label">Reaction Energy Profile — Uncatalyzed vs. KI Catalyzed</div>
+      <div class="chart-wrap" style="max-width:700px;margin:0 auto;">
+        <canvas id="energy-chart" width="680" height="360"></canvas>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;">
+        <div class="callout callout-info">
+          <span class="callout-icon">📐</span>
+          <div>
+            <strong>Uncatalyzed path (gray):</strong><br>
+            Eₐ = 75 kJ/mol — one high barrier<br>
+            Single-step collision of 2 H₂O₂
+          </div>
+        </div>
+        <div class="callout callout-info" style="border-left-color:var(--cat);">
+          <span class="callout-icon">⚡</span>
+          <div>
+            <strong>KI-Catalyzed path (teal):</strong><br>
+            Step 1 Eₐ = 56 kJ/mol (RDS, lower barrier)<br>
+            Step 2 Eₐ = ~20 kJ/mol (fast, HOI is intermediate)<br>
+            Two lower humps replace one tall one
+          </div>
+        </div>
+      </div>
+      <div class="callout callout-warn" style="margin-top:4px;">
+        <span class="callout-icon">⚠️</span>
+        <span><strong>AP Exam Note (5.11.A.1):</strong> The catalyst provides a reaction path with <em>lower activation energy</em>, increasing the fraction of collisions with sufficient energy to react (Maxwell-Boltzmann). It does <em>not</em> change ΔH — reactants and products are at the same energy with or without the catalyst.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════ TAB 4: FOAM VOLUME -->
+  <div id="tab-foam" class="panel">
+    <div class="card">
+      <div class="card-label">O₂ Gas Produced &amp; Foam Volume (50 mL solution, complete reaction)</div>
+      <div class="tubes-wrap" id="tubes-display"></div>
+      <div class="chart-wrap" style="margin-top:14px;">
+        <canvas id="foam-chart" width="700" height="240"></canvas>
+      </div>
+      <p style="font-size:11px;color:var(--text-muted);text-align:center;margin-top:6px;">O₂ volume at 22.2°C, 1 atm via ideal gas law: V = nRT/P</p>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-label">Pequa "Super Cess-Flo" — Unknown Concentration</div>
+        <p>Your Pequa product is labeled 10–20% H₂O₂. Here's how to bracket the unknown concentration using foam behavior:</p>
+        <table class="data-table" style="margin-top:8px;">
+          <thead><tr><th>If the foam…</th><th>Estimated [H₂O₂]</th></tr></thead>
+          <tbody>
+            <tr><td>Barely reaches 15 cm in a 500 mL cylinder</td><td style="color:var(--c10);">~10%</td></tr>
+            <tr><td>Fills a 500 mL cylinder about halfway</td><td style="color:var(--c15);">~15%</td></tr>
+            <tr><td>Overflows a 500 mL cylinder</td><td style="color:var(--c20);">~20%</td></tr>
+          </tbody>
+        </table>
+        <div class="callout callout-info" style="margin-top:10px;">
+          <span class="callout-icon">💡</span>
+          <span><strong>Recommendation:</strong> Assume 15% as your starting estimate. Run a 25 mL test trial in a 250 mL graduated cylinder before the full demo to calibrate.</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-label">Stoichiometry Calculation</div>
+        <div class="eq" style="font-size:11px;">
+          2 H₂O₂ → 2 H₂O + O₂<br>
+          <span class="muted">→ 1 mol H₂O₂ produces 0.5 mol O₂</span><br><br>
+          mol H₂O₂ = [H₂O₂] × V(L)<br>
+          mol O₂ = mol H₂O₂ × 0.5<br>
+          V(O₂) = nRT/P = n × 0.08206 × 295.4 K<br><br>
+          <span class="muted">Example: 20%, 50 mL</span><br>
+          mol H₂O₂ = 6.35 M × 0.050 L = 0.318 mol<br>
+          mol O₂ = 0.318 × 0.5 = 0.159 mol<br>
+          V = 0.159 × 0.08206 × 295.4 = 3.85 L
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════ TAB 5: DEMO GUIDE -->
+  <div id="tab-demo" class="panel">
+    <div class="two-col">
+      <div>
+        <div class="card">
+          <div class="card-label">Materials</div>
+          <table class="data-table">
+            <thead><tr><th>Item</th><th>Amount</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Pequa H₂O₂ (10–20%)</td><td>50–100 mL</td><td>Per trial</td></tr>
+              <tr><td>KI solution (saturated)</td><td>5–10 mL</td><td>~0.5–1.0 M</td></tr>
+              <tr><td>Dish soap (Dawn)</td><td>1–2 squirts</td><td>Traps O₂ as foam</td></tr>
+              <tr><td>Warm water (optional)</td><td>~10 mL</td><td>Dissolve KI</td></tr>
+              <tr><td>500 mL graduated cylinder</td><td>1</td><td>Or 1 L for 30%</td></tr>
+              <tr><td>Food coloring</td><td>few drops</td><td>Visual effect</td></tr>
+              <tr><td>Tray / sheet pan</td><td>large</td><td>Catches overflow</td></tr>
+              <tr><td>Gloves + goggles</td><td>required</td><td>H₂O₂ is oxidizer</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-label">Procedure</div>
+          <ol class="step-list">
+            <li>Set graduated cylinder in the center of a large tray. Add food coloring to the inside of the cylinder for visual effect.</li>
+            <li>Measure 50 mL of Pequa H₂O₂ into the cylinder. Add 1–2 squirts of dish soap and swirl gently — do not create bubbles yet.</li>
+            <li>In a separate small cup, dissolve 1–2 g KI in 10 mL warm water to make the catalyst solution (~0.5 M).</li>
+            <li>Hold the KI solution above the cylinder. Ask students: <em>"What do you predict will happen? Why?"</em></li>
+            <li>Pour the KI solution directly into the cylinder in one motion. Step back and observe.</li>
+            <li>While foam forms, ask: <em>"What gas is being produced? How do you know? What is the role of KI?"</em></li>
+            <li>Touch the outside of the cylinder — students should feel it is warm. Ask: <em>"What does that tell us about the reaction?"</em></li>
+          </ol>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <div class="card-label">Safety</div>
+          <div class="callout callout-danger">
+            <span class="callout-icon">🚨</span>
+            <div>
+              <strong>H₂O₂ at 10–20% is a strong oxidizer.</strong><br>
+              • Wear nitrile gloves and safety goggles at all times<br>
+              • Avoid skin/eye contact — flush immediately with water if contact occurs<br>
+              • Do not use concentrations above 30% without fume hood<br>
+              • Foam is hot — do not touch immediately after reaction<br>
+              • Dispose of foam/liquid down the drain with excess water
+            </div>
+          </div>
+          <div class="callout callout-warn" style="margin-top:4px;">
+            <span class="callout-icon">⚠️</span>
+            <span>KI is non-toxic but the <strong>iodine produced transiently</strong> (HOI intermediate) gives a brief brown color before being consumed. This is the intermediate in action — point it out to students!</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-label">AP Discussion Questions (During/After Demo)</div>
+          <ol class="step-list">
+            <li>The bottle of Pequa has been sitting in the supply closet for months with no visible change. What does this tell you about the uncatalyzed rate? (t½ ≈ 2.9 years at room temp)</li>
+            <li>You added KI and the reaction was complete in ~10 seconds. Did the KI get used up? How do you know? What does this confirm about its role?</li>
+            <li>Write the two elementary steps and identify: the catalyst, the intermediate, and the rate-determining step.</li>
+            <li>The cylinder felt warm after the reaction. Draw a qualitative energy profile showing both the uncatalyzed and catalyzed pathways. Label Eₐ and ΔH for each.</li>
+            <li>If you repeated this with 20% H₂O₂ instead of 10%, predict how the foam height and rate would change. Would t½ change?</li>
+            <li>This reaction is first-order in H₂O₂. If you doubled [H₂O₂] but kept [KI] the same, by what factor would the initial rate change?</li>
+          </ol>
+        </div>
+
+        <div class="card">
+          <div class="card-label">CED Connections (Topic 5.11)</div>
+          <p style="font-size:12px;"><strong style="color:var(--teal);">5.11.A.1</strong> — Catalyst lowers Eₐ from 75 → 56 kJ/mol, increasing effective collisions</p>
+          <p style="font-size:12px;"><strong style="color:var(--teal);">5.11.A.2</strong> — I⁻ consumed in Step 1 (RDS), regenerated in Step 2 → net [catalyst] unchanged</p>
+          <p style="font-size:12px;"><strong style="color:var(--teal);">5.11.A.4</strong> — This is homogeneous acid-base-adjacent catalysis; HOI is the bound intermediate</p>
+          <p style="font-size:12px;"><strong style="color:var(--teal);">5.5.A.3</strong> — Lower Eₐ means larger fraction of molecules exceed the barrier (Maxwell-Boltzmann)</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════ TAB: INTEGRATED RATE LAWS -->
+  <div id="tab-irl" class="panel">
+
+    <div class="card">
+      <div class="card-label">Integrated Rate Law Linearization — H₂O₂ Decomposition</div>
+      <p>The <strong>integrated rate law</strong> lets us determine reaction order from a graph. We plot the same concentration-vs-time data three different ways. Only the transformation that matches the true order produces a straight line. The slope of that line gives us k directly.</p>
+      <div class="two-col" style="margin-top:10px;">
+        <div>
+          <div class="eq" style="font-size:11px; line-height:2;">
+            <span style="color:var(--mint);">0th order:</span> [A]<sub>t</sub> = [A]<sub>0</sub> − kt<br>
+            <span style="color:var(--text-muted);">  Plot [A] vs t → linear, slope = −k</span><br>
+            <span style="color:var(--teal);">1st order:</span> ln[A]<sub>t</sub> = ln[A]<sub>0</sub> − kt<br>
+            <span style="color:var(--text-muted);">  Plot ln[A] vs t → linear, slope = −k</span><br>
+            <span style="color:var(--violet-light);">2nd order:</span> 1/[A]<sub>t</sub> = 1/[A]<sub>0</sub> + kt<br>
+            <span style="color:var(--text-muted);">  Plot 1/[A] vs t → linear, slope = +k</span>
+          </div>
+        </div>
+        <div>
+          <div style="background:rgba(13,27,42,0.6); border:1px solid var(--border); border-radius:8px; padding:13px;">
+            <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--teal);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Select Condition to Analyze</div>
+            <div style="margin-bottom:10px;">
+              <label style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text-muted);display:block;margin-bottom:4px;">[H₂O₂] starting concentration</label>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;" id="irl-conc-btns">
+                <button class="conc-btn btn-10 active" style="padding:4px 10px;font-size:10px;" onclick="setIrlConc(10,this)">10%</button>
+                <button class="conc-btn btn-15" style="padding:4px 10px;font-size:10px;" onclick="setIrlConc(15,this)">15%</button>
+                <button class="conc-btn btn-20" style="padding:4px 10px;font-size:10px;" onclick="setIrlConc(20,this)">20%</button>
+                <button class="conc-btn btn-30" style="padding:4px 10px;font-size:10px;" onclick="setIrlConc(30,this)">30%</button>
+              </div>
+            </div>
+            <div style="margin-bottom:10px;">
+              <label style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text-muted);display:block;margin-bottom:4px;">Reaction condition</label>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                <button class="conc-btn active" id="irl-uncat-btn" style="padding:4px 10px;font-size:10px;border-color:var(--uncat);color:var(--uncat);background:rgba(122,155,191,0.15);" onclick="setIrlCat('uncat',this)">Uncatalyzed</button>
+                <button class="conc-btn" id="irl-cat-btn" style="padding:4px 10px;font-size:10px;border-color:var(--cat);color:var(--cat);background:rgba(6,214,160,0.08);" onclick="setIrlCat('cat',this)">KI Catalyzed</button>
+              </div>
+            </div>
+            <div id="irl-stat-box" style="background:rgba(13,27,42,0.8);border-radius:6px;padding:10px;font-family:'Space Mono',monospace;font-size:11px;line-height:1.8;">
+              <div>k = <span id="irl-k-val" style="color:var(--teal);">7.52×10⁻⁹ s⁻¹</span></div>
+              <div>t½ = <span id="irl-t12-val" style="color:var(--gold);">2.9 yrs</span></div>
+              <div>Confirmed order: <span id="irl-order-val" style="color:var(--mint);">1st</span></div>
+              <div>Linear plot: <span id="irl-linear-val" style="color:var(--violet-light);">ln[H₂O₂] vs t</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Three linearization plots -->
+    <div class="three-col" style="margin-bottom:16px;">
+      <div class="card" id="irl-card-0th" style="border-color:rgba(46,196,182,0.2);transition:border-color 0.3s,box-shadow 0.3s;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--mint);text-transform:uppercase;letter-spacing:1px;">0th Order</div>
+          <div id="irl-badge-0th" style="display:none;background:var(--gold);color:var(--navy);font-family:'Space Mono',monospace;font-size:9px;font-weight:700;padding:2px 7px;border-radius:3px;">★ BEST FIT</div>
+        </div>
+        <div class="chart-wrap" style="padding:6px;">
+          <canvas id="irl-chart-0th" width="300" height="200"></canvas>
+        </div>
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--mint);text-align:center;margin-top:6px;">[H₂O₂] vs time</div>
+        <div id="irl-r2-0th" style="font-family:'Space Mono',monospace;font-size:12px;font-weight:700;text-align:center;color:var(--text-muted);margin-top:4px;padding:4px;background:rgba(13,27,42,0.6);border-radius:4px;">R² = —</div>
+        <div style="font-size:11px;color:var(--text-muted);text-align:center;margin-top:5px;">Curve → <em>not linear</em></div>
+      </div>
+
+      <div class="card" id="irl-card-1st" style="border-color:rgba(46,196,182,0.2);transition:border-color 0.3s,box-shadow 0.3s;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--teal);text-transform:uppercase;letter-spacing:1px;">1st Order</div>
+          <div id="irl-badge-1st" style="display:none;background:var(--gold);color:var(--navy);font-family:'Space Mono',monospace;font-size:9px;font-weight:700;padding:2px 7px;border-radius:3px;">★ BEST FIT</div>
+        </div>
+        <div class="chart-wrap" style="padding:6px;">
+          <canvas id="irl-chart-1st" width="300" height="200"></canvas>
+        </div>
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--teal);text-align:center;margin-top:6px;">ln[H₂O₂] vs time</div>
+        <div id="irl-r2-1st" style="font-family:'Space Mono',monospace;font-size:12px;font-weight:700;text-align:center;color:var(--text-muted);margin-top:4px;padding:4px;background:rgba(13,27,42,0.6);border-radius:4px;">R² = —</div>
+        <div style="font-size:11px;color:var(--text-muted);text-align:center;margin-top:5px;">Straight line → <em>first order confirmed</em></div>
+      </div>
+
+      <div class="card" id="irl-card-2nd" style="border-color:rgba(46,196,182,0.2);transition:border-color 0.3s,box-shadow 0.3s;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--violet-light);text-transform:uppercase;letter-spacing:1px;">2nd Order</div>
+          <div id="irl-badge-2nd" style="display:none;background:var(--gold);color:var(--navy);font-family:'Space Mono',monospace;font-size:9px;font-weight:700;padding:2px 7px;border-radius:3px;">★ BEST FIT</div>
+        </div>
+        <div class="chart-wrap" style="padding:6px;">
+          <canvas id="irl-chart-2nd" width="300" height="200"></canvas>
+        </div>
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--violet-light);text-align:center;margin-top:6px;">1/[H₂O₂] vs time</div>
+        <div id="irl-r2-2nd" style="font-family:'Space Mono',monospace;font-size:12px;font-weight:700;text-align:center;color:var(--text-muted);margin-top:4px;padding:4px;background:rgba(13,27,42,0.6);border-radius:4px;">R² = —</div>
+        <div style="font-size:11px;color:var(--text-muted);text-align:center;margin-top:5px;">Curve → <em>not linear</em></div>
+      </div>
+    </div>
+
+    <!-- R² summary and slope extraction -->
+    <div class="card" id="irl-results-card">
+      <div class="card-label">Why Only One Plot Is Linear — The Proof</div>
+      <div class="two-col">
+        <div>
+          <div id="irl-r2-summary" style="background:rgba(13,27,42,0.7);border-radius:8px;padding:14px;font-family:'Space Mono',monospace;font-size:12px;line-height:2.1;margin-bottom:10px;">
+            Run the analysis above to see R² values here.
+          </div>
+          <div class="callout callout-info">
+            <span class="callout-icon">💡</span>
+            <span>R² = 1.000 means a <em>perfect</em> linear fit. Only the 1st-order plot achieves this because H₂O₂ decomposition genuinely follows first-order kinetics. The other two plots curve because their math doesn't match the underlying physics.</span>
+          </div>
+        </div>
+        <div>
+          <div id="irl-slope-box" style="background:rgba(13,27,42,0.8);border:1px solid rgba(46,196,182,0.25);border-radius:8px;padding:14px;font-family:'Space Mono',monospace;font-size:11px;line-height:2.0;color:var(--teal);">
+            Select a condition above to see slope extraction details.
+          </div>
+          <div class="callout callout-warn" style="margin-top:10px;">
+            <span class="callout-icon">⚠️</span>
+            <span><strong>AP Exam tip:</strong> The slope of ln[A] vs t equals −k. It's always negative for a 1st-order decomposition because the reactant is disappearing. If you see a positive slope on this plot, something is wrong.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-info" style="margin-top:0;">
+      <span class="callout-icon">🔑</span>
+      <span><strong>The big picture:</strong> The integrated rate law is how we <em>prove</em> reaction order from real data — not assume it. We collect [H₂O₂] vs time, transform it three ways, and let the R² values tell us which model fits. This is exactly what AP Lab Investigation 11 (Crystal Violet) does with absorbance data instead of direct concentration.</span>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════ TAB: KI SIMULATOR -->
+  <div id="tab-kisim" class="panel">
+    <div class="card">
+      <div class="card-label">Interactive [KI] Concentration Simulator</div>
+      <p>Adjust [KI] below to see exactly how the catalyst concentration affects the pseudo-first-order rate constant k', the half-life, and the reaction timescale. This makes the assumption behind our k' calculation explicit and adjustable.</p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin:14px 0;" class="three-col">
+        <div style="background:rgba(13,27,42,0.6);border:1px solid rgba(46,196,182,0.15);border-radius:8px;padding:14px;">
+          <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">[KI] concentration (M)</div>
+          <div style="font-family:'Space Mono',monospace;font-size:26px;font-weight:700;color:var(--teal);margin-bottom:8px;" id="ki-conc-display">0.50 M</div>
+          <input type="range" id="ki-slider" min="1" max="80" step="1" value="10"
+            style="width:100%;-webkit-appearance:none;height:4px;background:var(--navy-light);border-radius:2px;outline:none;"
+            oninput="updateKiSim()">
+          <div style="display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:9px;color:var(--text-muted);margin-top:3px;"><span>0.05M</span><span>~Sat. KI (~8M)</span></div>
+        </div>
+        <div style="background:rgba(13,27,42,0.6);border:1px solid rgba(6,214,160,0.3);border-radius:8px;padding:14px;">
+          <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">H₂O₂ concentration</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;" id="ki-h2o2-btns">
+            <button class="conc-btn btn-10 active" style="padding:4px 10px;font-size:10px;" onclick="setKiH2O2(10,this)">10%</button>
+            <button class="conc-btn btn-15" style="padding:4px 10px;font-size:10px;" onclick="setKiH2O2(15,this)">15%</button>
+            <button class="conc-btn btn-20" style="padding:4px 10px;font-size:10px;" onclick="setKiH2O2(20,this)">20%</button>
+            <button class="conc-btn btn-30" style="padding:4px 10px;font-size:10px;" onclick="setKiH2O2(30,this)">30%</button>
+          </div>
+          <div style="margin-top:10px;font-family:'Space Mono',monospace;font-size:11px;color:var(--text-muted);">
+            [H₂O₂] = <span id="ki-h2o2-M" style="color:var(--gold);">3.06 M</span>
+          </div>
+        </div>
+        <div style="background:rgba(13,27,42,0.6);border:1px solid rgba(46,196,182,0.15);border-radius:8px;padding:14px;">
+          <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Transparency — show my k₂ assumption</div>
+          <div style="font-family:'Space Mono',monospace;font-size:11px;line-height:1.9;color:#c5d8ea;">
+            k₂ = <span style="color:var(--teal);">0.404 M⁻¹s⁻¹</span> at 22.2°C<br>
+            (lit. range: 0.2 – 2.0 M⁻¹s⁻¹)<br>
+            k' = k₂ × [KI]<br>
+            t½ = 0.693 / k'
+          </div>
+        </div>
+      </div>
+
+      <!-- Live stat readout -->
+      <div class="stat-grid" style="margin-bottom:0;" id="ki-stats">
+        <div class="stat-box"><div class="stat-label">k' (pseudo-1st-order)</div><div class="stat-value" id="ki-kprime" style="color:var(--cat);">0.202 s⁻¹</div><div class="stat-unit">= k₂ × [KI]</div></div>
+        <div class="stat-box"><div class="stat-label">Half-life t½</div><div class="stat-value" id="ki-t12" style="color:var(--gold);">3.4 s</div><div class="stat-unit">= 0.693 / k'</div></div>
+        <div class="stat-box"><div class="stat-label">90% complete in</div><div class="stat-value" id="ki-t90" style="color:var(--teal);">11.4 s</div><div class="stat-unit">= 2.303 / k'</div></div>
+        <div class="stat-box"><div class="stat-label">Initial Rate</div><div class="stat-value" id="ki-rate0" style="color:var(--violet-light);">0.618</div><div class="stat-unit">M/s = k'·[H₂O₂]</div></div>
+        <div class="stat-box"><div class="stat-label">vs. uncatalyzed</div><div class="stat-value" id="ki-factor" style="color:var(--coral);">2.7×10⁷</div><div class="stat-unit">× faster</div></div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-label">Concentration vs. Time — Adjustable [KI]</div>
+        <div class="chart-wrap">
+          <canvas id="ki-decay-chart" width="460" height="240"></canvas>
+        </div>
+        <p style="font-size:11px;color:var(--text-muted);text-align:center;margin-top:5px;">Gray curve = uncatalyzed (timescale: days). Teal/colored = catalyzed at current [KI].</p>
+      </div>
+      <div class="card">
+        <div class="card-label">k' and t½ vs. [KI] — The Linear Relationship</div>
+        <div class="chart-wrap">
+          <canvas id="ki-kprime-chart" width="460" height="240"></canvas>
+        </div>
+        <p style="font-size:11px;color:var(--text-muted);text-align:center;margin-top:5px;">k' = k₂·[KI] is linear in [KI] — this is pseudo-first-order. The slope of this line <em>is</em> k₂.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Integrated Rate Law Plot at Current [KI]</div>
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">This updates live as you move the [KI] slider. The ln[H₂O₂] vs time plot always stays linear (confirming 1st order), but the slope changes with [KI].</p>
+      <div class="chart-wrap" style="max-width:700px;margin:0 auto;">
+        <canvas id="ki-irl-chart" width="680" height="220"></canvas>
+      </div>
+      <div class="callout callout-info" style="margin-top:12px;">
+        <span class="callout-icon">🔑</span>
+        <span>The slope of ln[H₂O₂] vs t = −k'. As you increase [KI], the magnitude of the slope increases and the line gets steeper. The <em>linearity</em> never changes — that's fixed by the reaction being first-order. Only the slope (and therefore k') changes with [KI].</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════ TAB: MATH -->
+  <div id="tab-math" class="panel">
+    <div class="two-col">
+      <div class="card">
+        <div class="card-label">Step 1 — Temperature Conversion</div>
+        <div class="eq">
+          T(°F) = 72°F<br>
+          T(°C) = (72 − 32) × 5/9 = 40 × 5/9 = <strong>22.2°C</strong><br>
+          T(K)  = 22.2 + 273.15 = <strong>295.4 K</strong>
+        </div>
+
+        <div class="card-label" style="margin-top:14px;">Step 2 — Molar Concentrations from % w/w</div>
+        <div class="eq" style="font-size:11px;">
+          density ≈ 1.0 + 0.004 × (% H₂O₂)  [g/mL, approx]<br>
+          g H₂O₂ per L = % × ρ × 10<br>
+          [H₂O₂] = g/L ÷ MW = g/L ÷ 34.015 g/mol<br><br>
+          <span class="muted">10%: ρ=1.040 → 104.0 g/L ÷ 34.015 = 3.06 M</span><br>
+          <span class="muted">15%: ρ=1.060 → 159.0 g/L ÷ 34.015 = 4.67 M</span><br>
+          <span class="muted">20%: ρ=1.080 → 216.0 g/L ÷ 34.015 = 6.35 M</span><br>
+          <span class="muted">30%: ρ=1.120 → 336.0 g/L ÷ 34.015 = 9.88 M</span>
+        </div>
+
+        <div class="card-label" style="margin-top:14px;">Step 3 — Arrhenius: k at 22.2°C</div>
+        <div class="eq" style="font-size:11px;">
+          ln(k₂/k₁) = (Eₐ/R)(1/T₁ − 1/T₂)<br>
+          k at 22.2°C = k_ref × exp[−Eₐ/R × (1/T − 1/T_ref)]<br><br>
+          <strong>Uncatalyzed</strong> (Eₐ = 75,000 J/mol):<br>
+          k_ref = 1.0×10⁻⁸ s⁻¹ at 298.15 K<br>
+          factor = exp[−(75000/8.314)(1/295.4 − 1/298.15)]<br>
+                 = exp[−9020 × (−3.13×10⁻⁵)]<br>
+                 = exp[−0.284] = 0.752<br>
+          k_uncat = 1.0×10⁻⁸ × 0.752 = <strong>7.52×10⁻⁹ s⁻¹</strong><br>
+          t½ = 0.693 / 7.52×10⁻⁹ = <strong>9.2×10⁷ s ≈ 2.9 years</strong><br><br>
+          <strong>KI-Catalyzed</strong> (Eₐ = 56,000 J/mol):<br>
+          k₂_ref = 0.50 M⁻¹s⁻¹ at 298.15 K<br>
+          factor = exp[−(56000/8.314)(1/295.4 − 1/298.15)]<br>
+                 = exp[−0.211] = 0.809<br>
+          k₂ = 0.50 × 0.809 = 0.404 M⁻¹s⁻¹<br>
+          k' = k₂ × [KI] = 0.404 × 0.5 = <strong>0.202 s⁻¹</strong><br>
+          t½ = 0.693 / 0.202 = <strong>3.4 s</strong>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Step 4 — Initial Rates</div>
+        <div class="eq" style="font-size:11px;">
+          Rate = k[H₂O₂]  (first-order in H₂O₂)<br><br>
+          <span class="muted">Uncatalyzed, k = 7.52×10⁻⁹ s⁻¹:</span><br>
+          10%: 7.52×10⁻⁹ × 3.06 = 2.30×10⁻⁸ M/s<br>
+          20%: 7.52×10⁻⁹ × 6.35 = 4.78×10⁻⁸ M/s<br>
+          30%: 7.52×10⁻⁹ × 9.88 = 7.43×10⁻⁸ M/s<br><br>
+          <span class="muted">Catalyzed, k' = 0.202 s⁻¹:</span><br>
+          10%: 0.202 × 3.06 = 0.618 M/s<br>
+          20%: 0.202 × 6.35 = 1.284 M/s<br>
+          30%: 0.202 × 9.88 = 1.997 M/s
+        </div>
+
+        <div class="card-label" style="margin-top:14px;">Step 5 — O₂ Volume (Stoichiometry)</div>
+        <div class="eq" style="font-size:11px;">
+          2 H₂O₂ → 2 H₂O + O₂<br>
+          1 mol H₂O₂ → 0.5 mol O₂<br><br>
+          V = nRT/P, R = 0.08206 L·atm/mol·K<br>
+          T = 295.4 K, P = 1.00 atm<br><br>
+          <span class="muted">20% H₂O₂, 50 mL solution:</span><br>
+          n(H₂O₂) = 6.35 × 0.050 = 0.318 mol<br>
+          n(O₂)   = 0.318 × 0.5   = 0.159 mol<br>
+          V(O₂)   = 0.159 × 0.08206 × 295.4<br>
+                  = <strong>3.85 L = 3,850 mL at 22.2°C</strong>
+        </div>
+
+        <div class="card-label" style="margin-top:14px;">Step 6 — Rate Enhancement Factor</div>
+        <div class="eq" style="font-size:11px;">
+          k_cat / k_uncat = 0.202 / 7.52×10⁻⁹<br>
+                         = <strong>2.69 × 10⁷</strong><br><br>
+          <span class="muted">The catalyst makes the reaction ~27 million times faster.</span><br><br>
+          Equivalently:<br>
+          Uncatalyzed:  90% done in 3,543 days (9.7 yr)<br>
+          Catalyzed:    90% done in 11.4 seconds<br><br>
+          This is the macroscopic signature of lowering Eₐ<br>
+          from 75 → 56 kJ/mol (ΔEₐ = −19 kJ/mol)
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+'use strict';
+
+// ══ TABS ══
+function showTab(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+  setTimeout(drawAll, 50);
+}
+
+// ══ KINETICS DATA ══
+const CONCS = {
+  10: { M: 3.057, color: '#3b9ef5', pct: 10 },
+  15: { M: 4.674, color: '#2ec4b6', pct: 15 },
+  20: { M: 6.350, color: '#f4a827', pct: 20 },
+  30: { M: 9.878, color: '#f15025', pct: 30 }
+};
+const K_UNCAT  = 7.524e-9;   // s⁻¹
+const K_CAT    = 0.20215;    // s⁻¹
+const UNCAT_C  = '#7a9bbf';
+const CAT_C    = '#06d6a0';
+
+let activeConcs = new Set([10, 15, 20, 30]);
+
+// ══ HELPERS ══
+function px(val, min, max, pxStart, pxLen) {
+  if (max === min) return pxStart;
+  return pxStart + ((val - min) / (max - min)) * pxLen;
+}
+
+function drawAxes(ctx, W, H, pad, xMin, xMax, yMin, yMax, xLabel, yLabel, opts={}) {
+  ctx.clearRect(0, 0, W, H);
+  const pW = W - pad.l - pad.r;
+  const pH = H - pad.t - pad.b;
+
+  ctx.strokeStyle = 'rgba(46,196,182,0.07)'; ctx.lineWidth = 1;
+  for (let i = 0; i <= 5; i++) {
+    const x = pad.l + (i/5)*pW; const y = pad.t + (i/5)*pH;
+    ctx.beginPath(); ctx.moveTo(x, pad.t); ctx.lineTo(x, pad.t+pH); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l+pW, y); ctx.stroke();
+  }
+  ctx.strokeStyle = 'rgba(46,196,182,0.45)'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(pad.l, pad.t); ctx.lineTo(pad.l, pad.t+pH); ctx.lineTo(pad.l+pW, pad.t+pH); ctx.stroke();
+
+  ctx.fillStyle = 'rgba(122,155,191,0.85)'; ctx.font = '10px Space Mono, monospace';
+  ctx.textAlign = 'center';
+  for (let i = 0; i <= 5; i++) {
+    const val = xMin + (i/5)*(xMax-xMin);
+    const x   = pad.l + (i/5)*pW;
+    const lbl = opts.xFmt ? opts.xFmt(val) : Math.round(val);
+    ctx.fillText(lbl, x, pad.t+pH+14);
+  }
+  ctx.textAlign = 'right';
+  const ySteps = opts.ySteps || 5;
+  for (let i = 0; i <= ySteps; i++) {
+    const val = yMax - (i/ySteps)*(yMax-yMin);
+    const y   = pad.t + (i/ySteps)*pH;
+    const lbl = opts.yFmt ? opts.yFmt(val) : val.toFixed(opts.yDec !== undefined ? opts.yDec : 1);
+    ctx.fillText(lbl, pad.l-5, y+4);
+  }
+  ctx.fillStyle = 'rgba(46,196,182,0.8)'; ctx.font = 'bold 11px DM Sans, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(xLabel, pad.l+pW/2, H-3);
+  ctx.save(); ctx.translate(11, pad.t+pH/2); ctx.rotate(-Math.PI/2);
+  ctx.fillText(yLabel, 0, 0); ctx.restore();
+
+  return { pW, pH };
+}
+
+// ══ CHART 1: RATE BAR CHART (log scale) ══
+function drawRateBar() {
+  const canvas = document.getElementById('rate-bar-chart'); if (!canvas) return;
+  const ctx = canvas.getContext('2d'); const W = canvas.width, H = canvas.height;
+  const pad = { l: 70, r: 20, t: 20, b: 44 };
+  const pcts = [10, 15, 20, 30];
+  const pW = W - pad.l - pad.r; const pH = H - pad.t - pad.b;
+  ctx.clearRect(0, 0, W, H);
+
+  // Grid
+  ctx.strokeStyle = 'rgba(46,196,182,0.07)'; ctx.lineWidth = 1;
+  for (let i = 0; i <= 5; i++) {
+    const y = pad.t + (i/5)*pH;
+    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l+pW, y); ctx.stroke();
+  }
+  ctx.strokeStyle = 'rgba(46,196,182,0.45)'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(pad.l,pad.t); ctx.lineTo(pad.l,pad.t+pH); ctx.lineTo(pad.l+pW,pad.t+pH); ctx.stroke();
+
+  // Log scale: uncatalyzed ~1e-8, catalyzed ~1. Use log10.
+  const logMin = -9, logMax = 1;
+  const logRange = logMax - logMin;
+
+  const barW = pW / (pcts.length * 3 + 1);
+  const gap   = barW;
+
+  pcts.forEach((pct, i) => {
+    const c = CONCS[pct];
+    const x0 = pad.l + gap + i * (2*barW + gap*1.5);
+
+    // Uncatalyzed bar
+    const rU  = K_UNCAT * c.M;
+    const logU = Math.log10(rU);
+    const hU  = ((logU - logMin) / logRange) * pH;
+    ctx.fillStyle = UNCAT_C + 'cc';
+    ctx.fillRect(x0, pad.t + pH - hU, barW, hU);
+
+    // Catalyzed bar
+    const rC  = K_CAT * c.M;
+    const logC = Math.log10(rC);
+    const hC  = ((logC - logMin) / logRange) * pH;
+    ctx.fillStyle = c.color + 'cc';
+    ctx.fillRect(x0 + barW + 3, pad.t + pH - hC, barW, hC);
+
+    // X label
+    ctx.fillStyle = c.color; ctx.font = 'bold 11px Space Mono, monospace'; ctx.textAlign = 'center';
+    ctx.fillText(pct + '%', x0 + barW + 1, pad.t+pH+14);
+  });
+
+  // Y axis labels (log)
+  ctx.fillStyle = 'rgba(122,155,191,0.85)'; ctx.font = '9px Space Mono, monospace'; ctx.textAlign = 'right';
+  for (let log = logMin; log <= logMax; log += 2) {
+    const y = pad.t + pH - ((log - logMin) / logRange) * pH;
+    ctx.fillText('10' + (log >= 0 ? '+' : '') + log, pad.l - 4, y + 3);
+  }
+  ctx.fillStyle = 'rgba(46,196,182,0.8)'; ctx.font = 'bold 10px DM Sans, sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('Initial Rate (M/s) — log scale', pad.l + pW/2, H - 3);
+  ctx.save(); ctx.translate(10, pad.t + pH/2); ctx.rotate(-Math.PI/2);
+  ctx.fillText('log₁₀(Rate)', 0, 0); ctx.restore();
+
+  // Legend inside
+  ctx.fillStyle = UNCAT_C; ctx.fillRect(pad.l+4, pad.t+4, 14, 10);
+  ctx.fillStyle = 'rgba(180,210,240,0.8)'; ctx.font = '9px DM Sans, monospace'; ctx.textAlign = 'left';
+  ctx.fillText('Uncatalyzed', pad.l+22, pad.t+12);
+  ctx.fillStyle = CAT_C; ctx.fillRect(pad.l+4, pad.t+18, 14, 10);
+  ctx.fillText('KI Catalyzed', pad.l+22, pad.t+26);
+}
+
+// ══ CHART 2: DECAY CURVES ══
+function drawDecay() {
+  drawDecaySingle('decay-uncat', K_UNCAT, 'Uncatalyzed', 'Time (years)', 1/(86400*365), 5);
+  drawDecaySingle('decay-cat',   K_CAT,   'KI Catalyzed', 'Time (seconds)', 1, 20);
+}
+
+function drawDecaySingle(canvasId, k, title, xLabel, timeScale, tMax_scaled) {
+  const canvas = document.getElementById(canvasId); if (!canvas) return;
+  const ctx = canvas.getContext('2d'); const W = canvas.width, H = canvas.height;
+  const pad = { l: 52, r: 14, t: 24, b: 38 };
+  const { pW, pH } = drawAxes(ctx, W, H, pad, 0, tMax_scaled, 0, 12, xLabel, '[H₂O₂] (M)',
+    { yDec: 1, xFmt: v => v.toFixed(1) });
+
+  // Title inside
+  ctx.fillStyle = 'rgba(200,220,240,0.6)'; ctx.font = 'bold 11px DM Sans'; ctx.textAlign = 'right';
+  ctx.fillText(title, W - pad.r - 2, pad.t + 14);
+
+  const tMax_s = tMax_scaled / timeScale;
+  const steps = 300;
+
+  activeConcs.forEach(pct => {
+    if (!CONCS[pct]) return;
+    const c = CONCS[pct];
+    ctx.strokeStyle = c.color; ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    for (let i = 0; i <= steps; i++) {
+      const t_s   = (i / steps) * tMax_s;
+      const t_sc  = t_s * timeScale;
+      const conc  = c.M * Math.exp(-k * t_s);
+      const x = px(t_sc, 0, tMax_scaled, pad.l, pW);
+      const y = px(conc, 12, 0, pad.t, pH);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // Starting dot
+    ctx.fillStyle = c.color;
+    ctx.beginPath(); ctx.arc(pad.l, px(c.M, 12, 0, pad.t, pH), 4, 0, Math.PI*2); ctx.fill();
+  });
+
+  // Half-life marker (catalyzed only — visible; uncatalyzed would be at years)
+  if (k > 0.001) {
+    const t12 = 0.693 / k;
+    const t12_sc = t12 * timeScale;
+    if (t12_sc < tMax_scaled) {
+      ctx.strokeStyle = 'rgba(244,168,39,0.4)'; ctx.lineWidth = 1; ctx.setLineDash([5,4]);
+      ctx.beginPath(); ctx.moveTo(px(t12_sc, 0, tMax_scaled, pad.l, pW), pad.t);
+      ctx.lineTo(px(t12_sc, 0, tMax_scaled, pad.l, pW), pad.t+pH); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = 'rgba(244,168,39,0.85)'; ctx.font = '9px Space Mono'; ctx.textAlign = 'center';
+      ctx.fillText('t½=3.4s', px(t12_sc, 0, tMax_scaled, pad.l, pW), pad.t+10);
+    }
+  }
+}
+
+// ══ CHART 3: ENERGY PROFILE ══
+function drawEnergy() {
+  const canvas = document.getElementById('energy-chart'); if (!canvas) return;
+  const ctx = canvas.getContext('2d'); const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  const pad = { l: 70, r: 30, t: 30, b: 50 };
+  const pW = W - pad.l - pad.r; const pH = H - pad.t - pad.b;
+
+  // Y values in kJ/mol
+  const reactE = 0;   // H2O2 (reactants)
+  const prodE  = -105; // H2O + O2 (exothermic, ΔH ≈ −105 kJ/mol for 2H2O2→2H2O+O2... per mol H2O2: -52)
+  const tsUncat = 75;   // Ea uncatalyzed
+  const ts1Cat  = 56;   // Ea step 1 (RDS)
+  const intermE = -20;  // Intermediate energy (HOI, approx)
+  const ts2Cat  = 15;   // Ea step 2 (above intermediate)
+
+  const yMin = -120, yMax = 90;
+  const toY = (e) => pad.t + pH - ((e - yMin) / (yMax - yMin)) * pH;
+
+  // Grid
+  ctx.strokeStyle = 'rgba(46,196,182,0.06)'; ctx.lineWidth = 1;
+  for (let i = 0; i <= 6; i++) {
+    const y = pad.t + (i/6)*pH;
+    ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(pad.l+pW,y); ctx.stroke();
+  }
+
+  // Y labels (kJ/mol)
+  ctx.fillStyle = 'rgba(122,155,191,0.8)'; ctx.font = '10px Space Mono,monospace'; ctx.textAlign = 'right';
+  for (let e = -100; e <= 80; e += 40) {
+    ctx.fillText(e, pad.l-6, toY(e)+4);
+  }
+
+  // Zero line
+  ctx.strokeStyle = 'rgba(46,196,182,0.2)'; ctx.lineWidth = 1; ctx.setLineDash([4,4]);
+  ctx.beginPath(); ctx.moveTo(pad.l, toY(0)); ctx.lineTo(pad.l+pW, toY(0)); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Axes
+  ctx.strokeStyle = 'rgba(46,196,182,0.4)'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(pad.l,pad.t); ctx.lineTo(pad.l,pad.t+pH); ctx.lineTo(pad.l+pW,pad.t+pH); ctx.stroke();
+
+  // X positions
+  const x = {
+    react: pad.l + pW * 0.08,
+    ts_uncat: pad.l + pW * 0.50,
+    ts1_cat: pad.l + pW * 0.32,
+    interm: pad.l + pW * 0.55,
+    ts2_cat: pad.l + pW * 0.70,
+    prod: pad.l + pW * 0.92
+  };
+
+  // ── UNCATALYZED PATH ──
+  ctx.strokeStyle = 'rgba(122,155,191,0.7)'; ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  const drawCurve = (pts) => {
+    for (let i = 0; i <= 100; i++) {
+      const t = i / 100;
+      // Cubic bezier through control points
+      const xi = pts[0].x + t * (pts[pts.length-1].x - pts[0].x);
+      // Just lerp through given points for smoothness
+    }
+  };
+  // Smooth bezier: reactants → TS → products
+  ctx.beginPath();
+  ctx.moveTo(x.react - 30, toY(reactE));
+  ctx.lineTo(x.react, toY(reactE));
+  ctx.bezierCurveTo(
+    x.react + (x.ts_uncat - x.react)*0.5, toY(reactE),
+    x.react + (x.ts_uncat - x.react)*0.5, toY(tsUncat),
+    x.ts_uncat, toY(tsUncat)
+  );
+  ctx.bezierCurveTo(
+    x.ts_uncat + (x.prod - x.ts_uncat)*0.5, toY(tsUncat),
+    x.ts_uncat + (x.prod - x.ts_uncat)*0.5, toY(prodE),
+    x.prod, toY(prodE)
+  );
+  ctx.lineTo(x.prod + 20, toY(prodE));
+  ctx.stroke();
+
+  // ── CATALYZED PATH ──
+  ctx.strokeStyle = '#06d6a0'; ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  ctx.moveTo(x.react - 30, toY(reactE));
+  ctx.lineTo(x.react, toY(reactE));
+  ctx.bezierCurveTo(
+    x.react + (x.ts1_cat - x.react)*0.6, toY(reactE),
+    x.react + (x.ts1_cat - x.react)*0.6, toY(ts1Cat),
+    x.ts1_cat, toY(ts1Cat)
+  );
+  ctx.bezierCurveTo(
+    x.ts1_cat + (x.interm - x.ts1_cat)*0.5, toY(ts1Cat),
+    x.ts1_cat + (x.interm - x.ts1_cat)*0.5, toY(intermE),
+    x.interm, toY(intermE)
+  );
+  ctx.bezierCurveTo(
+    x.interm + (x.ts2_cat - x.interm)*0.5, toY(intermE),
+    x.interm + (x.ts2_cat - x.interm)*0.5, toY(ts2Cat),
+    x.ts2_cat, toY(ts2Cat)
+  );
+  ctx.bezierCurveTo(
+    x.ts2_cat + (x.prod - x.ts2_cat)*0.5, toY(ts2Cat),
+    x.ts2_cat + (x.prod - x.ts2_cat)*0.5, toY(prodE),
+    x.prod, toY(prodE)
+  );
+  ctx.lineTo(x.prod + 20, toY(prodE));
+  ctx.stroke();
+
+  // ── DASHED ANNOTATION LINES ──
+  ctx.strokeStyle = 'rgba(122,155,191,0.3)'; ctx.lineWidth = 1; ctx.setLineDash([4,3]);
+  // Ea uncatalyzed bracket
+  ctx.beginPath(); ctx.moveTo(x.ts_uncat + 8, toY(reactE)); ctx.lineTo(x.ts_uncat + 8, toY(tsUncat)); ctx.stroke();
+  // Ea catalyzed bracket
+  ctx.beginPath(); ctx.moveTo(x.ts1_cat + 8, toY(reactE)); ctx.lineTo(x.ts1_cat + 8, toY(ts1Cat)); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // ── LABELS ──
+  ctx.font = 'bold 11px DM Sans'; ctx.textAlign = 'center';
+
+  // Reactants
+  ctx.fillStyle = '#c5d8ea';
+  ctx.fillText('2 H₂O₂', x.react - 10, toY(reactE) - 8);
+
+  // Products
+  ctx.fillText('2 H₂O + O₂', x.prod + 10, toY(prodE) - 8);
+
+  // TS uncatalyzed
+  ctx.fillStyle = 'rgba(122,155,191,0.9)';
+  ctx.fillText('TS†', x.ts_uncat, toY(tsUncat) - 8);
+
+  // TS1 catalyzed
+  ctx.fillStyle = '#06d6a0';
+  ctx.fillText('TS₁†', x.ts1_cat, toY(ts1Cat) - 8);
+  ctx.fillText('HOI', x.interm + 2, toY(intermE) - 8);
+  ctx.fillText('TS₂†', x.ts2_cat, toY(ts2Cat) - 8);
+
+  // Ea labels
+  ctx.fillStyle = 'rgba(122,155,191,0.75)'; ctx.font = '10px Space Mono'; ctx.textAlign = 'left';
+  ctx.fillText('Eₐ = 75 kJ/mol', x.ts_uncat + 12, toY((tsUncat + reactE)/2) + 4);
+  ctx.fillStyle = '#06d6a0';
+  ctx.fillText('Eₐ = 56 kJ/mol', x.ts1_cat + 12, toY((ts1Cat + reactE)/2) + 4);
+
+  // ΔH label
+  ctx.fillStyle = 'rgba(244,168,39,0.85)'; ctx.textAlign = 'right';
+  ctx.fillText('ΔH = −105 kJ/mol', x.prod + 18, toY((prodE + reactE)/2));
+
+  // Axis labels
+  ctx.fillStyle = 'rgba(46,196,182,0.8)'; ctx.font = 'bold 11px DM Sans'; ctx.textAlign = 'center';
+  ctx.fillText('Reaction Coordinate →', pad.l + pW/2, H - 4);
+  ctx.save(); ctx.translate(12, pad.t + pH/2); ctx.rotate(-Math.PI/2);
+  ctx.fillText('Potential Energy (kJ/mol)', 0, 0); ctx.restore();
+
+  // Legend
+  ctx.fillStyle = 'rgba(122,155,191,0.8)'; ctx.fillRect(pad.l + 6, pad.t + 6, 18, 3);
+  ctx.fillStyle = 'rgba(200,220,240,0.7)'; ctx.font = '10px DM Sans'; ctx.textAlign = 'left';
+  ctx.fillText('Uncatalyzed', pad.l + 28, pad.t + 12);
+  ctx.fillStyle = '#06d6a0'; ctx.fillRect(pad.l + 6, pad.t + 20, 18, 3);
+  ctx.fillText('KI Catalyzed (2-step)', pad.l + 28, pad.t + 26);
+}
+
+// ══ CHART 4: FOAM BAR CHART ══
+const O2_VOLS = { 10: 1853, 15: 2832, 20: 3848, 30: 5986 };
+const FOAM_MULT = 15; // foam volume ≈ 15× O2 volume (dish soap traps gas)
+
+function drawFoam() {
+  // Tubes visual
+  buildTubes();
+
+  const canvas = document.getElementById('foam-chart'); if (!canvas) return;
+  const ctx = canvas.getContext('2d'); const W = canvas.width, H = canvas.height;
+  const pad = { l: 65, r: 20, t: 20, b: 44 };
+  const pcts = [10, 15, 20, 30];
+  const pW = W - pad.l - pad.r; const pH = H - pad.t - pad.b;
+  ctx.clearRect(0, 0, W, H);
+
+  ctx.strokeStyle = 'rgba(46,196,182,0.07)'; ctx.lineWidth = 1;
+  for (let i = 0; i <= 5; i++) {
+    const y = pad.t + (i/5)*pH;
+    ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(pad.l+pW,y); ctx.stroke();
+  }
+  ctx.strokeStyle = 'rgba(46,196,182,0.4)'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(pad.l,pad.t); ctx.lineTo(pad.l,pad.t+pH); ctx.lineTo(pad.l+pW,pad.t+pH); ctx.stroke();
+
+  const maxVol = 7000;
+  const barW = (pW / pcts.length) * 0.55;
+  const spc  = pW / pcts.length;
+
+  pcts.forEach((pct, i) => {
+    const c = CONCS[pct];
+    const vol = O2_VOLS[pct];
+    const x0  = pad.l + i * spc + (spc - barW) / 2;
+    const barH = (vol / maxVol) * pH;
+
+    const grad = ctx.createLinearGradient(0, pad.t+pH-barH, 0, pad.t+pH);
+    grad.addColorStop(0, c.color + 'ff');
+    grad.addColorStop(1, c.color + '55');
+    ctx.fillStyle = grad;
+    ctx.fillRect(x0, pad.t+pH-barH, barW, barH);
+
+    ctx.fillStyle = c.color; ctx.font = 'bold 11px Space Mono'; ctx.textAlign = 'center';
+    ctx.fillText(vol.toLocaleString() + ' mL', x0+barW/2, pad.t+pH-barH-6);
+    ctx.fillText(pct + '%', x0+barW/2, pad.t+pH+14);
+  });
+
+  ctx.fillStyle = 'rgba(46,196,182,0.8)'; ctx.font = 'bold 11px DM Sans'; ctx.textAlign = 'center';
+  ctx.fillText('H₂O₂ Concentration', pad.l+pW/2, H-3);
+  ctx.save(); ctx.translate(12, pad.t+pH/2); ctx.rotate(-Math.PI/2);
+  ctx.fillText('O₂ Volume (mL) at 22.2°C', 0, 0); ctx.restore();
+}
+
+function buildTubes() {
+  const wrap = document.getElementById('tubes-display'); if (!wrap) return;
+  wrap.innerHTML = '';
+  const maxFoam = 5986 * FOAM_MULT;
+  const tubeH = 140;
+
+  [10, 15, 20, 30].forEach(pct => {
+    const c = CONCS[pct];
+    const vol = O2_VOLS[pct];
+    const foamH = Math.min((vol * FOAM_MULT / maxFoam) * tubeH * 1.5, tubeH * 2.8);
+    const liqH  = Math.max(2, tubeH * 0.25);
+
+    const g = document.createElement('div');
+    g.className = 'tube-group';
+    g.innerHTML = `
+      <div class="tube-label-top" style="color:${c.color}">${pct}% H₂O₂</div>
+      <div style="position:relative; height:${tubeH + foamH + 10}px; display:flex; align-items:flex-end;">
+        <div class="tube-outer" style="height:${tubeH}px;">
+          <div class="tube-liquid" style="height:${liqH}px; background:${c.color}88;"></div>
+        </div>
+        <div class="tube-foam" style="position:absolute; bottom:${tubeH - 4}px; left:-5px; right:-5px; height:${foamH}px; background:linear-gradient(to top, ${c.color}cc, ${c.color}44); border-radius:4px 4px 0 0; border:2px solid ${c.color}88;"></div>
+      </div>
+      <div class="tube-label-bot" style="color:${c.color}">${pct}%</div>
+      <div class="tube-height-label">${(vol/1000).toFixed(1)}L O₂</div>
+    `;
+    wrap.appendChild(g);
+  });
+}
+
+// ══ CONC TOGGLE ══
+function toggleConc(pct, btn) {
+  if (activeConcs.has(pct) && activeConcs.size > 1) {
+    activeConcs.delete(pct);
+    btn.classList.remove('active');
+  } else {
+    activeConcs.add(pct);
+    btn.classList.add('active');
+  }
+  drawDecay();
+}
+
+// ══ INTEGRATED RATE LAWS TAB ══
+let irlConc = 10;
+let irlCond = 'uncat';
+
+function setIrlConc(pct, btn) {
+  irlConc = pct;
+  document.querySelectorAll('#irl-conc-btns .conc-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  drawIrl();
+}
+
+function setIrlCat(cond, btn) {
+  irlCond = cond;
+  document.getElementById('irl-uncat-btn').classList.toggle('active', cond === 'uncat');
+  document.getElementById('irl-cat-btn').classList.toggle('active', cond === 'cat');
+  drawIrl();
+}
+
+function linReg(pts) {
+  const n = pts.length;
+  if (n < 2) return { m: 0, b: 0, r2: 0 };
+  let sX=0,sY=0,sXY=0,sX2=0;
+  pts.forEach(p => { sX+=p.x; sY+=p.y; sXY+=p.x*p.y; sX2+=p.x*p.x; });
+  const d = n*sX2 - sX*sX;
+  if (!d) return { m:0, b:0, r2:0 };
+  const m = (n*sXY - sX*sY)/d;
+  const b = (sY - m*sX)/n;
+  const yMean = sY/n;
+  let ssTot=0, ssRes=0;
+  pts.forEach(p => { ssTot+=(p.y-yMean)**2; ssRes+=(p.y-(m*p.x+b))**2; });
+  const r2 = ssTot===0 ? 1 : Math.max(0, 1-ssRes/ssTot);
+  return { m, b, r2 };
+}
+
+function drawIrl() {
+  const c  = CONCS[irlConc];
+  const k  = irlCond === 'uncat' ? K_UNCAT : K_CAT;
+  const kLabel = irlCond === 'uncat' ? '7.52×10⁻⁹ s⁻¹' : '0.202 s⁻¹';
+  const t12Val  = (0.693/k);
+  const t12Str  = irlCond === 'uncat'
+    ? (t12Val/86400/365).toFixed(1)+' yrs'
+    : t12Val.toFixed(1)+' s';
+
+  // Time range: 5 half-lives
+  const tMax = 5 * (0.693/k);
+  const N    = 60;
+  const pts0=[],pts1=[],pts2=[];
+
+  for (let i=0; i<=N; i++) {
+    const t    = (i/N)*tMax;
+    const conc = c.M * Math.exp(-k*t);
+    pts0.push({ x:t, y:conc });
+    pts1.push({ x:t, y:Math.log(conc) });
+    pts2.push({ x:t, y:1/conc });
+  }
+
+  const r0 = linReg(pts0);
+  const r1 = linReg(pts1);
+  const r2 = linReg(pts2);
+
+  // Update stat box
+  document.getElementById('irl-k-val').textContent   = kLabel;
+  document.getElementById('irl-t12-val').textContent  = t12Str;
+  document.getElementById('irl-order-val').textContent = '1st';
+  document.getElementById('irl-linear-val').textContent = 'ln[H₂O₂] vs t';
+
+  // Draw each plot
+  drawIrlPlot('irl-chart-0th', pts0, r0, 'Time (s)', '[H₂O₂] (M)', '#06d6a0',  tMax, c.M, 0, c.M*1.05, false);
+  drawIrlPlot('irl-chart-1st', pts1, r1, 'Time (s)', 'ln[H₂O₂]',  '#2ec4b6',  tMax, Math.log(c.M), Math.log(c.M*Math.exp(-k*tMax))-0.05*Math.abs(Math.log(c.M)), Math.log(c.M)+0.05*Math.abs(Math.log(c.M)), true);
+  drawIrlPlot('irl-chart-2nd', pts2, r2, 'Time (s)', '1/[H₂O₂]',  '#c77dff',  tMax, 1/c.M, 0, 1/(c.M*Math.exp(-k*tMax))*1.05, false);
+
+  // R² badges
+  const cards  = ['irl-card-0th','irl-card-1st','irl-card-2nd'];
+  const badges = ['irl-badge-0th','irl-badge-1st','irl-badge-2nd'];
+  const r2els  = ['irl-r2-0th','irl-r2-1st','irl-r2-2nd'];
+  const r2vals = [r0.r2, r1.r2, r2.r2];
+  const best   = r2vals.indexOf(Math.max(...r2vals));
+
+  cards.forEach((id,i) => {
+    const card = document.getElementById(id);
+    const isBest = i === best;
+    card.style.borderColor = isBest ? 'var(--gold)' : 'rgba(46,196,182,0.2)';
+    card.style.boxShadow   = isBest ? '0 0 20px rgba(244,168,39,0.25)' : 'none';
+    document.getElementById(badges[i]).style.display = isBest ? 'block' : 'none';
+    document.getElementById(r2els[i]).textContent = 'R² = ' + r2vals[i].toFixed(6);
+    document.getElementById(r2els[i]).style.color = isBest ? 'var(--gold)' : 'var(--text-primary)';
+  });
+
+  // Summary + slope box
+  const slopeSign = r1.m < 0 ? '' : '+';
+  document.getElementById('irl-r2-summary').innerHTML =
+    `<div style="color:var(--mint);">0th order R² = ${r0.r2.toFixed(6)}</div>` +
+    `<div style="color:var(--teal);">1st order R² = <strong style="color:var(--gold);">${r1.r2.toFixed(6)} ✓</strong></div>` +
+    `<div style="color:var(--violet-light);">2nd order R² = ${r2.r2.toFixed(6)}</div>`;
+
+  document.getElementById('irl-slope-box').innerHTML =
+    `<div style="color:var(--text-muted);">Best linear fit: ln[H₂O₂] vs t</div>` +
+    `<div>slope = ${slopeSign}${r1.m.toExponential(3)} s⁻¹</div>` +
+    `<div>intercept = ${r1.b.toFixed(4)}</div>` +
+    `<div style="margin-top:6px;color:var(--text-muted);">Since slope = −k:</div>` +
+    `<div style="color:var(--gold);">k = ${Math.abs(r1.m).toExponential(3)} s⁻¹</div>` +
+    `<div>t½ = 0.693 / k = <span style="color:var(--gold);">${t12Str}</span></div>` +
+    `<div style="margin-top:6px;color:var(--text-muted);">Integrated rate law:</div>` +
+    `<div>ln[H₂O₂]t = ln[H₂O₂]₀ − k·t</div>`;
+}
+
+function drawIrlPlot(canvasId, points, reg, xLabel, yLabel, color, tMax, yStart, yMin, yMax, isLin) {
+  const canvas = document.getElementById(canvasId); if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const pad = { l:54, r:12, t:18, b:36 };
+  const pW  = W - pad.l - pad.r;
+  const pH  = H - pad.t - pad.b;
+
+  ctx.clearRect(0,0,W,H);
+
+  // Grid
+  ctx.strokeStyle = 'rgba(46,196,182,0.07)'; ctx.lineWidth = 1;
+  for (let i=0; i<=5; i++) {
+    const x=pad.l+(i/5)*pW; const y=pad.t+(i/5)*pH;
+    ctx.beginPath(); ctx.moveTo(x,pad.t); ctx.lineTo(x,pad.t+pH); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(pad.l+pW,y); ctx.stroke();
+  }
+
+  // Axes
+  ctx.strokeStyle = 'rgba(46,196,182,0.4)'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(pad.l,pad.t); ctx.lineTo(pad.l,pad.t+pH); ctx.lineTo(pad.l+pW,pad.t+pH); ctx.stroke();
+
+  // X tick labels — always time in seconds, but use different units for uncat
+  ctx.fillStyle = 'rgba(122,155,191,0.8)'; ctx.font = '9px Space Mono,monospace'; ctx.textAlign='center';
+  for (let i=0; i<=5; i++) {
+    const val = (i/5)*tMax;
+    const lbl = irlCond==='uncat' ? (val/86400/365).toFixed(1)+'y' : Math.round(val)+'s';
+    ctx.fillText(lbl, pad.l+(i/5)*pW, pad.t+pH+13);
+  }
+
+  // Y tick labels
+  ctx.textAlign = 'right';
+  for (let i=0; i<=5; i++) {
+    const val = yMax - (i/5)*(yMax-yMin);
+    ctx.fillText(val.toFixed(val>10||val<-10?0:2), pad.l-4, pad.t+(i/5)*pH+4);
+  }
+
+  // Axis labels
+  ctx.fillStyle = color+'cc'; ctx.font='bold 10px DM Sans'; ctx.textAlign='center';
+  ctx.fillText(xLabel, pad.l+pW/2, H-3);
+  ctx.save(); ctx.translate(10,pad.t+pH/2); ctx.rotate(-Math.PI/2);
+  ctx.fillText(yLabel,0,0); ctx.restore();
+
+  // Trendline (draw first, behind data)
+  const tx1 = 0, tx2 = tMax;
+  const ty1 = reg.m*tx1 + reg.b;
+  const ty2 = reg.m*tx2 + reg.b;
+  const px1 = pad.l;
+  const py1 = pad.t + pH - ((ty1-yMin)/(yMax-yMin))*pH;
+  const px2 = pad.l + pW;
+  const py2 = pad.t + pH - ((ty2-yMin)/(yMax-yMin))*pH;
+  ctx.strokeStyle = color+'55'; ctx.lineWidth=1.5; ctx.setLineDash([5,4]);
+  ctx.beginPath(); ctx.moveTo(px1,py1); ctx.lineTo(px2,py2); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Data curve
+  ctx.strokeStyle = color; ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  points.forEach((p,i) => {
+    const x = pad.l + (p.x/tMax)*pW;
+    const y = pad.t + pH - ((p.y-yMin)/(yMax-yMin))*pH;
+    const cy = Math.max(pad.t-2, Math.min(pad.t+pH+2, y));
+    if (i===0) ctx.moveTo(x,cy); else ctx.lineTo(x,cy);
+  });
+  ctx.stroke();
+
+  // R² inside chart
+  ctx.fillStyle = 'rgba(244,168,39,0.9)'; ctx.font='bold 10px Space Mono'; ctx.textAlign='right';
+  ctx.fillText('R²='+reg.r2.toFixed(4), W-pad.r-2, pad.t+13);
+}
+
+// ══ KI SIMULATOR ══
+let kiH2O2Pct = 10;
+const K2_CAT = 0.404; // M⁻¹s⁻¹ at 22.2°C
+
+function getKiConc() {
+  const slider = document.getElementById('ki-slider');
+  // Slider 1–80 maps to 0.05–8.0 M
+  return (parseInt(slider.value) / 10).toFixed(2) * 1;
+}
+
+function setKiH2O2(pct, btn) {
+  kiH2O2Pct = pct;
+  document.querySelectorAll('#ki-h2o2-btns .conc-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('ki-h2o2-M').textContent = CONCS[pct].M.toFixed(2) + ' M';
+  updateKiSim();
+}
+
+function updateKiSim() {
+  const kiM    = getKiConc();
+  const kprime = K2_CAT * kiM;
+  const t12    = 0.693 / kprime;
+  const t90    = 2.303 / kprime;
+  const h2o2M  = CONCS[kiH2O2Pct].M;
+  const rate0  = kprime * h2o2M;
+  const factor = kprime / K_UNCAT;
+
+  document.getElementById('ki-conc-display').textContent = kiM.toFixed(2) + ' M';
+
+  const fmt = (v, thresh=0.01) => v >= thresh ? v.toFixed(3) : v.toExponential(2);
+  const fmtT = (s) => s < 60 ? s.toFixed(1)+' s' : s < 3600 ? (s/60).toFixed(1)+' min' : s < 86400 ? (s/3600).toFixed(1)+' hr' : (s/86400).toFixed(1)+' d';
+
+  document.getElementById('ki-kprime').textContent = kprime >= 0.001 ? kprime.toFixed(4)+' s⁻¹' : kprime.toExponential(3)+' s⁻¹';
+  document.getElementById('ki-t12').textContent    = fmtT(t12);
+  document.getElementById('ki-t90').textContent    = fmtT(t90);
+  document.getElementById('ki-rate0').textContent  = rate0 >= 0.001 ? rate0.toFixed(4) : rate0.toExponential(3);
+  document.getElementById('ki-factor').textContent = factor.toExponential(2)+'×';
+
+  drawKiDecay(kprime, h2o2M, kiM);
+  drawKiKprimeChart(kiM);
+  drawKiIrl(kprime, h2o2M);
+}
+
+function drawKiDecay(kprime, h2o2M, kiM) {
+  const canvas = document.getElementById('ki-decay-chart'); if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W=canvas.width, H=canvas.height;
+  const pad={l:60,r:14,t:20,b:38};
+  const pW=W-pad.l-pad.r, pH=H-pad.t-pad.b;
+  ctx.clearRect(0,0,W,H);
+
+  // Use catalyzed timescale (5 half-lives)
+  const tMax = Math.min(5*(0.693/kprime), 3600);
+  const yMax  = h2o2M * 1.08;
+  const steps = 200;
+
+  // Grid
+  ctx.strokeStyle='rgba(46,196,182,0.07)'; ctx.lineWidth=1;
+  for (let i=0;i<=5;i++){
+    const x=pad.l+(i/5)*pW; const y=pad.t+(i/5)*pH;
+    ctx.beginPath();ctx.moveTo(x,pad.t);ctx.lineTo(x,pad.t+pH);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+pW,y);ctx.stroke();
+  }
+  ctx.strokeStyle='rgba(46,196,182,0.4)';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(pad.l,pad.t);ctx.lineTo(pad.l,pad.t+pH);ctx.lineTo(pad.l+pW,pad.t+pH);ctx.stroke();
+
+  // X tick labels
+  ctx.fillStyle='rgba(122,155,191,0.8)';ctx.font='9px Space Mono';ctx.textAlign='center';
+  for (let i=0;i<=5;i++){
+    const t=(i/5)*tMax;
+    const lbl=t<60?Math.round(t)+'s':t<3600?(t/60).toFixed(1)+'m':(t/3600).toFixed(1)+'h';
+    ctx.fillText(lbl, pad.l+(i/5)*pW, pad.t+pH+13);
+  }
+  ctx.textAlign='right';
+  for (let i=0;i<=5;i++){
+    const val=yMax-(i/5)*yMax;
+    ctx.fillText(val.toFixed(1), pad.l-4, pad.t+(i/5)*pH+4);
+  }
+
+  // Catalyzed curve — color by H2O2 pct
+  const col = CONCS[kiH2O2Pct].color;
+  ctx.strokeStyle=col; ctx.lineWidth=2.5;
+  ctx.beginPath();
+  for (let i=0;i<=steps;i++){
+    const t=(i/steps)*tMax;
+    const conc=h2o2M*Math.exp(-kprime*t);
+    const x=pad.l+(t/tMax)*pW;
+    const y=pad.t+pH-((conc/yMax)*pH);
+    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+
+  // Half-life markers
+  for (let n=1;n<=5;n++){
+    const t=n*0.693/kprime;
+    if (t>tMax) break;
+    const x=pad.l+(t/tMax)*pW;
+    ctx.strokeStyle='rgba(244,168,39,0.3)';ctx.lineWidth=1;ctx.setLineDash([4,3]);
+    ctx.beginPath();ctx.moveTo(x,pad.t);ctx.lineTo(x,pad.t+pH);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='rgba(244,168,39,0.7)';ctx.font='9px Space Mono';ctx.textAlign='center';
+    ctx.fillText('t½',x,pad.t+10);
+  }
+
+  // Labels
+  ctx.fillStyle='rgba(46,196,182,0.8)';ctx.font='bold 10px DM Sans';ctx.textAlign='center';
+  ctx.fillText('Time', pad.l+pW/2, H-3);
+  ctx.save();ctx.translate(11,pad.t+pH/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText('[H₂O₂] (M)',0,0);ctx.restore();
+
+  // k' label
+  ctx.fillStyle='rgba(200,220,240,0.7)';ctx.font='10px Space Mono';ctx.textAlign='right';
+  const kLabel=kprime>=0.001?kprime.toFixed(4)+' s⁻¹':kprime.toExponential(3)+' s⁻¹';
+  ctx.fillText('[KI]='+kiM.toFixed(2)+'M → k\'='+kLabel, W-pad.r-2, pad.t+13);
+}
+
+function drawKiKprimeChart(currentKi) {
+  const canvas = document.getElementById('ki-kprime-chart'); if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W=canvas.width, H=canvas.height;
+  const pad={l:65,r:14,t:20,b:38};
+  const pW=W-pad.l-pad.r, pH=H-pad.t-pad.b;
+  ctx.clearRect(0,0,W,H);
+
+  const kiMax=8.0, kpMax=K2_CAT*kiMax*1.05;
+
+  // Grid
+  ctx.strokeStyle='rgba(46,196,182,0.07)';ctx.lineWidth=1;
+  for (let i=0;i<=5;i++){
+    const x=pad.l+(i/5)*pW;const y=pad.t+(i/5)*pH;
+    ctx.beginPath();ctx.moveTo(x,pad.t);ctx.lineTo(x,pad.t+pH);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+pW,y);ctx.stroke();
+  }
+  ctx.strokeStyle='rgba(46,196,182,0.4)';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(pad.l,pad.t);ctx.lineTo(pad.l,pad.t+pH);ctx.lineTo(pad.l+pW,pad.t+pH);ctx.stroke();
+
+  // k' line (linear)
+  ctx.strokeStyle='#06d6a0';ctx.lineWidth=2.5;
+  ctx.beginPath();
+  ctx.moveTo(pad.l, pad.t+pH);
+  ctx.lineTo(pad.l+pW, pad.t+pH-(K2_CAT*kiMax/kpMax)*pH);
+  ctx.stroke();
+
+  // t½ curve (hyperbola, secondary Y axis concept — show as dashed)
+  ctx.strokeStyle='rgba(244,168,39,0.6)';ctx.lineWidth=1.5;ctx.setLineDash([5,4]);
+  const t12Max=0.693/(K2_CAT*0.05);
+  ctx.beginPath();
+  for (let i=1;i<=100;i++){
+    const ki=(i/100)*kiMax;
+    const t12=0.693/(K2_CAT*ki);
+    const x=pad.l+(ki/kiMax)*pW;
+    const y=pad.t+pH-Math.min((t12/t12Max)*pH,pH);
+    if(i===1)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();ctx.setLineDash([]);
+
+  // Current KI marker
+  const kpCurrent=K2_CAT*currentKi;
+  const xMark=pad.l+(currentKi/kiMax)*pW;
+  const yMark=pad.t+pH-(kpCurrent/kpMax)*pH;
+  ctx.fillStyle='#06d6a0';
+  ctx.beginPath();ctx.arc(xMark,yMark,5,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='rgba(6,214,160,0.4)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(xMark,pad.t+pH);ctx.lineTo(xMark,yMark);ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Tick labels
+  ctx.fillStyle='rgba(122,155,191,0.8)';ctx.font='9px Space Mono';ctx.textAlign='center';
+  for (let i=0;i<=5;i++) ctx.fillText(((i/5)*kiMax).toFixed(1)+'M', pad.l+(i/5)*pW, pad.t+pH+13);
+  ctx.textAlign='right';
+  for (let i=0;i<=5;i++){
+    const val=kpMax-(i/5)*kpMax;
+    ctx.fillText(val.toFixed(2), pad.l-4, pad.t+(i/5)*pH+4);
+  }
+
+  // Labels
+  ctx.fillStyle='rgba(46,196,182,0.8)';ctx.font='bold 10px DM Sans';ctx.textAlign='center';
+  ctx.fillText('[KI] (M)', pad.l+pW/2, H-3);
+  ctx.save();ctx.translate(11,pad.t+pH/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText("k' (s⁻¹)",0,0);ctx.restore();
+
+  // Legend
+  ctx.fillStyle='#06d6a0';ctx.fillRect(pad.l+4,pad.t+5,14,3);
+  ctx.fillStyle='rgba(200,220,240,0.7)';ctx.font='9px DM Sans';ctx.textAlign='left';
+  ctx.fillText("k' = k₂·[KI]  (slope = k₂ = 0.404)",pad.l+22,pad.t+11);
+  ctx.strokeStyle='rgba(244,168,39,0.6)';ctx.lineWidth=1.5;ctx.setLineDash([4,3]);
+  ctx.beginPath();ctx.moveTo(pad.l+4,pad.t+20);ctx.lineTo(pad.l+18,pad.t+20);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='rgba(244,168,39,0.8)';ctx.fillText("t½ = 0.693/k' (decreases with [KI])",pad.l+22,pad.t+24);
+}
+
+function drawKiIrl(kprime, h2o2M) {
+  const canvas = document.getElementById('ki-irl-chart'); if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W=canvas.width, H=canvas.height;
+  const pad={l:65,r:14,t:22,b:38};
+  const pW=W-pad.l-pad.r, pH=H-pad.t-pad.b;
+  ctx.clearRect(0,0,W,H);
+
+  const tMax=5*(0.693/kprime);
+  const lnMax=Math.log(h2o2M)+0.1;
+  const lnMin=Math.log(h2o2M*Math.exp(-kprime*tMax))-0.2;
+  const N=80;
+
+  // Grid
+  ctx.strokeStyle='rgba(46,196,182,0.07)';ctx.lineWidth=1;
+  for (let i=0;i<=5;i++){
+    const x=pad.l+(i/5)*pW;const y=pad.t+(i/5)*pH;
+    ctx.beginPath();ctx.moveTo(x,pad.t);ctx.lineTo(x,pad.t+pH);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+pW,y);ctx.stroke();
+  }
+  ctx.strokeStyle='rgba(46,196,182,0.4)';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(pad.l,pad.t);ctx.lineTo(pad.l,pad.t+pH);ctx.lineTo(pad.l+pW,pad.t+pH);ctx.stroke();
+
+  // Trend line (exact: y = ln(h2o2M) - kprime*t)
+  const ty1=Math.log(h2o2M);
+  const ty2=Math.log(h2o2M)-kprime*tMax;
+  ctx.strokeStyle='rgba(46,196,182,0.3)';ctx.lineWidth=1.5;ctx.setLineDash([5,4]);
+  ctx.beginPath();
+  ctx.moveTo(pad.l, pad.t+pH-((ty1-lnMin)/(lnMax-lnMin))*pH);
+  ctx.lineTo(pad.l+pW, pad.t+pH-((ty2-lnMin)/(lnMax-lnMin))*pH);
+  ctx.stroke();ctx.setLineDash([]);
+
+  // Data
+  ctx.strokeStyle=CONCS[kiH2O2Pct].color;ctx.lineWidth=2.5;
+  ctx.beginPath();
+  for (let i=0;i<=N;i++){
+    const t=(i/N)*tMax;
+    const lnC=Math.log(h2o2M)-kprime*t;
+    const x=pad.l+(t/tMax)*pW;
+    const y=pad.t+pH-((lnC-lnMin)/(lnMax-lnMin))*pH;
+    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+
+  // Tick labels
+  ctx.fillStyle='rgba(122,155,191,0.8)';ctx.font='9px Space Mono';ctx.textAlign='center';
+  for (let i=0;i<=5;i++){
+    const t=(i/5)*tMax;
+    const lbl=t<60?Math.round(t)+'s':t<3600?(t/60).toFixed(1)+'m':(t/3600).toFixed(1)+'h';
+    ctx.fillText(lbl, pad.l+(i/5)*pW, pad.t+pH+13);
+  }
+  ctx.textAlign='right';
+  for (let i=0;i<=5;i++){
+    const val=lnMax-(i/5)*(lnMax-lnMin);
+    ctx.fillText(val.toFixed(1), pad.l-4, pad.t+(i/5)*pH+4);
+  }
+
+  // Labels
+  ctx.fillStyle='rgba(46,196,182,0.8)';ctx.font='bold 10px DM Sans';ctx.textAlign='center';
+  ctx.fillText('Time', pad.l+pW/2, H-3);
+  ctx.save();ctx.translate(11,pad.t+pH/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText('ln[H₂O₂]',0,0);ctx.restore();
+
+  // Slope annotation inside chart
+  const slopeLabel = 'slope = −k\' = −'+kprime.toFixed(4)+' s⁻¹';
+  ctx.fillStyle='rgba(244,168,39,0.9)';ctx.font='bold 10px Space Mono';ctx.textAlign='right';
+  ctx.fillText(slopeLabel, W-pad.r-2, pad.t+13);
+  ctx.fillStyle='rgba(200,220,240,0.6)';ctx.font='9px Space Mono';
+  ctx.fillText('R² = 1.0000', W-pad.r-2, pad.t+26);
+}
+
+// ══ DRAW ALL ══
+function drawAll() {
+  drawRateBar();
+  drawDecay();
+  drawEnergy();
+  drawFoam();
+  drawIrl();
+  updateKiSim();
+}
+
+drawAll();
+window.addEventListener('resize', drawAll);
+</script>
+</body>
+</html>
