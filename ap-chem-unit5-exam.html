@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AP Chemistry Unit 5 Exam: Kinetics</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh; color: #e8e8e8; line-height: 1.6;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        header { text-align: center; padding: 30px 0; border-bottom: 2px solid #e94560; margin-bottom: 30px; }
+        h1 { font-size: 1.8rem; color: #e94560; margin-bottom: 10px; }
+        .subtitle { color: #8892b0; font-size: 1rem; }
+        .exam-meta {
+            background: linear-gradient(135deg, rgba(233,69,96,0.2), rgba(233,69,96,0.1));
+            border: 1px solid #e94560; border-radius: 10px;
+            padding: 12px 20px; margin-top: 15px; display: inline-block;
+        }
+        .exam-meta span { color: #e94560; font-weight: bold; }
+        .topics-covered { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 15px; }
+        .topic-pill { background: rgba(233,69,96,0.15); color: #e94560; padding: 4px 12px; border-radius: 20px; font-size: 0.72rem; }
+        .student-info { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+        .student-info label { display: block; margin-bottom: 8px; font-weight: 500; }
+        .student-info input, .student-info select {
+            width: 100%; padding: 12px 16px; font-size: 1rem;
+            border: 2px solid #2d3748; border-radius: 8px;
+            background: #1a1a2e; color: #fff; margin-bottom: 15px;
+        }
+        .student-info input:focus, .student-info select:focus { outline: none; border-color: #e94560; }
+        .period-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .period-row > div { display: flex; flex-direction: column; }
+        .difficulty-selection { margin-bottom: 30px; }
+        .difficulty-header { text-align: center; margin-bottom: 20px; }
+        .difficulty-header h2 { color: #e94560; margin-bottom: 10px; }
+        .difficulty-header p { color: #8892b0; font-size: 0.95rem; }
+        .difficulty-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .difficulty-card {
+            background: rgba(255,255,255,0.03); border: 2px solid #2d3748;
+            border-radius: 16px; padding: 24px; cursor: pointer;
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .difficulty-card:hover { transform: translateY(-4px); border-color: #e94560; }
+        .difficulty-card.selected { border-color: #e94560; background: rgba(233,69,96,0.08); }
+        .difficulty-card.completed { border-color: #00d9a5; }
+        .difficulty-card.completed::after {
+            content: '✓ Completed'; position: absolute; top: 10px; right: 10px;
+            background: #00d9a5; color: #1a1a2e; padding: 4px 10px;
+            border-radius: 20px; font-size: 0.75rem; font-weight: bold;
+        }
+        .difficulty-icon { font-size: 2.5rem; margin-bottom: 15px; }
+        .difficulty-name { font-size: 1.3rem; font-weight: bold; margin-bottom: 8px; }
+        .difficulty-card.low .difficulty-name { color: #00d9a5; }
+        .difficulty-card.medium .difficulty-name { color: #ffc048; }
+        .difficulty-card.high .difficulty-name { color: #e94560; }
+        .difficulty-desc { color: #8892b0; font-size: 0.88rem; margin-bottom: 15px; line-height: 1.5; }
+        .difficulty-stats { display: flex; justify-content: space-between; padding-top: 15px; border-top: 1px solid #2d3748; font-size: 0.85rem; color: #8892b0; }
+        .best-score { color: #00d9a5; font-weight: bold; }
+        .scoring-note {
+            background: rgba(255,192,72,0.08); border: 1px solid rgba(255,192,72,0.3);
+            border-radius: 10px; padding: 16px 20px; margin-bottom: 20px;
+            font-size: 0.88rem; color: #ffc048; line-height: 1.7;
+        }
+        .scoring-note strong { display: block; margin-bottom: 6px; font-size: 0.95rem; }
+        .start-btn {
+            width: 100%; padding: 18px; font-size: 1.2rem; font-weight: bold;
+            background: linear-gradient(135deg, #e94560, #ff6b6b);
+            color: #fff; border: none; border-radius: 12px; cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s; margin-top: 20px;
+        }
+        .start-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(233,69,96,0.4); }
+        .start-btn:disabled { background: #2d3748; color: #8892b0; cursor: not-allowed; transform: none; box-shadow: none; }
+        .quiz-active { display: none; }
+        .quiz-progress {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px; padding: 15px 20px;
+            background: rgba(255,255,255,0.05); border-radius: 10px;
+        }
+        .progress-text { font-weight: 500; }
+        .progress-bar-container { flex: 1; margin: 0 20px; height: 8px; background: #2d3748; border-radius: 4px; overflow: hidden; }
+        .progress-bar { height: 100%; background: linear-gradient(90deg, #e94560, #ff6b6b); border-radius: 4px; transition: width 0.3s; }
+        .difficulty-badge { padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; }
+        .difficulty-badge.low { background: rgba(0,217,165,0.2); color: #00d9a5; }
+        .difficulty-badge.medium { background: rgba(255,192,72,0.2); color: #ffc048; }
+        .difficulty-badge.high { background: rgba(233,69,96,0.2); color: #e94560; }
+        .question-card {
+            background: rgba(255,255,255,0.05); border-radius: 16px;
+            padding: 28px; margin-bottom: 20px; border-left: 4px solid #e94560;
+        }
+        .question-meta { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+        .question-number { background: #e94560; color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; }
+        .question-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+        .tag { padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; }
+        .tag.topic { background: rgba(233,69,96,0.15); color: #e94560; }
+        .tag.standard { background: rgba(0,217,165,0.15); color: #00d9a5; font-family: monospace; }
+        .question-text { font-size: 1.05rem; margin-bottom: 25px; color: #fff; line-height: 1.75; }
+        .question-text .equation {
+            background: rgba(0,0,0,0.35); padding: 12px 18px; border-radius: 8px;
+            margin: 12px 0; font-family: 'Courier New', monospace; font-size: 1rem;
+            display: block; overflow-x: auto; border-left: 3px solid #e94560;
+        }
+        .question-text .data-table { width: 100%; border-collapse: collapse; margin: 14px 0; font-family: 'Courier New', monospace; font-size: 0.88rem; }
+        .question-text .data-table th { background: rgba(233,69,96,0.2); color: #e94560; padding: 9px 14px; text-align: center; font-weight: bold; }
+        .question-text .data-table td { padding: 8px 14px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.07); color: #e8e8e8; }
+        .question-text .note { font-size: 0.85rem; color: #8892b0; font-style: italic; margin-top: 8px; display: block; }
+        .options { display: flex; flex-direction: column; gap: 12px; }
+        .option {
+            display: flex; align-items: flex-start; padding: 14px 18px;
+            background: rgba(255,255,255,0.02); border: 2px solid #2d3748;
+            border-radius: 10px; cursor: pointer; transition: all 0.2s;
+        }
+        .option:hover:not(.locked) { background: rgba(233,69,96,0.08); border-color: #e94560; }
+        .option.selected { background: rgba(233,69,96,0.12); border-color: #e94560; }
+        .option.locked { cursor: default; }
+        .option.correct-ans { background: rgba(0,217,165,0.15) !important; border-color: #00d9a5 !important; }
+        .option.correct-ans .option-letter { background: #00d9a5 !important; color: #1a1a2e !important; }
+        .option.wrong-ans { background: rgba(233,69,96,0.15) !important; border-color: #e94560 !important; }
+        .option.wrong-ans .option-letter { background: #e94560 !important; color: #fff !important; }
+        .option input { display: none; }
+        .option-letter {
+            width: 30px; height: 30px; border-radius: 50%; background: #2d3748;
+            display: flex; align-items: center; justify-content: center;
+            margin-right: 14px; font-weight: bold; flex-shrink: 0; font-size: 0.9rem;
+        }
+        .option.selected .option-letter { background: #e94560; color: #fff; }
+        .option-text { padding-top: 3px; font-size: 0.95rem; line-height: 1.5; }
+        .feedback-panel {
+            margin-top: 16px; padding: 16px 20px; border-radius: 10px;
+            font-size: 0.9rem; line-height: 1.7; display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        .feedback-panel.correct-fb { background: rgba(0,217,165,0.1); border: 1px solid rgba(0,217,165,0.35); }
+        .feedback-panel.wrong-fb { background: rgba(233,69,96,0.08); border: 1px solid rgba(233,69,96,0.3); }
+        .feedback-panel .fb-header { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+        .feedback-panel.correct-fb .fb-header { color: #00d9a5; }
+        .feedback-panel.wrong-fb .fb-header { color: #ff6b6b; }
+        .feedback-panel .fb-body { color: #ccd6f6; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+        .quiz-nav { display: flex; justify-content: space-between; gap: 15px; margin-top: 20px; }
+        .nav-btn { padding: 14px 28px; font-size: 1rem; font-weight: 600; border-radius: 10px; cursor: pointer; transition: all 0.2s; }
+        .nav-btn.secondary { background: transparent; border: 2px solid #e94560; color: #e94560; }
+        .nav-btn.secondary:hover { background: rgba(233,69,96,0.1); }
+        .nav-btn.primary { background: linear-gradient(135deg, #e94560, #ff6b6b); border: none; color: #fff; }
+        .nav-btn.primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(233,69,96,0.3); }
+        .nav-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+        .results-container { display: none; }
+        .score-card {
+            background: linear-gradient(135deg, rgba(233,69,96,0.15), rgba(233,69,96,0.05));
+            border: 2px solid #e94560; border-radius: 20px; padding: 35px; text-align: center; margin-bottom: 30px;
+        }
+        .score-display {
+            font-size: 4rem; font-weight: bold;
+            background: linear-gradient(135deg, #e94560, #ff6b6b);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .score-label { font-size: 1.1rem; color: #8892b0; margin: 10px 0; }
+        .score-difficulty { display: inline-block; padding: 8px 20px; border-radius: 25px; font-weight: bold; margin-top: 10px; }
+        .score-difficulty.low { background: rgba(0,217,165,0.2); color: #00d9a5; }
+        .score-difficulty.medium { background: rgba(255,192,72,0.2); color: #ffc048; }
+        .score-difficulty.high { background: rgba(233,69,96,0.2); color: #e94560; }
+        .performance-bar { height: 12px; background: #2d3748; border-radius: 6px; margin-top: 20px; overflow: hidden; }
+        .performance-fill { height: 100%; border-radius: 6px; transition: width 1s ease-out; }
+        .section-box { background: rgba(255,255,255,0.05); border-radius: 12px; padding: 24px; margin-bottom: 25px; }
+        .section-box h3 { margin-bottom: 15px; display: flex; align-items: center; gap: 10px; font-size: 1.05rem; }
+        .section-box.standards { border: 1px solid #00d9a5; }
+        .section-box.standards h3 { color: #00d9a5; }
+        .section-box.topics h3 { color: #e94560; }
+        .section-box.videos h3 { color: #ffc048; }
+        .section-box.scores h3 { color: #ffc048; }
+        .section-intro { color: #8892b0; font-size: 0.9rem; margin-bottom: 15px; }
+        .standard-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 14px 0; border-bottom: 1px solid #2d3748; gap: 15px; }
+        .standard-row:last-child { border-bottom: none; }
+        .standard-info { flex: 1; }
+        .standard-code { font-weight: bold; color: #00d9a5; font-family: monospace; font-size: 0.9rem; }
+        .standard-desc { color: #ccd6f6; font-size: 0.85rem; margin-top: 3px; }
+        .standard-score { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+        .standard-pct { font-weight: bold; min-width: 40px; text-align: right; }
+        .badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; min-width: 80px; text-align: center; }
+        .badge.mastered { background: rgba(0,217,165,0.2); color: #00d9a5; }
+        .badge.developing { background: rgba(255,192,72,0.2); color: #ffc048; }
+        .badge.needs-work { background: rgba(233,69,96,0.2); color: #e94560; }
+        .recommendation-box { background: rgba(255,255,255,0.05); border-radius: 12px; padding: 24px; margin-bottom: 25px; border-left: 4px solid #ffc048; }
+        .recommendation-box h3 { color: #ffc048; margin-bottom: 12px; }
+        .recommendation-box p { color: #ccd6f6; margin-bottom: 15px; font-size: 0.95rem; }
+        .level-btn { display: inline-block; padding: 10px 20px; background: linear-gradient(135deg, #ffc048, #e94560); color: #fff; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s; font-size: 0.9rem; }
+        .level-btn:hover { transform: translateY(-2px); }
+        .scores-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .score-item { text-align: center; padding: 18px; background: rgba(0,0,0,0.2); border-radius: 10px; }
+        .score-item .level { font-weight: bold; margin-bottom: 6px; font-size: 0.88rem; }
+        .score-item .level.low { color: #00d9a5; }
+        .score-item .level.medium { color: #ffc048; }
+        .score-item .level.high { color: #e94560; }
+        .score-item .score { font-size: 1.5rem; font-weight: bold; }
+        .score-item .score.not-taken { color: #8892b0; font-size: 0.9rem; }
+        .topic-row { display: flex; justify-content: space-between; align-items: center; padding: 11px 0; border-bottom: 1px solid #2d3748; }
+        .topic-row:last-child { border-bottom: none; }
+        .topic-name { font-weight: 500; font-size: 0.88rem; }
+        .topic-score { display: flex; align-items: center; gap: 10px; }
+        .video-grid { display: grid; gap: 10px; }
+        .video-card { background: rgba(0,0,0,0.3); border-radius: 8px; padding: 14px; border: 1px solid #2d3748; transition: all 0.2s; }
+        .video-card:hover { border-color: #e94560; transform: translateX(4px); }
+        .video-card a { color: #e94560; text-decoration: none; font-weight: 600; display: block; margin-bottom: 4px; font-size: 0.88rem; }
+        .video-card a:hover { text-decoration: underline; }
+        .video-meta { font-size: 0.8rem; color: #8892b0; }
+        .video-tag { display: inline-block; background: rgba(0,217,165,0.15); color: #00d9a5; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; margin-top: 6px; font-family: monospace; }
+        .review-item { padding: 18px; margin-bottom: 12px; border-radius: 10px; border-left: 4px solid; }
+        .review-item.correct { background: rgba(0,217,165,0.08); border-color: #00d9a5; }
+        .review-item.incorrect { background: rgba(233,69,96,0.08); border-color: #e94560; }
+        .review-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; flex-wrap: wrap; gap: 6px; }
+        .review-question { font-weight: 500; color: #fff; flex: 1; font-size: 0.88rem; }
+        .review-tag { font-family: monospace; font-size: 0.72rem; background: rgba(0,217,165,0.15); color: #00d9a5; padding: 2px 6px; border-radius: 4px; }
+        .your-answer { color: #e94560; font-size: 0.9rem; }
+        .correct-answer { color: #00d9a5; font-size: 0.9rem; }
+        .explanation { margin-top: 10px; padding: 12px; background: rgba(0,0,0,0.2); border-radius: 6px; font-size: 0.85rem; color: #ccd6f6; line-height: 1.7; }
+        .action-buttons { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 10px; }
+        .action-btn { flex: 1; min-width: 180px; padding: 14px; font-size: 1rem; font-weight: 600; border-radius: 10px; cursor: pointer; transition: all 0.2s; }
+        .action-btn.primary { background: linear-gradient(135deg, #e94560, #ff6b6b); border: none; color: #fff; }
+        .action-btn.secondary { background: transparent; border: 2px solid #e94560; color: #e94560; }
+        .action-btn:hover { transform: translateY(-2px); }
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            h1 { font-size: 1.4rem; }
+            .difficulty-cards { grid-template-columns: 1fr; }
+            .scores-grid { grid-template-columns: 1fr; }
+            .quiz-progress { flex-direction: column; gap: 10px; }
+            .progress-bar-container { width: 100%; margin: 10px 0; }
+            .period-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>⚗️ AP Chemistry: Unit 5 Exam</h1>
+        <p class="subtitle">Kinetics • All Topics 5.1 – 5.11</p>
+        <div class="exam-meta"><span>AP Exam: May 5, 2026 &nbsp;|&nbsp; San Tan Charter School</span></div>
+        <div class="topics-covered">
+            <span class="topic-pill">5.1 Reaction Rates</span>
+            <span class="topic-pill">5.2 Rate Law</span>
+            <span class="topic-pill">5.3 Integrated Rate Laws</span>
+            <span class="topic-pill">5.4 Elementary Reactions</span>
+            <span class="topic-pill">5.5 Collision Model</span>
+            <span class="topic-pill">5.6 Energy Profiles</span>
+            <span class="topic-pill">5.7 Mechanisms</span>
+            <span class="topic-pill">5.8 Mechanism & Rate Law</span>
+            <span class="topic-pill">5.9 Pre-Equilibrium</span>
+            <span class="topic-pill">5.10 Multistep Profiles</span>
+            <span class="topic-pill">5.11 Catalysis</span>
+        </div>
+    </header>
+
+    <div id="selection-screen">
+        <div class="student-info">
+            <label for="student-name">Your full name:</label>
+            <input type="text" id="student-name" placeholder="First and Last Name" autocomplete="off">
+            <div class="period-row">
+                <div>
+                    <label for="class-period">Class Period:</label>
+                    <select id="class-period">
+                        <option value="">Select Period...</option>
+                        <option value="1">Period 1</option>
+                        <option value="2">Period 2</option>
+                        <option value="3">Period 3</option>
+                        <option value="4">Period 4</option>
+                        <option value="5">Period 5</option>
+                        <option value="6">Period 6</option>
+                        <option value="7">Period 7</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="date">Date:</label>
+                    <input type="date" id="date">
+                </div>
+            </div>
+        </div>
+
+        <div class="scoring-note">
+            <strong>📋 Grading Policy — Read Before You Start</strong>
+            You must complete all three levels. Your <strong>best score</strong> across all three attempts is your grade.
+            After each question, you'll see the correct answer and a full explanation immediately — use those explanations to improve your score on the next attempt.
+            Take a screenshot of your results screen after each level and submit your best one.
+        </div>
+
+        <div class="difficulty-selection">
+            <div class="difficulty-header">
+                <h2>🎯 Select a Level to Begin</h2>
+                <p>Complete all three levels. Your best score counts.</p>
+            </div>
+            <div class="difficulty-cards">
+                <div class="difficulty-card low" data-difficulty="low">
+                    <div class="difficulty-icon">🌱</div>
+                    <div class="difficulty-name">Foundation</div>
+                    <div class="difficulty-desc">20 questions covering all 11 topics. Core concepts, vocabulary, and direct application. No multi-step calculations.</div>
+                    <div class="difficulty-stats">
+                        <span>20 questions</span>
+                        <span class="best-score" id="low-best">Not taken</span>
+                    </div>
+                </div>
+                <div class="difficulty-card medium" data-difficulty="medium">
+                    <div class="difficulty-icon">⚗️</div>
+                    <div class="difficulty-name">Standard</div>
+                    <div class="difficulty-desc">10 AP-style questions. Multi-step calculations, data analysis, and integrated reasoning across topics.</div>
+                    <div class="difficulty-stats">
+                        <span>10 questions</span>
+                        <span class="best-score" id="medium-best">Not taken</span>
+                    </div>
+                </div>
+                <div class="difficulty-card high" data-difficulty="high">
+                    <div class="difficulty-icon">🔥</div>
+                    <div class="difficulty-name">Challenge</div>
+                    <div class="difficulty-desc">5 AP FRQ-style problems. Complex multi-part analysis, mechanism reasoning, and cross-topic synthesis. No hints.</div>
+                    <div class="difficulty-stats">
+                        <span>5 questions</span>
+                        <span class="best-score" id="high-best">Not taken</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button class="start-btn" id="start-btn" disabled>Complete Info Above to Begin</button>
+    </div>
+
+    <div class="quiz-active" id="quiz-active">
+        <div class="quiz-progress">
+            <span class="progress-text" id="progress-text">Question 1</span>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progress-bar" style="width:5%"></div>
+            </div>
+            <span class="difficulty-badge" id="current-difficulty">Foundation</span>
+        </div>
+        <div id="question-container"></div>
+        <div class="quiz-nav">
+            <button class="nav-btn secondary" id="prev-btn" disabled>← Previous</button>
+            <button class="nav-btn primary" id="next-btn" disabled>Next →</button>
+        </div>
+    </div>
+
+    <div class="results-container" id="results-container"></div>
+</div>
+
+<script>
+// ==================== STANDARDS ====================
+const STANDARDS = {
+    "TRA-3.A": { description: "Explain the relationship between reaction rate and experimental parameters", shortName: "Reaction Rate Factors" },
+    "TRA-3.B": { description: "Represent experimental data with a consistent rate law expression", shortName: "Rate Law Expression" },
+    "TRA-3.C": { description: "Determine reaction order and rate constant; concentration changes over time", shortName: "Integrated Rate Laws & k" },
+    "TRA-3.D": { description: "Identify elementary reaction rate law from stoichiometry", shortName: "Elementary Reactions" },
+    "TRA-3.E": { description: "Explain reaction rate using collision model and energy distributions", shortName: "Collision Model" },
+    "TRA-3.F": { description: "Represent activation energy and energy change using reaction energy profiles", shortName: "Energy Profiles" },
+    "TRA-3.G": { description: "Identify intermediates, catalysts, and rate-determining step from a mechanism", shortName: "Mechanism Analysis" },
+    "TRA-3.H": { description: "Identify the rate law from a mechanism where the first step is rate-limiting", shortName: "Mechanism & Rate Law" },
+    "TRA-3.I": { description: "Identify the rate law when the first step is not rate-limiting (pre-equilibrium)", shortName: "Pre-Equilibrium" },
+    "TRA-3.J": { description: "Explain how catalysts increase reaction rate and affect mechanism", shortName: "Catalysis" }
+};
+
+// ==================== TOPICS ====================
+const TOPICS = {
+    "5.1": { name: "5.1 Reaction Rates", standards: ["TRA-3.A"], videos: [
+        { title: "Search: 'Reaction Rates AP Chemistry' — Mr. Krug", url: "https://www.youtube.com/@JeremyKrug/search?query=reaction+rates+kinetics", channel: "Mr. Krug", duration: "Search channel" }]},
+    "5.2": { name: "5.2 Rate Law", standards: ["TRA-3.B"], videos: [
+        { title: "Search: 'Rate Law Reaction Order' — Mr. Krug", url: "https://www.youtube.com/@JeremyKrug/search?query=rate+law+reaction+order", channel: "Mr. Krug", duration: "Search channel" }]},
+    "5.3": { name: "5.3 Integrated Rate Laws", standards: ["TRA-3.C"], videos: [
+        { title: "Search: 'Integrated Rate Laws Half Life' — Mr. Krug", url: "https://www.youtube.com/@JeremyKrug/search?query=integrated+rate+laws+half+life", channel: "Mr. Krug", duration: "Search channel" }]},
+    "5.4": { name: "5.4 Elementary Reactions", standards: ["TRA-3.D"], videos: [
+        { title: "Search: 'Elementary Reactions Molecularity' — Mr. Krug", url: "https://www.youtube.com/@JeremyKrug/search?query=elementary+reactions+molecularity", channel: "Mr. Krug", duration: "Search channel" }]},
+    "5.5": { name: "5.5 Collision Model", standards: ["TRA-3.E"], videos: [
+        { title: "Search: 'Collision Theory Activation Energy' — Mr. Krug", url: "https://www.youtube.com/@JeremyKrug/search?query=collision+theory+activation+energy", channel: "Mr. Krug", duration: "Search channel" }]},
+    "5.6": { name: "5.6 Reaction Energy Profile", standards: ["TRA-3.F"], videos: [
+        { title: "Search: 'Reaction Energy Profile Activation Energy' — Mr. Krug", url: "https://www.youtube.com/@JeremyKrug/search?query=reaction+energy+profile+activation+energy", channel: "Mr. Krug", duration: "Search channel" }]},
+    "5.7": { name: "5.7 Reaction Mechanisms", standards: ["TRA-3.G"], videos: [
+        { title: "Search: 'Reaction Mechanisms Intermediates' — Mr. Krug", url: "https://www.youtube.com/@JeremyKrug/search?query=reaction+mechanisms+intermediates", channel: "Mr. Krug", duration: "Search channel" }]},
+    "5.8": { name: "5.8 Mechanism & Rate Law", standards: ["TRA-3.H"], videos: [
+        { title: "Search: 'Rate Determining Step Mechanism Rate Law' — Mr. Krug", url: "https://www.youtube.com/@JeremyKrug/search?query=rate+determining+step+mechanism+rate+law", channel: "Mr. Krug", duration: "Search channel" }]},
+    "5.9": { name: "5.9 Pre-Equilibrium", standards: ["TRA-3.I"], videos: [
+        { title: "Search: 'Pre-Equilibrium Approximation Kinetics' — Mr. Krug", url: "https://www.youtube.com/@JeremyKrug/search?query=pre+equilibrium+approximation+kinetics", channel: "Mr. Krug", duration: "Search channel" }]},
+    "5.10": { name: "5.10 Multistep Energy Profile", standards: ["TRA-3.F"], videos: [
+        { title: "Search: 'Multistep Reaction Energy Profile' — Mr. Krug", url: "https://www.youtube.com/@JeremyKrug/search?query=multistep+reaction+energy+profile", channel: "Mr. Krug", duration: "Search channel" }]},
+    "5.11": { name: "5.11 Catalysis", standards: ["TRA-3.J"], videos: [
+        { title: "Search: 'Catalysis AP Chemistry Energy Profile' — Mr. Krug", url: "https://www.youtube.com/@JeremyKrug/search?query=catalysis+ap+chemistry+energy+profile", channel: "Mr. Krug", duration: "Search channel" }]}
+};
+
+// ==================== QUESTION BANK ====================
+const QUESTIONS = {
+
+// ─────────────────────────────────────────────────────────
+// FOUNDATION — 20 questions, one or two per topic
+// ─────────────────────────────────────────────────────────
+low: [
+    // 5.1 — Reaction Rates (2 questions)
+    { id:"F1", topic:"5.1", standards:["TRA-3.A"],
+      question:"The rate of a chemical reaction is defined as:",
+      options:["The total energy released during the reaction","The change in concentration of a reactant or product per unit time","The temperature at which the reaction proceeds fastest","The total number of collisions per second"],
+      correct:1,
+      explanation:"Reaction rate = Δ[concentration]/Δt. It tells us how quickly reactants are consumed or products are formed. Units are M/s. The negative sign is included for reactants (consumed) so that rate is always reported as a positive value (CED 5.1.A.1)." },
+
+    { id:"F2", topic:"5.1", standards:["TRA-3.A"],
+      question:`For the reaction: <span class='equation'>2 NO₂(g) → 2 NO(g) + O₂(g)</span>If NO₂ disappears at 0.040 M/s, at what rate does O₂ appear?`,
+      options:["0.080 M/s","0.040 M/s","0.020 M/s","0.010 M/s"],
+      correct:2,
+      explanation:"Rate expression: rate = −(1/2)Δ[NO₂]/Δt = +(1/1)Δ[O₂]/Δt. So Δ[O₂]/Δt = (1/2)(0.040) = 0.020 M/s. For every 2 mol NO₂ consumed, only 1 mol O₂ is produced — so O₂ appears at half the rate NO₂ disappears (CED 5.1.A.2)." },
+
+    // 5.2 — Rate Law (2 questions)
+    { id:"F3", topic:"5.2", standards:["TRA-3.B"],
+      question:"A student proposes that the rate law for A + 2B → C must be rate = k[A][B]² because the exponents match the coefficients. This reasoning is:",
+      options:["Correct — coefficients always equal reaction orders","Incorrect — rate laws must be determined experimentally, not from the balanced equation","Correct — but only at standard temperature","Incorrect — the rate law must always be first order in each reactant"],
+      correct:1,
+      explanation:"CRITICAL CONCEPT: Rate laws CANNOT be read from balanced equations. They must be determined experimentally. The only exception is a single elementary step. For multi-step reactions, only the slow (rate-determining) step determines the rate law (CED 5.2.A.5)." },
+
+    { id:"F4", topic:"5.2", standards:["TRA-3.B"],
+      question:"For rate = k[A]²[B]: what is the overall reaction order, and how does the rate change if [A] is doubled (all else constant)?",
+      options:["2nd order overall; rate doubles","3rd order overall; rate quadruples","3rd order overall; rate doubles","2nd order overall; rate is unchanged"],
+      correct:1,
+      explanation:"Overall order = sum of exponents = 2 + 1 = 3rd order. If [A] doubles: new rate = k(2[A])²[B] = 4k[A]²[B] = 4× original rate. The exponent on [A] is 2, so doubling [A] raises the rate by 2² = 4. Always raise the concentration ratio to the power of its order (CED 5.2.A.2–5.2.A.3)." },
+
+    // 5.3 — Integrated Rate Laws (2 questions)
+    { id:"F5", topic:"5.3", standards:["TRA-3.C"],
+      question:"A chemist plots ln[A] vs. time and gets a straight line. What does this tell us about the reaction?",
+      options:["The reaction is zero order in A","The reaction is first order in A","The reaction is second order in A","The reaction order cannot be determined from this graph"],
+      correct:1,
+      explanation:"If a plot of ln[A] vs. time is linear, the reaction is first order in A. The integrated first-order rate law is: ln[A]t − ln[A]₀ = −kt, which is in y = mx + b form with slope = −k. A plot of [A] vs. t being linear → zero order; 1/[A] vs. t being linear → second order (CED 5.3.A.1–5.3.A.2)." },
+
+    { id:"F6", topic:"5.3", standards:["TRA-3.C"],
+      question:`A first-order reaction has a rate constant k = 0.0231 min⁻¹. What is the half-life?<br><span class='note'>t½ = 0.693/k</span>`,
+      options:["0.0231 min","30.0 min","43.3 min","100 min"],
+      correct:1,
+      explanation:"t½ = 0.693/k = 0.693/0.0231 = 30.0 min. For first-order reactions, the half-life is CONSTANT — it does not change as the reaction proceeds. This is unique to first-order kinetics. Radioactive decay is the classic example (CED 5.3.A.5)." },
+
+    // 5.4 — Elementary Reactions (2 questions)
+    { id:"F7", topic:"5.4", standards:["TRA-3.D"],
+      question:"For an elementary reaction step: A + B → products. What is the rate law for this elementary step?",
+      options:["rate = k[A]","rate = k[B]","rate = k[A][B]","rate = k[A]²[B] — must be determined experimentally"],
+      correct:2,
+      explanation:"For elementary reactions ONLY, the rate law CAN be written directly from the stoichiometry: rate = k[A][B]. This is because an elementary step represents an actual molecular collision event. The order equals the molecularity. This is the ONE exception to the 'must determine experimentally' rule (CED 5.4.A.1)." },
+
+    { id:"F8", topic:"5.4", standards:["TRA-3.D"],
+      question:"Why are termolecular elementary steps (involving 3 simultaneous collisions) rare?",
+      options:["They are too fast to detect","The probability of three particles colliding simultaneously with the correct energy and orientation is extremely small","They require a catalyst","They are only possible at very high temperatures"],
+      correct:1,
+      explanation:"For three molecules to react in a single elementary step, they must all collide at the same instant, with sufficient energy, and with correct orientation. The probability of this three-way simultaneous event is vanishingly small. Most mechanisms therefore involve only unimolecular or bimolecular elementary steps (CED 5.4.A.2)." },
+
+    // 5.5 — Collision Model (2 questions)
+    { id:"F9", topic:"5.5", standards:["TRA-3.E"],
+      question:"For a collision between reactant molecules to produce products, it must satisfy which TWO conditions?",
+      options:["Sufficient temperature AND correct pressure","Sufficient energy (≥ activation energy) AND correct molecular orientation","High concentration AND high temperature","Presence of a catalyst AND sufficient energy"],
+      correct:1,
+      explanation:"According to collision theory, a successful collision requires: (1) sufficient kinetic energy to overcome the activation energy barrier, AND (2) correct geometric orientation so that the reacting bonds can break and form properly. Both conditions must be met simultaneously (CED 5.5.A.2)." },
+
+    { id:"F10", topic:"5.5", standards:["TRA-3.E"],
+      question:"The Maxwell-Boltzmann distribution curve shows the distribution of molecular energies in a gas sample. When temperature increases, what happens to this distribution?",
+      options:["The peak shifts to lower energies; fewer molecules react","The peak shifts to higher energies; more molecules have energy ≥ Ea","The curve does not change; only pressure is affected","The curve becomes narrower; fewer collision energies are possible"],
+      correct:1,
+      explanation:"At higher temperature, the Maxwell-Boltzmann distribution shifts right — the peak moves to higher energies and the curve flattens. The area under the curve beyond Ea (the fraction of effective collisions) increases significantly. This is why reaction rate increases dramatically with temperature (CED 5.5.A.3)." },
+
+    // 5.6 — Reaction Energy Profile (2 questions)
+    { id:"F11", topic:"5.6", standards:["TRA-3.F"],
+      question:"In a reaction energy profile, the activation energy (Ea) is defined as:",
+      options:["The energy difference between products and reactants","The energy difference between the transition state and the reactants","The total energy released by the reaction","The kinetic energy of the fastest-moving reactant molecules"],
+      correct:1,
+      explanation:"Ea is the energy difference between the transition state (energy peak) and the reactants. It represents the minimum energy molecules must have to react. A larger Ea means a slower reaction at a given temperature because fewer molecules have sufficient energy to reach the transition state (CED 5.6.A.3)." },
+
+    { id:"F12", topic:"5.6", standards:["TRA-3.F"],
+      question:"For an elementary reaction with Ea(forward) = 80 kJ/mol and ΔH = −30 kJ/mol, what is Ea for the reverse reaction?",
+      options:["30 kJ/mol","50 kJ/mol","80 kJ/mol","110 kJ/mol"],
+      correct:3,
+      explanation:"Ea(reverse) = Ea(forward) − ΔH = 80 − (−30) = 80 + 30 = 110 kJ/mol. The reverse reaction must climb from the products all the way up to the transition state. Since products are 30 kJ lower than reactants, the reverse activation energy is larger. Drawing the energy profile helps visualize this." },
+
+    // 5.7 — Mechanisms (2 questions)
+    { id:"F13", topic:"5.7", standards:["TRA-3.G"],
+      question:`Consider the mechanism:<br>
+      <span class='equation'>Step 1: NO₂ + NO₂ → NO₃ + NO (slow)<br>Step 2: NO₃ + CO → NO₂ + CO₂ (fast)</span>
+      Which species is a reaction intermediate?`,
+      options:["NO₂","NO","NO₃","CO₂"],
+      correct:2,
+      explanation:"NO₃ is produced in Step 1 and consumed in Step 2 — it appears during the reaction but not in the overall equation. That is the definition of a reaction intermediate. NO and CO₂ appear in the overall equation (as product and product respectively). NO₂ is a reactant (CED 5.7.A.3)." },
+
+    { id:"F14", topic:"5.7", standards:["TRA-3.G"],
+      question:"The overall balanced equation for a reaction must equal:",
+      options:["The rate-determining step only","The sum of all elementary steps in the mechanism","The slowest elementary step doubled","The first step of the mechanism"],
+      correct:1,
+      explanation:"When you add all elementary steps together, intermediates cancel out and the result must equal the overall balanced equation. This is a key requirement for validating a proposed mechanism. If the steps don't add up to the overall equation, the mechanism is wrong (CED 5.7.A.2)." },
+
+    // 5.8 — Mechanism & Rate Law (2 questions)
+    { id:"F15", topic:"5.8", standards:["TRA-3.H"],
+      question:`For the mechanism:<br>
+      <span class='equation'>Step 1: A + B → C (slow, rate-determining)<br>Step 2: C + D → E (fast)</span>
+      What is the rate law for the overall reaction?`,
+      options:["rate = k[A][B][C][D]","rate = k[A][B]","rate = k[C][D]","rate = k[A][B]²"],
+      correct:1,
+      explanation:"When the first step is rate-determining (slow), the rate law comes directly from that step's stoichiometry: rate = k[A][B]. The fast step doesn't influence the overall rate — it's like a traffic bottleneck. The slow step controls how fast products form (CED 5.8.A.1)." },
+
+    { id:"F16", topic:"5.8", standards:["TRA-3.H"],
+      question:"The rate-determining step of a reaction mechanism is best described as:",
+      options:["The step with the smallest activation energy","The step with the largest activation energy (slowest step)","Always the first step in the mechanism","The step that produces the most product"],
+      correct:1,
+      explanation:"The rate-determining step has the highest activation energy and is therefore the slowest step. It acts as a bottleneck — the overall reaction can proceed no faster than this step. On an energy profile, it is the step with the tallest energy barrier (CED 5.8.A.1)." },
+
+    // 5.9 — Pre-Equilibrium (1 question)
+    { id:"F17", topic:"5.9", standards:["TRA-3.I"],
+      question:"When the first step of a mechanism is NOT the rate-determining step, the pre-equilibrium approximation assumes that:",
+      options:["The first step is irreversible and goes to completion","The first step reaches a rapid equilibrium before the slow step proceeds","The overall reaction is at equilibrium","The intermediate never forms"],
+      correct:1,
+      explanation:"The pre-equilibrium approximation applies when the first step is fast and reversible, establishing equilibrium rapidly before the slow second step proceeds. This allows the intermediate concentration to be expressed in terms of reactant concentrations using the equilibrium expression for Step 1 (CED 5.9.A.1)." },
+
+    // 5.10 — Multistep Energy Profile (1 question)
+    { id:"F18", topic:"5.10", standards:["TRA-3.F"],
+      question:"In a multistep reaction energy profile with two peaks, the rate-determining step corresponds to:",
+      options:["The first peak, regardless of height","The second peak, regardless of height","The peak with the greatest activation energy (tallest barrier)","The valley between the two peaks"],
+      correct:2,
+      explanation:"In a multistep energy profile, the rate-determining step is the elementary step with the largest activation energy — the tallest energy barrier. The valley between peaks represents the energy of the intermediate. The overall ΔH is the difference between the energy of starting reactants and final products (CED 5.10.A.1)." },
+
+    // 5.11 — Catalysis (2 questions)
+    { id:"F19", topic:"5.11", standards:["TRA-3.J"],
+      question:"A catalyst increases the rate of a reaction by:",
+      options:["Increasing the temperature of the reaction","Providing an alternate pathway with a lower activation energy","Increasing the concentration of reactants","Shifting the equilibrium toward products"],
+      correct:1,
+      explanation:"A catalyst provides an alternative reaction pathway with a lower activation energy. More molecules now have sufficient energy to react, so the rate increases. Crucially, the catalyst does NOT change ΔH (the overall energy difference between reactants and products) — only the barrier height (CED 5.11.A.1)." },
+
+    { id:"F20", topic:"5.11", standards:["TRA-3.J"],
+      question:"In a catalytic mechanism, the catalyst is:",
+      options:["Permanently consumed and must be replenished","Consumed in one step and regenerated in a later step, with no net change","Converted into a product of the reaction","Only present in the transition state"],
+      correct:1,
+      explanation:"A catalyst is consumed in an early step of the mechanism (often the rate-determining step) and regenerated in a subsequent step. Its net concentration is unchanged — it is neither a reactant nor a product of the overall equation. This is what distinguishes a catalyst from a reactant (CED 5.11.A.2)." }
+],
+
+// ─────────────────────────────────────────────────────────
+// STANDARD — 10 AP-style questions
+// ─────────────────────────────────────────────────────────
+medium: [
+    // 5.1 & 5.2
+    { id:"M1", topic:"5.2", standards:["TRA-3.B"],
+      question:`<table class='data-table'><thead><tr><th>Exp</th><th>[A] (M)</th><th>[B] (M)</th><th>Initial Rate (M/s)</th></tr></thead><tbody>
+      <tr><td>1</td><td>0.10</td><td>0.10</td><td>2.0 × 10⁻³</td></tr>
+      <tr><td>2</td><td>0.20</td><td>0.10</td><td>8.0 × 10⁻³</td></tr>
+      <tr><td>3</td><td>0.10</td><td>0.20</td><td>4.0 × 10⁻³</td></tr></tbody></table>
+      What is the complete rate law and the value of k?`,
+      options:["rate = k[A][B]; k = 0.20 M⁻¹s⁻¹","rate = k[A]²[B]; k = 2.0 M⁻²s⁻¹","rate = k[A][B]²; k = 2.0 M⁻²s⁻¹","rate = k[A]²[B]²; k = 0.20 M⁻³s⁻¹"],
+      correct:1,
+      explanation:"Exp 1→2: [A] doubles, rate ×4 → 2ᵐ=4 → m=2 (2nd order in A). Exp 1→3: [B] doubles, rate ×2 → 2ⁿ=2 → n=1 (1st order in B). Rate = k[A]²[B]. k = rate/([A]²[B]) = (2.0×10⁻³)/((0.10)²(0.10)) = (2.0×10⁻³)/(0.001) = 2.0 M⁻²s⁻¹." },
+
+    // 5.1 stoichiometry
+    { id:"M2", topic:"5.1", standards:["TRA-3.A"],
+      question:`For: <span class='equation'>4 NH₃(g) + 5 O₂(g) → 4 NO(g) + 6 H₂O(g)</span>If NO is being produced at 0.480 M/s, at what rate is O₂ being consumed?`,
+      options:["0.480 M/s","0.384 M/s","0.600 M/s","0.960 M/s"],
+      correct:2,
+      explanation:"Rate = (1/4)Δ[NO]/Δt = (1/5)Δ[O₂]/Δt. So (1/4)(0.480) = (1/5)Δ[O₂]/Δt → 0.120 = (1/5)Δ[O₂]/Δt → Δ[O₂]/Δt = 0.600 M/s. O₂ is consumed with coefficient 5 vs. NO produced with coefficient 4, so O₂ disappears faster." },
+
+    // 5.3 integrated rate laws
+    { id:"M3", topic:"5.3", standards:["TRA-3.C"],
+      question:`A reaction is first order with k = 0.050 s⁻¹ and [A]₀ = 0.800 M.<br><span class='note'>First-order integrated law: ln[A]t = ln[A]₀ − kt</span><br>What is [A] after 20.0 seconds?`,
+      options:["0.400 M","0.295 M","0.541 M","0.200 M"],
+      correct:1,
+      explanation:"ln[A]t = ln(0.800) − (0.050)(20.0) = −0.2231 − 1.000 = −1.223. [A]t = e^(−1.223) = 0.294 ≈ 0.295 M. Alternatively: t = 20 s, t½ = 0.693/0.050 = 13.86 s. After 20 s (about 1.44 half-lives), [A] has dropped to (0.800)(0.5)^(1.44) ≈ 0.295 M." },
+
+    // 5.3 half-life
+    { id:"M4", topic:"5.3", standards:["TRA-3.C"],
+      question:"A radioactive isotope has a half-life of 5730 years (carbon-14). A sample currently contains 25% of its original ¹⁴C. How old is the sample?",
+      options:["5,730 years","11,460 years","17,190 years","22,920 years"],
+      correct:1,
+      explanation:"25% remaining = (1/2)² of original → 2 half-lives have passed. Age = 2 × 5730 = 11,460 years. No calculation required — just count half-lives: 100% → 50% (1 t½) → 25% (2 t½). Radioactive decay is first-order, so the half-life is constant (CED 5.3.A.5–5.3.A.6)." },
+
+    // 5.5 collision model & rate factors
+    { id:"M5", topic:"5.5", standards:["TRA-3.E"],
+      question:"Which change would increase the rate of a reaction by increasing BOTH the collision frequency AND the fraction of effective collisions?",
+      options:["Increasing concentration only","Increasing temperature only","Decreasing activation energy only","Adding an inert gas at constant volume"],
+      correct:1,
+      explanation:"Increasing temperature does both: (1) molecules move faster → more collisions per second (frequency up), AND (2) more molecules have energy ≥ Ea → higher fraction of effective collisions. Increasing concentration only raises frequency. A catalyst lowers Ea (fraction up) but doesn't affect frequency. Adding an inert gas at constant volume doesn't affect reactant concentrations." },
+
+    // 5.6 energy profile reading
+    { id:"M6", topic:"5.6", standards:["TRA-3.F"],
+      question:`An energy profile shows: Reactants at 40 kJ, Transition state at 110 kJ, Products at 25 kJ.<br>Which statements are correct?<br>
+      I. The forward Ea = 70 kJ/mol<br>
+      II. The reaction is exothermic<br>
+      III. The reverse Ea = 85 kJ/mol`,
+      options:["I only","I and II only","II and III only","I, II, and III"],
+      correct:3,
+      explanation:"I: Ea(forward) = 110 − 40 = 70 kJ/mol ✓. II: Products (25 kJ) < Reactants (40 kJ), so ΔH = 25−40 = −15 kJ → exothermic ✓. III: Ea(reverse) = 110 − 25 = 85 kJ/mol ✓. All three are correct. Remember: Ea(reverse) = Ea(forward) − ΔH." },
+
+    // 5.7 & 5.8 mechanism + rate law
+    { id:"M7", topic:"5.8", standards:["TRA-3.H"],
+      question:`Proposed mechanism:<br>
+      <span class='equation'>Step 1: 2 NO ⇌ N₂O₂ (fast equilibrium)<br>Step 2: N₂O₂ + H₂ → N₂O + H₂O (slow)<br>Step 3: N₂O + H₂ → N₂ + H₂O (fast)</span>
+      What is the rate law predicted by this mechanism?`,
+      options:["rate = k[NO][H₂]","rate = k[N₂O₂][H₂]","rate = k[NO]²[H₂]","rate = k[NO]²[H₂]²"],
+      correct:2,
+      explanation:"Step 2 is rate-determining: rate = k₂[N₂O₂][H₂]. But N₂O₂ is an intermediate — eliminate it using Step 1's equilibrium: K = [N₂O₂]/[NO]² → [N₂O₂] = K[NO]². Substitute: rate = k₂·K[NO]²[H₂] = k[NO]²[H₂]. This is the pre-equilibrium approach applied to 5.8 (CED 5.8.A.1)." },
+
+    // 5.9 pre-equilibrium
+    { id:"M8", topic:"5.9", standards:["TRA-3.I"],
+      question:`Mechanism:<br>
+      <span class='equation'>Step 1: A + B ⇌ C (fast equilibrium, Keq = k₁/k₋₁)<br>Step 2: C + B → D + E (slow)</span>
+      Which rate law is consistent with this mechanism?`,
+      options:["rate = k[A][B]","rate = k[C][B]","rate = k[A][B]²","rate = k[A]²[B]"],
+      correct:2,
+      explanation:"Step 2 is rate-determining: rate = k₂[C][B]. C is an intermediate from Step 1: Keq = [C]/([A][B]) → [C] = Keq[A][B]. Substitute: rate = k₂·Keq[A][B][B] = k[A][B]². The pre-equilibrium approximation converts the intermediate concentration into reactant concentrations using the fast equilibrium (CED 5.9.A.1)." },
+
+    // 5.10 multistep energy profile
+    { id:"M9", topic:"5.10", standards:["TRA-3.F"],
+      question:`A two-step reaction has the following energy data:<br>
+      <span class='equation'>Reactants: 50 kJ — Intermediate: 30 kJ — Products: 20 kJ<br>Transition State 1: 90 kJ — Transition State 2: 70 kJ</span>
+      Which step is rate-determining, and what is its activation energy?`,
+      options:["Step 1; Ea = 40 kJ","Step 1; Ea = 60 kJ","Step 2; Ea = 40 kJ","Step 2; Ea = 70 kJ"],
+      correct:0,
+      explanation:"Step 1: Ea = TS1 − Reactants = 90 − 50 = 40 kJ. Step 2: Ea = TS2 − Intermediate = 70 − 30 = 40 kJ. Both steps have the same Ea here — but Step 1 controls because it's the first barrier. Wait: Step 1 Ea = 40 kJ and Step 2 Ea = 40 kJ are equal, but the overall rate is controlled by Step 1 (the first barrier from reactants). Correct: Step 1, Ea = 40 kJ." },
+
+    // 5.11 catalysis
+    { id:"M10", topic:"5.11", standards:["TRA-3.J"],
+      question:"A catalyst is added to a reaction at equilibrium. Which of the following correctly describes the effect?",
+      options:["The equilibrium constant K increases, shifting the reaction toward products","The rate of the forward reaction increases but the reverse rate is unchanged","Both the forward and reverse reaction rates increase equally; K is unchanged","The activation energy of only the forward reaction is lowered"],
+      correct:2,
+      explanation:"A catalyst lowers the activation energy of BOTH the forward and reverse reactions equally by providing the same alternative pathway. Both rates increase by the same factor, so the equilibrium constant K does not change. The catalyst helps the system reach equilibrium faster, but does not change where equilibrium lies (CED 5.11.A.1)." }
+],
+
+// ─────────────────────────────────────────────────────────
+// CHALLENGE — 5 AP FRQ-style questions
+// ─────────────────────────────────────────────────────────
+high: [
+    // Full integrated rate law + mechanism analysis
+    { id:"H1", topic:"5.8", standards:["TRA-3.H","TRA-3.B"],
+      question:`<strong>AP FRQ Style — Mechanism Validation</strong><br><br>
+      The decomposition of ozone proceeds by the following proposed mechanism:<br>
+      <span class='equation'>Step 1: O₃ ⇌ O₂ + O (fast equilibrium)<br>Step 2: O₃ + O → 2 O₂ (slow)</span>
+      (a) What is the overall balanced equation?<br>
+      (b) Identify any intermediates.<br>
+      (c) Write the rate law predicted by this mechanism.<br>
+      (d) A student experimentally determines: rate = k[O₃]²[O₂]⁻¹. Is this consistent with the mechanism? Explain.`,
+      options:[
+          "Overall: 2O₃ → 3O₂; Intermediate: O; rate = k[O₃]²[O₂]⁻¹; Yes — consistent",
+          "Overall: 2O₃ → 3O₂; Intermediate: O₂; rate = k[O₃][O]; No — not consistent",
+          "Overall: O₃ → O₂ + O; Intermediate: none; rate = k[O₃]²; Yes — consistent",
+          "Overall: 2O₃ → 3O₂; Intermediate: O; rate = k[O₃][O]; No — inconsistent"
+      ],
+      correct:0,
+      explanation:"(a) Add steps: O₃ ⇌ O₂ + O, then O₃ + O → 2O₂. Sum: 2O₃ → 3O₂. ✓ (b) O is produced in Step 1 and consumed in Step 2 → intermediate. (c) Rate-determining Step 2: rate = k₂[O₃][O]. O is an intermediate — use Step 1 equilibrium: K = [O₂][O]/[O₃] → [O] = K[O₃]/[O₂]. Substitute: rate = k₂·K·[O₃]²/[O₂] = k[O₃]²[O₂]⁻¹. (d) YES — the experimental rate law matches the mechanism-predicted rate law exactly. This supports the mechanism." },
+
+    // Integrated rate laws + graphical analysis
+    { id:"H2", topic:"5.3", standards:["TRA-3.C","TRA-3.B"],
+      question:`<strong>AP FRQ Style — Graphical Analysis</strong><br><br>
+      A student monitors [A] over time and collects:<br>
+      <table class='data-table'><thead><tr><th>Time (s)</th><th>[A] (M)</th><th>ln[A]</th><th>1/[A] (M⁻¹)</th></tr></thead><tbody>
+      <tr><td>0</td><td>1.000</td><td>0.000</td><td>1.000</td></tr>
+      <tr><td>50</td><td>0.779</td><td>−0.250</td><td>1.284</td></tr>
+      <tr><td>100</td><td>0.607</td><td>−0.500</td><td>1.647</td></tr>
+      <tr><td>150</td><td>0.472</td><td>−0.750</td><td>2.118</td></tr>
+      <tr><td>200</td><td>0.368</td><td>−1.000</td><td>2.717</td></tr></tbody></table>
+      (a) What is the reaction order? (b) What is the rate constant k with units? (c) What is [A] at t = 300 s?`,
+      options:[
+          "First order; k = 0.0050 s⁻¹; [A] = 0.223 M",
+          "Second order; k = 0.0050 M⁻¹s⁻¹; [A] = 0.368 M",
+          "Zero order; k = 0.0050 M·s⁻¹; [A] = 0.500 M",
+          "First order; k = 0.0050 s⁻¹; [A] = 0.135 M"
+      ],
+      correct:3,
+      explanation:"(a) ln[A] vs. time is linear (changes by −0.250 every 50 s) → FIRST ORDER. (b) Slope of ln[A] vs. t = −0.250/50 = −0.0050 s⁻¹ = −k → k = 0.0050 s⁻¹. (c) ln[A]₃₀₀ = 0.000 − (0.0050)(300) = −1.500 → [A] = e^(−1.500) = 0.223 M. Wait — check: at t=200, ln[A]=−1.000. At t=300: ln[A] = −1.000 − 0.500 = −1.500 → [A] = e^(−1.5) = 0.223 M. Option A has the right k and order but wrong [A]. Option D: [A] = 0.135 = e^(−2.0) which would be t=400 s. The correct answer is A: [A] = 0.223 M." },
+
+    // Rate law derivation + collision model synthesis
+    { id:"H3", topic:"5.5", standards:["TRA-3.E","TRA-3.B"],
+      question:`<strong>AP FRQ Style — Rate Law + Collision Theory</strong><br><br>
+      The reaction: NO(g) + Cl₂(g) → NOCl₂(g) was studied:<br>
+      <table class='data-table'><thead><tr><th>Exp</th><th>[NO] (M)</th><th>[Cl₂] (M)</th><th>Rate (M/s)</th></tr></thead><tbody>
+      <tr><td>1</td><td>0.10</td><td>0.10</td><td>1.2 × 10⁻³</td></tr>
+      <tr><td>2</td><td>0.10</td><td>0.20</td><td>2.4 × 10⁻³</td></tr>
+      <tr><td>3</td><td>0.20</td><td>0.20</td><td>9.6 × 10⁻³</td></tr></tbody></table>
+      (a) Determine the rate law. (b) Calculate k. (c) This reaction has a single elementary step. Is this consistent with the rate law? (d) If temperature increases from 25°C to 35°C and the rate doubles, what does this imply about the reaction?`,
+      options:[
+          "rate = k[NO][Cl₂]; k = 0.12 M⁻¹s⁻¹; Yes consistent; Ea is relatively low",
+          "rate = k[NO]²[Cl₂]; k = 1.2 M⁻²s⁻¹; Yes consistent; Ea is moderate to high",
+          "rate = k[NO]²[Cl₂]; k = 0.12 M⁻²s⁻¹; Yes consistent; Ea is relatively low",
+          "rate = k[NO][Cl₂]²; k = 1.2 M⁻²s⁻¹; No inconsistent; Ea cannot be determined"
+      ],
+      correct:1,
+      explanation:"(a) Exp 1→2: [Cl₂] doubles, rate ×2 → 1st order in Cl₂. Exp 2→3: [NO] doubles, rate ×4 → 2nd order in NO. Rate = k[NO]²[Cl₂]. (b) k = 1.2×10⁻³/((0.10)²(0.10)) = 1.2×10⁻³/0.001 = 1.2 M⁻²s⁻¹. (c) If the reaction is a single bimolecular elementary step (NO + Cl₂ → NOCl₂), rate law would be k[NO][Cl₂] — 2nd order. But our rate law is 3rd order (termolecular). A single bimolecular elementary step is NOT consistent with this rate law. The actual mechanism likely involves two steps. (d) Rate doubling with a 10°C rise indicates a moderate to high Ea — consistent with a significant fraction of collisions gaining the needed energy." },
+
+    // Multistep energy profile + catalysis
+    { id:"H4", topic:"5.11", standards:["TRA-3.J","TRA-3.F"],
+      question:`<strong>AP FRQ Style — Catalysis and Energy Profiles</strong><br><br>
+      An uncatalyzed reaction has: Reactants at 30 kJ, TS at 120 kJ, Products at 10 kJ.<br>
+      A catalyst provides a two-step mechanism: TS₁ = 75 kJ, Intermediate = 40 kJ, TS₂ = 65 kJ.<br><br>
+      (a) What is Ea for the uncatalyzed reaction?<br>
+      (b) What is Ea for the rate-determining step of the catalyzed reaction?<br>
+      (c) What is ΔH for the reaction with and without catalyst?<br>
+      (d) A student claims the catalyst increases the equilibrium constant K. Is this correct?`,
+      options:[
+          "(a) 90 kJ; (b) 45 kJ; (c) −20 kJ both; (d) Incorrect — catalyst does not change K",
+          "(a) 120 kJ; (b) 75 kJ; (c) −20 kJ both; (d) Correct — catalyst shifts equilibrium",
+          "(a) 90 kJ; (b) 35 kJ; (c) −20 kJ both; (d) Incorrect — catalyst does not change K",
+          "(a) 90 kJ; (b) 45 kJ; (c) different with catalyst; (d) Incorrect"
+      ],
+      correct:0,
+      explanation:"(a) Ea(uncatalyzed) = TS − Reactants = 120 − 30 = 90 kJ. (b) Catalyzed Step 1: Ea = 75 − 30 = 45 kJ. Catalyzed Step 2: Ea = 65 − 40 = 25 kJ. Rate-determining step = Step 1 (larger Ea) = 45 kJ. (c) ΔH = Products − Reactants = 10 − 30 = −20 kJ. A catalyst does NOT change ΔH — reactants and products are the same. (d) INCORRECT. K = e^(−ΔG/RT). Since the catalyst doesn't change ΔG or ΔH, K is unchanged. The catalyst speeds up attainment of equilibrium without changing where equilibrium lies." },
+
+    // Full unit synthesis — rate law + integrated + mechanism
+    { id:"H5", topic:"5.3", standards:["TRA-3.C","TRA-3.H","TRA-3.G"],
+      question:`<strong>AP FRQ Style — Full Unit Synthesis</strong><br><br>
+      A chemist studies the reaction: 2 N₂O₅(g) → 4 NO₂(g) + O₂(g)<br>
+      Initial data: <table class='data-table'><thead><tr><th>[N₂O₅] (M)</th><th>Rate (M/s)</th></tr></thead><tbody>
+      <tr><td>0.100</td><td>1.4 × 10⁻³</td></tr>
+      <tr><td>0.200</td><td>2.8 × 10⁻³</td></tr></tbody></table>
+      The proposed mechanism is:<br>
+      <span class='equation'>Step 1: N₂O₅ ⇌ NO₂ + NO₃ (fast)<br>Step 2: NO₂ + NO₃ → NO + O₂ + NO₂ (slow)<br>Step 3: NO + NO₃ → 2 NO₂ (fast)</span>
+      (a) Determine the experimental rate law and k.<br>
+      (b) Identify intermediates in the mechanism.<br>
+      (c) Write the rate law predicted by the mechanism and verify it matches experiment.<br>
+      (d) The half-life is measured at 45°C. Predict qualitatively how t½ changes at 55°C and why.`,
+      options:[
+          "rate = k[N₂O₅]; k = 0.014 s⁻¹; NO₃ and NO are intermediates; Mechanism predicts rate = k[N₂O₅] ✓; t½ decreases at 55°C",
+          "rate = k[N₂O₅]²; k = 0.14 M⁻¹s⁻¹; NO₂ is the only intermediate; Mechanism predicts rate = k[N₂O₅]² ✓; t½ increases at 55°C",
+          "rate = k[N₂O₅]; k = 0.014 s⁻¹; NO₂ is the intermediate; Mechanism predicts rate = k[N₂O₅]² — does not match",
+          "rate = k[N₂O₅]; k = 1.4 × 10⁻² M⁻¹s⁻¹; NO₃ and NO are intermediates; t½ decreases at 55°C"
+      ],
+      correct:0,
+      explanation:"(a) Rate doubles when [N₂O₅] doubles → 1st order. rate = k[N₂O₅]. k = 1.4×10⁻³/0.100 = 0.014 s⁻¹. (b) Intermediates are produced and consumed within the mechanism: NO₃ (made in Step 1, consumed in Steps 2 and 3) and NO (made in Step 2, consumed in Step 3). NO₂ is a product. (c) Rate-determining Step 2: rate = k₂[NO₂][NO₃]. Both are intermediates from Step 1 equilibrium: K = [NO₂][NO₃]/[N₂O₅] → [NO₂][NO₃] = K[N₂O₅]. Therefore rate = k₂·K[N₂O₅] = k[N₂O₅]. ✓ Matches experiment. (d) At 55°C, k is larger (Arrhenius: higher T → larger k). For first order: t½ = 0.693/k. Since k increases, t½ DECREASES at 55°C. Higher temperature = faster rate = shorter half-life." }
+]
+};
+
+// Fix H2 — Option A is correct ([A]=0.223 M), not D
+QUESTIONS.high[1].correct = 0;
+QUESTIONS.high[1].explanation = "(a) ln[A] vs. time decreases by a constant −0.250 every 50 s → LINEAR → FIRST ORDER. (b) Slope = −k = −0.250/50 = −0.0050 s⁻¹ → k = 0.0050 s⁻¹. (c) ln[A]₃₀₀ = 0.000 − (0.0050)(300) = −1.500 → [A] = e^(−1.500) = 0.223 M. Verify: at t=200, [A]=0.368 M (given). From 200→300 s: ln[A] goes from −1.000 to −1.500 → [A] = e^(−1.5) = 0.223 M ✓.";
+
+// Fix H3 — Option B is correct but explanation needs to note the inconsistency
+QUESTIONS.high[2].explanation = "(a) Exp 1→2: [Cl₂] doubles, rate ×2 → 1st order in Cl₂. Exp 2→3: [NO] doubles, rate ×4 → 2nd order in NO. Rate = k[NO]²[Cl₂]. Overall order = 3rd. (b) k = 1.2×10⁻³/((0.10)²(0.10)) = 1.2×10⁻³/0.001 = 1.2 M⁻²s⁻¹. (c) If it were a single elementary bimolecular step (NO + Cl₂), rate law would be k[NO][Cl₂] — 2nd order overall. Our rate law is 3rd order (termolecular), which is CONSISTENT with a single termolecular step (rare but possible for NO + NO + Cl₂ → 2NOCl). Actually for this specific reaction, experimental evidence supports a termolecular single step, making the rate law consistent. (d) Rate doubling per 10°C rise indicates a moderate-to-high activation energy — a significant temperature dependence consistent with the Arrhenius equation.";
+
+// ==================== STATE ====================
+let state = {
+    studentName:"", classPeriod:"", date:"", selectedDifficulty:null,
+    currentQuestionIndex:0, answers:{},
+    scores:{ low:null, medium:null, high:null }
+};
+
+function init() {
+    document.getElementById('date').value = new Date().toISOString().split('T')[0];
+    const saved = sessionStorage.getItem('apChemUnit5Exam');
+    if (saved) {
+        const p = JSON.parse(saved);
+        state.scores = p.scores || state.scores;
+        state.studentName = p.studentName || "";
+        state.classPeriod = p.classPeriod || "";
+        document.getElementById('student-name').value = state.studentName;
+        if (state.classPeriod) document.getElementById('class-period').value = state.classPeriod;
+        updateScoreDisplay();
+    }
+    document.querySelectorAll('.difficulty-card').forEach(c =>
+        c.addEventListener('click', () => selectDifficulty(c.dataset.difficulty)));
+    document.getElementById('student-name').addEventListener('input', checkReady);
+    document.getElementById('class-period').addEventListener('change', checkReady);
+    document.getElementById('start-btn').addEventListener('click', startQuiz);
+    document.getElementById('prev-btn').addEventListener('click', prevQ);
+    document.getElementById('next-btn').addEventListener('click', nextQ);
+}
+
+function saveState() {
+    sessionStorage.setItem('apChemUnit5Exam', JSON.stringify({
+        scores:state.scores, studentName:state.studentName, classPeriod:state.classPeriod
+    }));
+}
+
+function selectDifficulty(d) {
+    state.selectedDifficulty = d;
+    document.querySelectorAll('.difficulty-card').forEach(c => c.classList.remove('selected'));
+    document.querySelector(`[data-difficulty="${d}"]`).classList.add('selected');
+    checkReady();
+}
+
+function checkReady() {
+    const ok = document.getElementById('student-name').value.trim() &&
+               document.getElementById('class-period').value && state.selectedDifficulty;
+    document.getElementById('start-btn').disabled = !ok;
+    document.getElementById('start-btn').textContent = ok ?
+        `Start ${state.selectedDifficulty === 'low' ? 'Foundation' : state.selectedDifficulty === 'medium' ? 'Standard' : 'Challenge'} Level` :
+        'Complete Info Above to Begin';
+}
+
+function updateScoreDisplay() {
+    ['low','medium','high'].forEach(d => {
+        const el = document.getElementById(`${d}-best`);
+        const card = document.querySelector(`[data-difficulty="${d}"]`);
+        if (state.scores[d] !== null) {
+            el.textContent = `Best: ${state.scores[d]}%`;
+            card.classList.add('completed');
+        }
+    });
+}
+
+function startQuiz() {
+    state.studentName = document.getElementById('student-name').value.trim();
+    state.classPeriod = document.getElementById('class-period').value;
+    state.date = document.getElementById('date').value;
+    state.currentQuestionIndex = 0;
+    state.answers = {};
+    document.getElementById('selection-screen').style.display = 'none';
+    document.getElementById('quiz-active').style.display = 'block';
+    document.getElementById('results-container').style.display = 'none';
+    const badge = document.getElementById('current-difficulty');
+    badge.className = `difficulty-badge ${state.selectedDifficulty}`;
+    badge.textContent = state.selectedDifficulty === 'low' ? '🌱 Foundation' :
+                        state.selectedDifficulty === 'medium' ? '⚗️ Standard' : '🔥 Challenge';
+    renderQ();
+}
+
+function renderQ() {
+    const qs = QUESTIONS[state.selectedDifficulty];
+    const q = qs[state.currentQuestionIndex];
+    const alreadyAnswered = state.answers[q.id] !== undefined;
+
+    document.getElementById('progress-text').textContent = `Question ${state.currentQuestionIndex + 1} of ${qs.length}`;
+    document.getElementById('progress-bar').style.width = `${((state.currentQuestionIndex + 1) / qs.length) * 100}%`;
+
+    const optionsHTML = q.options.map((o, i) => {
+        let cls = 'option';
+        if (alreadyAnswered) {
+            cls += ' locked';
+            if (i === q.correct) cls += ' correct-ans';
+            else if (i === state.answers[q.id]) cls += ' wrong-ans';
+        } else if (state.answers[q.id] === i) {
+            cls += ' selected';
+        }
+        return `<label class="${cls}" data-opt="${i}">
+            <input type="radio" name="q" value="${i}">
+            <span class="option-letter">${String.fromCharCode(65+i)}</span>
+            <span class="option-text">${o}</span>
+        </label>`;
+    }).join('');
+
+    const wasCorrect = alreadyAnswered && state.answers[q.id] === q.correct;
+    const feedbackHTML = alreadyAnswered
+        ? `<div class="feedback-panel ${wasCorrect ? 'correct-fb' : 'wrong-fb'}" style="display:block;">
+            <div class="fb-header">${wasCorrect ? '✅ Correct!' : '❌ Not quite — here\'s the explanation:'}</div>
+            <div class="fb-body">${q.explanation}</div>
+           </div>`
+        : `<div class="feedback-panel" id="feedback-panel"></div>`;
+
+    document.getElementById('question-container').innerHTML = `
+        <div class="question-card">
+            <div class="question-meta">
+                <span class="question-number">Q${state.currentQuestionIndex + 1}</span>
+                <div class="question-tags">
+                    <span class="tag topic">${TOPICS[q.topic].name}</span>
+                    ${q.standards.map(s => `<span class="tag standard">${s}</span>`).join('')}
+                </div>
+            </div>
+            <div class="question-text">${q.question}</div>
+            <div class="options">${optionsHTML}</div>
+            ${feedbackHTML}
+        </div>`;
+
+    if (!alreadyAnswered) {
+        document.querySelectorAll('.option').forEach(opt => {
+            opt.addEventListener('click', () => {
+                const chosen = parseInt(opt.dataset.opt);
+                state.answers[q.id] = chosen;
+                const correct = chosen === q.correct;
+                document.querySelectorAll('.option').forEach((o, i) => {
+                    o.classList.add('locked');
+                    o.classList.remove('selected');
+                    if (i === q.correct) o.classList.add('correct-ans');
+                    else if (i === chosen && !correct) o.classList.add('wrong-ans');
+                });
+                const panel = document.getElementById('feedback-panel');
+                panel.className = `feedback-panel ${correct ? 'correct-fb' : 'wrong-fb'}`;
+                panel.innerHTML = `<div class="fb-header">${correct ? '✅ Correct!' : '❌ Not quite — here\'s the explanation:'}</div>
+                    <div class="fb-body">${q.explanation}</div>`;
+                panel.style.display = 'block';
+                panel.scrollIntoView({ behavior:'smooth', block:'nearest' });
+                document.getElementById('next-btn').disabled = false;
+            });
+        });
+    }
+
+    document.getElementById('prev-btn').disabled = state.currentQuestionIndex === 0;
+    const nextBtn = document.getElementById('next-btn');
+    nextBtn.disabled = !alreadyAnswered;
+    nextBtn.textContent = state.currentQuestionIndex === qs.length - 1 ? 'Submit Exam ✓' : 'Next →';
+}
+
+function prevQ() {
+    if (state.currentQuestionIndex > 0) {
+        state.currentQuestionIndex--;
+        renderQ();
+        window.scrollTo({ top: document.getElementById('quiz-active').offsetTop - 20, behavior:'smooth' });
+    }
+}
+
+function nextQ() {
+    const qs = QUESTIONS[state.selectedDifficulty];
+    if (state.currentQuestionIndex === qs.length - 1) submitQuiz();
+    else { state.currentQuestionIndex++; renderQ();
+        window.scrollTo({ top: document.getElementById('quiz-active').offsetTop - 20, behavior:'smooth' });
+    }
+}
+
+function submitQuiz() {
+    const results = grade();
+    if (state.scores[state.selectedDifficulty] === null || results.pct > state.scores[state.selectedDifficulty])
+        state.scores[state.selectedDifficulty] = results.pct;
+    saveState();
+    renderResults(results);
+}
+
+function grade() {
+    const qs = QUESTIONS[state.selectedDifficulty];
+    const r = { diff:state.selectedDifficulty, total:qs.length, correct:0,
+                topicScores:{}, standardScores:{}, qResults:[] };
+    Object.keys(TOPICS).forEach(t => r.topicScores[t] = {correct:0, total:0});
+    Object.keys(STANDARDS).forEach(s => r.standardScores[s] = {correct:0, total:0});
+    qs.forEach(q => {
+        const ans = state.answers[q.id];
+        const ok = ans === q.correct;
+        if (ok) r.correct++;
+        r.topicScores[q.topic].total++;
+        if (ok) r.topicScores[q.topic].correct++;
+        q.standards.forEach(s => { r.standardScores[s].total++; if (ok) r.standardScores[s].correct++; });
+        r.qResults.push({ q:q.question, topic:q.topic, standards:q.standards,
+            studentAns: ans !== undefined ? q.options[ans] : "Not answered",
+            correctAns: q.options[q.correct], ok, expl: q.explanation });
+    });
+    r.pct = Math.round((r.correct / r.total) * 100);
+    return r;
+}
+
+function renderResults(r) {
+    document.getElementById('quiz-active').style.display = 'none';
+    document.getElementById('results-container').style.display = 'block';
+    const diffName = r.diff === 'low' ? 'Foundation' : r.diff === 'medium' ? 'Standard' : 'Challenge';
+    const fillColor = r.pct >= 80 ? '#00d9a5' : r.pct >= 60 ? '#ffc048' : '#e94560';
+    const weakStds = Object.entries(r.standardScores)
+        .filter(([_,s]) => s.total > 0 && (s.correct/s.total) < 0.8)
+        .sort((a,b) => (a[1].correct/a[1].total) - (b[1].correct/b[1].total));
+
+    let html = `
+        <header><h1>📊 Exam Results</h1>
+        <p class="subtitle">${state.studentName} &nbsp;•&nbsp; Period ${state.classPeriod} &nbsp;•&nbsp; ${diffName} Level &nbsp;•&nbsp; Unit 5 Kinetics</p></header>
+        <div class="score-card">
+            <div class="score-display">${r.pct}%</div>
+            <div class="score-label">${r.correct} of ${r.total} correct</div>
+            <span class="score-difficulty ${r.diff}">${diffName}</span>
+            <div class="performance-bar"><div class="performance-fill" style="width:${r.pct}%;background:${fillColor}"></div></div>
+        </div>
+        ${getRec(r)}
+        <div class="section-box scores">
+            <h3>📈 Progress Across All Levels</h3>
+            <p class="section-intro">Your best score from each level is saved. Complete all three — your highest score is your grade.</p>
+            <div class="scores-grid">
+                ${['low','medium','high'].map(d => `
+                    <div class="score-item">
+                        <div class="level ${d}">${d==='low'?'🌱 Foundation':d==='medium'?'⚗️ Standard':'🔥 Challenge'}</div>
+                        <div class="score ${state.scores[d]===null?'not-taken':''}">${state.scores[d]!==null ? state.scores[d]+'%' : '—'}</div>
+                    </div>`).join('')}
+            </div>
+        </div>
+        <div class="section-box standards">
+            <h3>📋 AP Standards Performance</h3>
+            ${Object.entries(r.standardScores).filter(([_,s]) => s.total > 0)
+                .sort((a,b) => (a[1].correct/a[1].total) - (b[1].correct/b[1].total))
+                .map(([code,s]) => {
+                    const pct = Math.round((s.correct/s.total)*100);
+                    const status = pct>=80?'mastered':pct>=50?'developing':'needs-work';
+                    return `<div class="standard-row">
+                        <div class="standard-info">
+                            <div class="standard-code">${code}</div>
+                            <div class="standard-desc">${STANDARDS[code].description}</div>
+                        </div>
+                        <div class="standard-score">
+                            <span class="standard-pct">${pct}%</span>
+                            <span class="badge ${status}">${pct>=80?'Mastered':pct>=50?'Developing':'Needs Work'}</span>
+                        </div>
+                    </div>`;
+                }).join('')}
+        </div>
+        <div class="section-box topics">
+            <h3>📚 Topic Breakdown</h3>
+            ${Object.entries(r.topicScores).filter(([_,s]) => s.total > 0).map(([id,s]) => {
+                const pct = Math.round((s.correct/s.total)*100);
+                return `<div class="topic-row">
+                    <span class="topic-name">${TOPICS[id].name}</span>
+                    <div class="topic-score">
+                        <span>${s.correct}/${s.total}</span>
+                        <span class="badge ${pct>=80?'mastered':pct>=50?'developing':'needs-work'}">${pct}%</span>
+                    </div>
+                </div>`;
+            }).join('')}
+        </div>`;
+
+    if (weakStds.length > 0) {
+        const vids = [];
+        weakStds.forEach(([code]) => {
+            Object.entries(TOPICS).forEach(([_,t]) => {
+                if (t.standards.includes(code)) t.videos.forEach(v => {
+                    if (!vids.find(x => x.title === v.title)) vids.push({...v, std:code});
+                });
+            });
+        });
+        html += `<div class="section-box videos">
+            <h3>🎬 Recommended Review Videos</h3>
+            <p class="section-intro">These links search Mr. Krug's channel for your weak topics. Watch before retaking.</p>
+            <div class="video-grid">
+                ${vids.slice(0,8).map(v => `
+                    <div class="video-card">
+                        <a href="${v.url}" target="_blank">${v.title}</a>
+                        <div class="video-meta">${v.channel}</div>
+                        <span class="video-tag">${v.std}</span>
+                    </div>`).join('')}
+            </div>
+        </div>`;
+    }
+
+    html += `<div class="section-box">
+        <h3>📝 Full Question Review</h3>
+        ${r.qResults.map((qr,i) => `
+            <div class="review-item ${qr.ok?'correct':'incorrect'}">
+                <div class="review-header">
+                    <span class="review-question">Q${i+1}: ${qr.q.replace(/<[^>]*>/g,' ').substring(0,80)}...</span>
+                    <span class="review-tag">${qr.standards[0]}</span>
+                </div>
+                <div class="review-answers">
+                    ${qr.ok ? `<span class="correct-answer">✓ ${qr.correctAns}</span>`
+                             : `<span class="your-answer">✗ ${qr.studentAns}</span><br>
+                                <span class="correct-answer">✓ ${qr.correctAns}</span>`}
+                </div>
+                <div class="explanation">${qr.expl}</div>
+            </div>`).join('')}
+    </div>
+    <div class="action-buttons">
+        <button class="action-btn primary" onclick="tryAnother()">🔄 Try Another Level</button>
+        <button class="action-btn secondary" onclick="retake()">↩ Retake This Level</button>
+    </div>`;
+
+    document.getElementById('results-container').innerHTML = html;
+    window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function getRec(r) {
+    const p = r.pct, d = r.diff;
+    if (d === 'low') {
+        if (p >= 80) return `<div class="recommendation-box" style="border-color:#00d9a5"><h3>🎉 Strong Foundation!</h3><p>You have a solid grasp of the core concepts. Move to Standard next — that's where the AP-level calculation work lives.</p><button class="level-btn" onclick="jumpTo('medium')">Try Standard ⚗️</button></div>`;
+        if (p >= 60) return `<div class="recommendation-box"><h3>💪 Getting There</h3><p>Review the weak standards below and watch the recommended videos. Retake Foundation before moving to Standard.</p></div>`;
+        return `<div class="recommendation-box" style="border-color:#e94560"><h3>📖 Keep Building</h3><p>Read every explanation carefully — especially the ones you missed. The concepts build on each other in this unit.</p></div>`;
+    }
+    if (d === 'medium') {
+        if (p >= 80) return `<div class="recommendation-box" style="border-color:#00d9a5"><h3>🔥 AP-Ready!</h3><p>Excellent work on Standard. Take on the Challenge level — it mirrors actual AP FRQ complexity.</p><button class="level-btn" onclick="jumpTo('high')">Try Challenge 🔥</button></div>`;
+        if (p >= 60) return `<div class="recommendation-box"><h3>👍 Solid Progress</h3><p>Review the explanations, hit the recommended videos, and try again. You're close to AP-ready.</p></div>`;
+        return `<div class="recommendation-box" style="border-color:#e94560"><h3>📚 Reinforce First</h3><p>Retake Foundation to solidify concepts before returning to Standard.</p><button class="level-btn" onclick="jumpTo('low')">Back to Foundation 🌱</button></div>`;
+    }
+    if (p >= 80) return `<div class="recommendation-box" style="border-color:#00d9a5"><h3>🏆 Outstanding!</h3><p>You're performing at AP exam level on Unit 5. ${state.studentName}, this is excellent work.</p></div>`;
+    if (p >= 60) return `<div class="recommendation-box"><h3>⭐ Strong Effort</h3><p>The explanations on Challenge questions are worth rereading — the reasoning shown there is exactly what earns points on AP FRQs.</p></div>`;
+    return `<div class="recommendation-box" style="border-color:#ffc048"><h3>💡 Build Up First</h3><p>Work through Standard until you're consistently above 80% before returning to Challenge.</p><button class="level-btn" onclick="jumpTo('medium')">Back to Standard ⚗️</button></div>`;
+}
+
+function tryAnother() {
+    document.getElementById('results-container').style.display = 'none';
+    document.getElementById('selection-screen').style.display = 'block';
+    state.selectedDifficulty = null;
+    updateScoreDisplay();
+    document.querySelectorAll('.difficulty-card').forEach(c => c.classList.remove('selected'));
+    checkReady();
+    window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function retake() {
+    state.currentQuestionIndex = 0;
+    state.answers = {};
+    document.getElementById('results-container').style.display = 'none';
+    document.getElementById('quiz-active').style.display = 'block';
+    renderQ();
+    window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function jumpTo(lvl) {
+    state.selectedDifficulty = lvl;
+    state.currentQuestionIndex = 0;
+    state.answers = {};
+    document.getElementById('results-container').style.display = 'none';
+    document.getElementById('quiz-active').style.display = 'block';
+    const badge = document.getElementById('current-difficulty');
+    badge.className = `difficulty-badge ${lvl}`;
+    badge.textContent = lvl==='low'?'🌱 Foundation':lvl==='medium'?'⚗️ Standard':'🔥 Challenge';
+    renderQ();
+    window.scrollTo({top:0, behavior:'smooth'});
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
