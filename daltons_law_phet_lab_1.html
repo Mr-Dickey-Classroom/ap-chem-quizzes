@@ -1,0 +1,1422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dalton's Law of Partial Pressures — PhET Virtual Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,300&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0D1B3E;
+    --teal: #1B8A8F;
+    --teal-light: #2BB5BC;
+    --orange: #E8682A;
+    --orange-light: #F5A05A;
+    --cream: #F5F0E8;
+    --cream-dark: #EDE7D8;
+    --text: #1A1A2E;
+    --text-light: #4A4A6A;
+    --white: #FFFFFF;
+    --success: #2E7D5E;
+    --border: #C8C0B0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    line-height: 1.65;
+    font-size: 15px;
+  }
+
+  /* ── HEADER ── */
+  .lab-header {
+    background: var(--navy);
+    color: var(--white);
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .lab-header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(43,181,188,0.18) 0%, transparent 70%);
+  }
+  .lab-header::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: 20%;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(232,104,42,0.12) 0%, transparent 70%);
+  }
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 36px 32px 28px;
+    position: relative;
+    z-index: 1;
+  }
+  .school-tag {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--teal-light);
+    background: rgba(43,181,188,0.12);
+    border: 1px solid rgba(43,181,188,0.3);
+    border-radius: 3px;
+    padding: 3px 10px;
+    margin-bottom: 14px;
+  }
+  .lab-header h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 2.4rem;
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 8px;
+  }
+  .lab-header h1 em {
+    font-style: italic;
+    color: var(--teal-light);
+  }
+  .lab-subtitle {
+    color: rgba(255,255,255,0.65);
+    font-size: 14px;
+    font-weight: 300;
+    margin-bottom: 22px;
+  }
+  .meta-row {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .meta-chip {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 4px;
+    padding: 5px 12px;
+    font-size: 12.5px;
+    color: rgba(255,255,255,0.8);
+  }
+  .meta-chip .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+  }
+  .dot-orange { background: var(--orange-light); }
+  .dot-teal   { background: var(--teal-light); }
+  .dot-cream  { background: rgba(255,255,255,0.5); }
+
+  /* ── OBJECTIVE BAND ── */
+  .objective-band {
+    background: var(--teal);
+    color: var(--white);
+    padding: 14px 32px;
+  }
+  .objective-band-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .obj-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    margin-top: 2px;
+    opacity: 0.8;
+  }
+  .obj-text {
+    font-size: 14px;
+    font-style: italic;
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    line-height: 1.5;
+  }
+
+  /* ── MAIN LAYOUT ── */
+  .main-wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 32px 60px;
+  }
+
+  /* ── SECTION HEADERS ── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 36px 0 18px;
+  }
+  .section-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--white);
+    background: var(--navy);
+    padding: 3px 9px;
+    border-radius: 3px;
+    min-width: 56px;
+    text-align: center;
+  }
+  .section-num.orange { background: var(--orange); }
+  .section-num.teal   { background: var(--teal); }
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--white);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    padding: 22px 26px;
+    margin-bottom: 18px;
+    position: relative;
+  }
+  .card.accent-left {
+    border-left: 4px solid var(--teal);
+  }
+  .card.accent-orange {
+    border-left: 4px solid var(--orange);
+  }
+  .card.formula-card {
+    background: var(--navy);
+    color: var(--white);
+    border: none;
+  }
+  .card-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 10px;
+  }
+  .card-title.orange { color: var(--orange); }
+
+  /* ── FORMULA DISPLAY ── */
+  .formula-display {
+    font-family: 'Fraunces', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--teal-light);
+    text-align: center;
+    padding: 18px 0 8px;
+    letter-spacing: 0.05em;
+  }
+  .formula-sub {
+    text-align: center;
+    font-size: 13px;
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 4px;
+  }
+
+  /* ── SIMULATION FRAME ── */
+  .sim-container {
+    background: var(--white);
+    border-radius: 8px;
+    border: 2px solid var(--navy);
+    overflow: hidden;
+    margin-bottom: 18px;
+  }
+  .sim-topbar {
+    background: var(--navy);
+    padding: 10px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .sim-topbar-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.7);
+    text-transform: uppercase;
+  }
+  .sim-badge {
+    background: var(--teal);
+    color: white;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    letter-spacing: 0.1em;
+  }
+  iframe#phet-sim {
+    display: block;
+    width: 100%;
+    height: 560px;
+    border: none;
+  }
+  .sim-note {
+    background: var(--cream-dark);
+    border-top: 1px solid var(--border);
+    padding: 10px 18px;
+    font-size: 12.5px;
+    color: var(--text-light);
+  }
+  .sim-note strong { color: var(--navy); }
+
+  /* ── STEP BOXES ── */
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  .step-box {
+    background: var(--white);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    padding: 16px 18px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .step-num-circle {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--navy);
+    color: white;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .step-num-circle.orange { background: var(--orange); }
+  .step-num-circle.teal   { background: var(--teal); }
+  .step-content p { font-size: 13.5px; color: var(--text); }
+  .step-content strong { color: var(--navy); }
+
+  /* ── INPUT FIELDS ── */
+  .input-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 10px 0;
+    flex-wrap: wrap;
+  }
+  .input-label {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--text);
+    min-width: 120px;
+  }
+  .chem-input {
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    padding: 7px 12px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--text);
+    background: var(--cream);
+    width: 130px;
+    transition: border-color 0.2s;
+  }
+  .chem-input:focus {
+    outline: none;
+    border-color: var(--teal);
+    background: var(--white);
+  }
+  .unit-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 11.5px;
+    color: var(--text-light);
+    background: var(--cream-dark);
+    border-radius: 3px;
+    padding: 2px 7px;
+    border: 1px solid var(--border);
+  }
+
+  /* ── DATA TABLE ── */
+  .data-table-wrap {
+    overflow-x: auto;
+    margin: 14px 0;
+  }
+  table.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+  table.data-table th {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'DM Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 10px 14px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  table.data-table th.teal-header {
+    background: var(--teal);
+  }
+  table.data-table th.orange-header {
+    background: var(--orange);
+  }
+  table.data-table td {
+    border: 1px solid var(--border);
+    padding: 8px 10px;
+    text-align: center;
+    background: var(--white);
+    vertical-align: middle;
+  }
+  table.data-table td.row-label {
+    background: var(--cream-dark);
+    font-weight: 600;
+    font-size: 12.5px;
+    font-family: 'DM Mono', monospace;
+    color: var(--navy);
+  }
+  table.data-table td.blocked {
+    background: repeating-linear-gradient(
+      45deg,
+      var(--cream-dark),
+      var(--cream-dark) 4px,
+      #e0d9cc 4px,
+      #e0d9cc 8px
+    );
+    pointer-events: none;
+  }
+  table.data-table input[type="number"] {
+    width: 80px;
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    padding: 5px 7px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    text-align: center;
+    background: var(--cream);
+    color: var(--text);
+    -moz-appearance: textfield;
+  }
+  table.data-table input[type="number"]:focus {
+    outline: none;
+    border-color: var(--teal);
+    background: white;
+  }
+  table.data-table input[type="number"]::-webkit-inner-spin-button,
+  table.data-table input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+  .calc-cell {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--teal);
+    font-weight: 500;
+  }
+
+  /* ── QUESTION BLOCKS ── */
+  .question-block {
+    background: var(--white);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    padding: 18px 22px;
+    margin-bottom: 14px;
+    position: relative;
+  }
+  .q-number {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--orange);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .q-text {
+    font-size: 14px;
+    color: var(--text);
+    margin-bottom: 12px;
+    line-height: 1.6;
+  }
+  textarea.q-answer {
+    width: 100%;
+    min-height: 90px;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    padding: 10px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13.5px;
+    color: var(--text);
+    background: var(--cream);
+    resize: vertical;
+    transition: border-color 0.2s;
+    line-height: 1.55;
+  }
+  textarea.q-answer:focus {
+    outline: none;
+    border-color: var(--teal);
+    background: var(--white);
+  }
+  .q-hint {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--text-light);
+    font-style: italic;
+  }
+
+  /* ── CALCULATION PROBLEM ── */
+  .calc-problem {
+    background: linear-gradient(135deg, #0D1B3E 0%, #162850 100%);
+    border-radius: 8px;
+    padding: 22px 26px;
+    margin-bottom: 14px;
+    color: white;
+  }
+  .calc-problem .q-number { color: var(--orange-light); }
+  .calc-problem .q-text { color: rgba(255,255,255,0.9); }
+  .calc-problem .given-box {
+    background: rgba(255,255,255,0.07);
+    border-radius: 5px;
+    padding: 12px 16px;
+    margin: 10px 0 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12.5px;
+    color: var(--teal-light);
+    line-height: 1.8;
+  }
+  .calc-problem textarea.q-answer {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.2);
+    color: var(--white);
+  }
+  .calc-problem textarea.q-answer:focus {
+    background: rgba(255,255,255,0.12);
+    border-color: var(--teal-light);
+  }
+  .calc-problem textarea.q-answer::placeholder { color: rgba(255,255,255,0.3); }
+
+  /* ── SUBMIT SECTION ── */
+  .submit-section {
+    background: var(--white);
+    border-radius: 8px;
+    border: 2px solid var(--navy);
+    padding: 26px 28px;
+    margin-top: 36px;
+  }
+  .submit-title {
+    font-family: 'Fraunces', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+  .submit-desc {
+    font-size: 13.5px;
+    color: var(--text-light);
+    margin-bottom: 20px;
+    line-height: 1.55;
+  }
+  .submit-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 640px) { .submit-options { grid-template-columns: 1fr; } }
+
+  .submit-opt {
+    border: 2px solid var(--border);
+    border-radius: 7px;
+    padding: 18px 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .submit-opt:hover { border-color: var(--teal); }
+  .submit-opt.active { border-color: var(--teal); background: rgba(27,138,143,0.05); }
+  .submit-opt-icon { font-size: 22px; margin-bottom: 8px; }
+  .submit-opt-title { font-weight: 600; font-size: 14px; color: var(--navy); margin-bottom: 4px; }
+  .submit-opt-desc { font-size: 12px; color: var(--text-light); line-height: 1.45; }
+
+  .action-buttons {
+    display: flex;
+    gap: 14px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 22px;
+    border-radius: 5px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 13.5px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.18s;
+    text-decoration: none;
+  }
+  .btn-primary {
+    background: var(--teal);
+    color: white;
+  }
+  .btn-primary:hover { background: #167c80; }
+  .btn-secondary {
+    background: var(--orange);
+    color: white;
+  }
+  .btn-secondary:hover { background: #cc5a22; }
+  .btn-ghost {
+    background: transparent;
+    color: var(--navy);
+    border: 2px solid var(--navy);
+  }
+  .btn-ghost:hover { background: var(--navy); color: white; }
+
+  /* ── PROGRESS BAR ── */
+  .progress-bar-wrap {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: rgba(0,0,0,0.1);
+    z-index: 999;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--teal), var(--orange));
+    width: 0%;
+    transition: width 0.3s;
+  }
+
+  /* ── COMPLETION TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    display: none;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+    z-index: 1000;
+    animation: slideUp 0.3s ease;
+  }
+  .toast.show { display: flex; }
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+  .toast-icon { font-size: 18px; }
+
+  /* ── DIVIDER ── */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 28px 0;
+  }
+
+  /* ── PRINT STYLES ── */
+  @media print {
+    .progress-bar-wrap, .toast, .submit-section .action-buttons { display: none; }
+    .sim-container { page-break-inside: avoid; }
+    body { background: white; }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 700px) {
+    .header-inner { padding: 24px 18px; }
+    .main-wrap { padding: 20px 16px 40px; }
+    .lab-header h1 { font-size: 1.7rem; }
+    iframe#phet-sim { height: 420px; }
+    .steps-grid { grid-template-columns: 1fr; }
+  }
+
+  .info-callout {
+    background: linear-gradient(135deg, rgba(27,138,143,0.08) 0%, rgba(27,138,143,0.03) 100%);
+    border: 1px solid rgba(27,138,143,0.25);
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin: 14px 0;
+    font-size: 13.5px;
+    color: var(--text);
+  }
+  .info-callout strong { color: var(--teal); }
+
+  .warning-callout {
+    background: rgba(232,104,42,0.08);
+    border: 1px solid rgba(232,104,42,0.3);
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin: 12px 0;
+    font-size: 13px;
+    color: var(--text);
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .name-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 640px) { .name-section { grid-template-columns: 1fr; } }
+  .name-field label {
+    display: block;
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-bottom: 5px;
+  }
+  .name-field input {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13.5px;
+    color: var(--text);
+    background: var(--cream);
+  }
+  .name-field input:focus {
+    outline: none;
+    border-color: var(--teal);
+    background: white;
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
+
+<!-- HEADER -->
+<header class="lab-header">
+  <div class="header-inner">
+    <div class="school-tag">San Tan Charter School · Chemistry</div>
+    <h1>Dalton's Law of<br><em>Partial Pressures</em></h1>
+    <p class="lab-subtitle">PhET Gas Properties Simulation Lab — Virtual Inquiry</p>
+    <div class="meta-row">
+      <div class="meta-chip"><span class="dot dot-teal"></span>Unit: Gas Laws (Ch. 14)</div>
+      <div class="meta-chip"><span class="dot dot-orange"></span>AZSci HS-PS1-7</div>
+      <div class="meta-chip"><span class="dot dot-cream"></span>~45 minutes</div>
+      <div class="meta-chip"><span class="dot dot-teal"></span>PhET: Gas Properties</div>
+    </div>
+  </div>
+</header>
+
+<div class="objective-band">
+  <div class="objective-band-inner">
+    <div class="obj-label">Learning Target</div>
+    <div class="obj-text">Confirm that the total pressure of a gas mixture equals the sum of the partial pressures of each component gas, at constant temperature and volume.</div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main-wrap">
+
+  <!-- STUDENT INFO -->
+  <div class="card" style="margin-top: 8px;">
+    <div class="card-title">Student Information</div>
+    <div class="name-section">
+      <div class="name-field">
+        <label for="s-name">Full Name</label>
+        <input type="text" id="s-name" placeholder="Your name">
+      </div>
+      <div class="name-field">
+        <label for="s-period">Period / Section</label>
+        <input type="text" id="s-period" placeholder="e.g., 3rd Period">
+      </div>
+      <div class="name-field">
+        <label for="s-date">Date</label>
+        <input type="date" id="s-date">
+      </div>
+    </div>
+  </div>
+
+  <!-- FORMULA REFERENCE -->
+  <div class="card formula-card">
+    <div style="display:flex; align-items:flex-start; gap:30px; flex-wrap:wrap;">
+      <div style="flex:1; min-width:220px;">
+        <div class="card-title" style="color:var(--teal-light);">Dalton's Law Formula</div>
+        <div class="formula-display">P<sub style="font-size:0.65em">total</sub> = P<sub style="font-size:0.65em">1</sub> + P<sub style="font-size:0.65em">2</sub> + P<sub style="font-size:0.65em">3</sub> + ...</div>
+        <div class="formula-sub">Sum of all partial pressures = Total pressure</div>
+      </div>
+      <div style="flex:1; min-width:220px; border-left:1px solid rgba(255,255,255,0.12); padding-left:28px;">
+        <div class="card-title" style="color:var(--orange-light);">Key Concepts to Remember</div>
+        <ul style="list-style:none; font-size:13px; color:rgba(255,255,255,0.78); line-height:2;">
+          <li>🔵 Pressure depends on <strong style="color:white;">number of collisions</strong>, not particle mass</li>
+          <li>🔶 Heavy &amp; light particles have the <strong style="color:white;">same average KE</strong> at equal T</li>
+          <li>⬜ Gases in a mixture act <strong style="color:white;">independently</strong></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 1: PRE-LAB -->
+  <div class="section-header">
+    <div class="section-num teal">PART 1</div>
+    <div class="section-title">Pre-Lab Setup &amp; Controlled Variables</div>
+  </div>
+
+  <div class="card accent-left">
+    <div class="card-title">Setup Instructions — Complete These Steps in Order</div>
+    <div class="steps-grid">
+      <div class="step-box">
+        <div class="step-num-circle teal">1</div>
+        <div class="step-content">
+          <p><strong>Open the simulation</strong> below. When it loads, you'll see a screen with two options — click the <strong>left tile (Ideal)</strong> to enter the correct simulation screen. The screen shows a gas container with a pressure gauge on the right side.</p>
+        </div>
+      </div>
+      <div class="step-box">
+        <div class="step-num-circle teal">2</div>
+        <div class="step-content">
+          <p><strong>Add 50 heavy particles first</strong> using the <strong>Heavy</strong> pump arrows (+) in the top-right panel. <em>You must add particles before the "Hold Constant" option becomes available.</em> The particle count appears in the box next to the arrows.</p>
+        </div>
+      </div>
+      <div class="step-box">
+        <div class="step-num-circle teal">3</div>
+        <div class="step-content">
+          <p>Now set <strong>Hold Constant → Temperature (T)</strong> in the right panel. This locks temperature at <strong>300 K</strong> (the default) so pressure changes are caused only by particle count. You'll see "300 K" displayed on the thermometer.</p>
+        </div>
+      </div>
+      <div class="step-box">
+        <div class="step-num-circle teal">4</div>
+        <div class="step-content">
+          <p>Check the <strong>"Width"</strong> checkbox in the right panel. A ruler will appear — read the width of the container and record it as your volume below. <em>Do not resize the container during the lab.</em></p>
+        </div>
+      </div>
+      <div class="step-box">
+        <div class="step-num-circle teal">5</div>
+        <div class="step-content">
+          <p>Confirm your starting state: <strong>Temperature = 300 K, Hold Constant = Temperature (T), Width checkbox checked</strong>. You're now ready to collect data! Record the controlled variables below before continuing.</p>
+        </div>
+      </div>
+      <div class="step-box">
+        <div class="step-num-circle teal">6</div>
+        <div class="step-content">
+          <p><strong>Wait 5–10 seconds</strong> after each particle change for the pressure to stabilize before recording. The pressure gauge needle will stop swinging when it's ready. Read to the nearest 0.01 atm.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="warning-callout">
+      <span>⚠️</span>
+      <div>When switching between heavy-only and light-only trials, <strong>use the minus (−) arrows to bring that particle type back to zero</strong> before adding the new type. For Phase C mixture trials, <strong>keep both types in the container at the same time</strong>.</div>
+    </div>
+  </div>
+
+  <!-- CONTROLLED VARIABLES -->
+  <div class="card">
+    <div class="card-title">Record Your Controlled Variables</div>
+    <p style="font-size:13.5px; color:var(--text-light); margin-bottom:14px;">These stay constant for <em>every trial</em>. The temperature is pre-set at 300 K — verify this on your thermometer display, then record your volume from the width ruler.</p>
+    <div class="input-row">
+      <div class="input-label">Temperature (T):</div>
+      <input class="chem-input" type="number" id="cv-temp" value="300" placeholder="300">
+      <div class="unit-tag">K</div>
+      <span style="font-size:12px; color:var(--text-light); font-style:italic;">(default — verify on thermometer)</span>
+    </div>
+    <div class="input-row">
+      <div class="input-label">Container Width:</div>
+      <input class="chem-input" type="number" id="cv-vol" placeholder="0.00">
+      <div class="unit-tag">nm (from ruler)</div>
+      <span style="font-size:12px; color:var(--text-light); font-style:italic;">(read from Width ruler in sim)</span>
+    </div>
+  </div>
+
+  <!-- SIMULATION EMBED -->
+  <div class="sim-container">
+    <div class="sim-topbar">
+      <span class="sim-topbar-title">PhET Gas Properties Simulation — University of Colorado Boulder</span>
+      <span class="sim-badge">LIVE SIM</span>
+    </div>
+    <iframe id="phet-sim"
+      src="https://phet.colorado.edu/sims/html/gas-properties/latest/gas-properties_en.html"
+      allowfullscreen>
+    </iframe>
+    <div class="sim-note">
+      <strong>Having trouble?</strong> If the simulation doesn't load, <a href="https://phet.colorado.edu/sims/html/gas-properties/latest/gas-properties_en.html" target="_blank" style="color:var(--teal);">open it in a new tab</a> and record your data side-by-side. Use the <strong>Ideal</strong> tab for this lab.
+    </div>
+  </div>
+
+  <!-- SECTION 2: DATA COLLECTION -->
+  <div class="section-header">
+    <div class="section-num teal">PART 2</div>
+    <div class="section-title">Experimental Phase — Data Collection</div>
+  </div>
+
+  <!-- PHASE A: HEAVY ONLY -->
+  <div class="card accent-left">
+    <div class="card-title">Phase A — Heavy Particles Only</div>
+    <div class="info-callout">
+      Make sure light particles are set to <strong>0</strong>. Use the <strong>Heavy (+) arrows</strong> to add particles in steps of 50. After each change, wait for the pressure gauge to stabilize (~5–10 sec), then record below.
+    </div>
+    <div class="data-table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th class="teal-header">Particles</th>
+            <th class="teal-header">50 Heavy</th>
+            <th class="teal-header">100 Heavy</th>
+            <th class="teal-header">150 Heavy</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="row-label">P<sub>heavy</sub> (atm)</td>
+            <td><input type="number" step="0.01" id="h50" placeholder="—"></td>
+            <td><input type="number" step="0.01" id="h100" placeholder="—"></td>
+            <td><input type="number" step="0.01" id="h150" placeholder="—"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PHASE B: LIGHT ONLY -->
+  <div class="card accent-left">
+    <div class="card-title">Phase B — Light Particles Only</div>
+    <div class="info-callout">
+      <strong>Use the Heavy (−) arrows to bring heavy particles back to 0 first.</strong> Then add only light particles in steps of 50. Wait for stabilization before each reading.
+    </div>
+    <div class="data-table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th class="teal-header">Particles</th>
+            <th class="teal-header">50 Light</th>
+            <th class="teal-header">100 Light</th>
+            <th class="teal-header">150 Light</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="row-label">P<sub>light</sub> (atm)</td>
+            <td><input type="number" step="0.01" id="l50" placeholder="—"></td>
+            <td><input type="number" step="0.01" id="l100" placeholder="—"></td>
+            <td><input type="number" step="0.01" id="l150" placeholder="—"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PHASE C: MIXTURES (Main 9-cell grid) -->
+  <div class="card accent-orange">
+    <div class="card-title orange">Phase C — Mixed Gas Trials (3×3 Grid)</div>
+    <div class="info-callout">
+      Now add <strong>both heavy and light particles simultaneously</strong> in each combination below. Set heavy particles first, then add light particles on top. Wait for stabilization, then record the <em>measured</em> total pressure. The teal values auto-calculate your Dalton's Law prediction from Phases A &amp; B.
+    </div>
+    <div class="data-table-wrap">
+      <table class="data-table" id="mix-table">
+        <thead>
+          <tr>
+            <th rowspan="3" style="background:#2a2a50; vertical-align:middle; font-size:11px;">Heavy ↓ / Light →</th>
+            <th class="teal-header" colspan="3">Light Gas Particles</th>
+          </tr>
+          <tr>
+            <th class="teal-header">50 Light</th>
+            <th class="teal-header">100 Light</th>
+            <th class="teal-header">150 Light</th>
+          </tr>
+          <tr>
+            <th class="teal-header" style="font-size:9px; letter-spacing:0; text-transform:none; font-weight:400; opacity:0.75;">measured / predicted</th>
+            <th class="teal-header" style="font-size:9px; letter-spacing:0; text-transform:none; font-weight:400; opacity:0.75;">measured / predicted</th>
+            <th class="teal-header" style="font-size:9px; letter-spacing:0; text-transform:none; font-weight:400; opacity:0.75;">measured / predicted</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Row: 50 Heavy -->
+          <tr>
+            <td class="row-label" rowspan="2">50 Heavy</td>
+            <td><input type="number" step="0.01" id="m_h50_l50" placeholder="—"></td>
+            <td><input type="number" step="0.01" id="m_h50_l100" placeholder="—"></td>
+            <td><input type="number" step="0.01" id="m_h50_l150" placeholder="—"></td>
+          </tr>
+          <tr>
+            <td class="calc-cell" id="p_h50_l50">—</td>
+            <td class="calc-cell" id="p_h50_l100">—</td>
+            <td class="calc-cell" id="p_h50_l150">—</td>
+          </tr>
+          <!-- Row: 100 Heavy -->
+          <tr>
+            <td class="row-label" rowspan="2">100 Heavy</td>
+            <td><input type="number" step="0.01" id="m_h100_l50" placeholder="—"></td>
+            <td><input type="number" step="0.01" id="m_h100_l100" placeholder="—"></td>
+            <td><input type="number" step="0.01" id="m_h100_l150" placeholder="—"></td>
+          </tr>
+          <tr>
+            <td class="calc-cell" id="p_h100_l50">—</td>
+            <td class="calc-cell" id="p_h100_l100">—</td>
+            <td class="calc-cell" id="p_h100_l150">—</td>
+          </tr>
+          <!-- Row: 150 Heavy -->
+          <tr>
+            <td class="row-label" rowspan="2">150 Heavy</td>
+            <td><input type="number" step="0.01" id="m_h150_l50" placeholder="—"></td>
+            <td><input type="number" step="0.01" id="m_h150_l100" placeholder="—"></td>
+            <td><input type="number" step="0.01" id="m_h150_l150" placeholder="—"></td>
+          </tr>
+          <tr>
+            <td class="calc-cell" id="p_h150_l50">—</td>
+            <td class="calc-cell" id="p_h150_l100">—</td>
+            <td class="calc-cell" id="p_h150_l150">—</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="4" style="background:var(--cream-dark); font-size:11.5px; color:var(--text-light); padding:8px 14px; font-style:italic; text-align:left;">
+              <strong style="color:var(--teal);">Teal values</strong> = P<sub>heavy</sub> + P<sub>light</sub> predicted by Dalton's Law (auto-fills from your Phase A &amp; B data above). Compare these to your measured values!
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+  <!-- SECTION 3: ANALYSIS -->
+  <div class="section-header">
+    <div class="section-num orange">PART 3</div>
+    <div class="section-title">Post-Lab Analysis Questions</div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">Question 1 — Pattern Recognition</div>
+    <div class="q-text">Looking at your data from Phase C, how does the measured total pressure compare to the <em>sum</em> of the individual partial pressures (Phase A + Phase B) for the same particle counts? State a trend or pattern you observe.</div>
+    <textarea class="q-answer" id="q1" placeholder="Write your answer here..."></textarea>
+    <div class="q-hint">💡 Hint: Compare your teal "predicted" values with your measured values. Are they close? What does that tell you?</div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">Question 2 — Mass &amp; Pressure</div>
+    <div class="q-text">Compare the pressure of 100 heavy particles to 100 light particles at the same temperature and volume. Does the <strong>mass</strong> of the gas particles affect pressure? Use your data as evidence to support your answer.</div>
+    <textarea class="q-answer" id="q2" placeholder="Write your answer here..."></textarea>
+    <div class="q-hint">💡 Hint: Think about the Kinetic Molecular Theory — what do heavy and light particles have in common at the same temperature?</div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">Question 3 — KMT Connection</div>
+    <div class="q-text">The simulation note says that at the same temperature, heavy and light particles have the same kinetic energy (KE = ½mv²). If the heavy particle is more massive, what must be true about the <em>speed</em> of the light particle? Explain why this matters for pressure.</div>
+    <textarea class="q-answer" id="q3" placeholder="Write your answer here..."></textarea>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">Question 4 — Dalton's Law in Words</div>
+    <div class="q-text">In your own words, write a statement of Dalton's Law of Partial Pressures based on your experimental results (not the textbook definition). Reference at least one specific data point from your table.</div>
+    <textarea class="q-answer" id="q4" placeholder="Write your answer here..." style="min-height:110px;"></textarea>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">Question 5 — Sources of Error</div>
+    <div class="q-text">Even in a simulation, you may notice small differences between the predicted sum (P<sub>heavy</sub> + P<sub>light</sub>) and the measured total pressure. List at least <strong>two reasons</strong> why these values might not match perfectly.</div>
+    <textarea class="q-answer" id="q5" placeholder="1. ...\n2. ..."></textarea>
+    <div class="q-hint">💡 Think about: reading the pressure gauge, simulation randomness, particle fluctuations, decimal rounding...</div>
+  </div>
+
+  <!-- CALCULATION PROBLEM -->
+  <div class="section-header">
+    <div class="section-num orange">PART 4</div>
+    <div class="section-title">Application Problem</div>
+  </div>
+
+  <div class="calc-problem">
+    <div class="q-number">Calculation — Apply Dalton's Law</div>
+    <div class="q-text">A 1.0 L container at 25 °C contains a mixture of three gases: nitrogen (N₂), oxygen (O₂), and argon (Ar). Use the information below to find the missing value.</div>
+    <div class="given-box">
+      Given:<br>
+      P(N₂) = 0.30 atm<br>
+      P(O₂) = 0.25 atm<br>
+      P(total) = 1.00 atm<br>
+      Find: P(Ar) = ?
+    </div>
+    <div class="q-text" style="font-size:13px; opacity:0.85; margin-bottom:10px;">Show your work using the formula P<sub>total</sub> = P(N₂) + P(O₂) + P(Ar):</div>
+    <textarea class="q-answer" id="q-calc" placeholder="Show your setup and work here:&#10;&#10;P_total = P(N₂) + P(O₂) + P(Ar)&#10;1.00 atm = 0.30 atm + 0.25 atm + P(Ar)&#10;..."></textarea>
+  </div>
+
+  <div class="calc-problem" style="margin-top:14px;">
+    <div class="q-number">Bonus — Mole Fraction</div>
+    <div class="q-text">Using the problem above, what is the mole fraction (χ) of nitrogen gas in the mixture? Recall: χ = P<sub>gas</sub> / P<sub>total</sub></div>
+    <textarea class="q-answer" id="q-bonus" placeholder="χ(N₂) = P(N₂) / P(total) = ..."></textarea>
+  </div>
+
+  <!-- SUBMIT SECTION -->
+  <div class="submit-section">
+    <div class="submit-title">📤 Submit Your Lab</div>
+    <div class="submit-desc">Choose how you'd like to save and submit your completed lab. Make sure all data tables and questions are filled in before submitting.</div>
+
+    <div class="submit-options">
+      <div class="submit-opt" onclick="selectOpt(this, 'screenshot')" id="opt-screenshot">
+        <div class="submit-opt-icon">📸</div>
+        <div class="submit-opt-title">Screenshot Method</div>
+        <div class="submit-opt-desc">Take a full-page screenshot of this lab page with your answers filled in. Upload the image to Google Classroom.</div>
+      </div>
+      <div class="submit-opt" onclick="selectOpt(this, 'word')" id="opt-word">
+        <div class="submit-opt-icon">📄</div>
+        <div class="submit-opt-title">Download Word Doc</div>
+        <div class="submit-opt-desc">Export all your answers as a formatted Word document (.docx) ready to upload to Google Classroom.</div>
+      </div>
+    </div>
+
+    <div class="action-buttons">
+      <button class="btn btn-primary" onclick="downloadAnswers()">⬇ Download My Answers (.txt)</button>
+      <button class="btn btn-secondary" onclick="exportWordDoc()">📄 Export as Word Doc</button>
+      <button class="btn btn-ghost" onclick="printLab()">🖨 Print / Save as PDF</button>
+    </div>
+
+    <p style="margin-top:14px; font-size:12px; color:var(--text-light);">
+      <strong>Screenshot tip:</strong> Press <kbd style="background:var(--cream-dark); padding:2px 6px; border-radius:3px; font-family:monospace; border:1px solid var(--border);">Ctrl+Shift+S</kbd> (Windows) or <kbd style="background:var(--cream-dark); padding:2px 6px; border-radius:3px; font-family:monospace; border:1px solid var(--border);">Cmd+Shift+4</kbd> (Mac) for a region screenshot, or use your browser's full-page screenshot tool.
+    </p>
+  </div>
+
+</div><!-- end main-wrap -->
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span class="toast-icon">✅</span>
+  <span id="toast-msg">Your answers have been downloaded!</span>
+</div>
+
+<script>
+// ── AUTO-DATE ──
+document.getElementById('s-date').valueAsDate = new Date();
+
+// ── PROGRESS BAR ──
+function updateProgress() {
+  const inputs = document.querySelectorAll('input[type="number"], input[type="text"], textarea');
+  let filled = 0;
+  inputs.forEach(el => { if (el.value.trim() !== '') filled++; });
+  const pct = Math.min(100, Math.round((filled / inputs.length) * 100));
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+document.addEventListener('input', updateProgress);
+
+// ── AUTO-CALCULATE PREDICTED PRESSURES (Phase A + Phase B → Phase C) ──
+function getPressureFor(heavy, light) {
+  const hVal = parseFloat(document.getElementById('h' + heavy)?.value);
+  const lVal = parseFloat(document.getElementById('l' + light)?.value);
+  if (!isNaN(hVal) && !isNaN(lVal)) {
+    return (hVal + lVal).toFixed(2) + ' atm';
+  }
+  return '—';
+}
+
+function updatePredictions() {
+  const combos = [
+    ['50','50'],['50','100'],['50','150'],
+    ['100','50'],['100','100'],['100','150'],
+    ['150','50'],['150','100'],['150','150']
+  ];
+  combos.forEach(([h, l]) => {
+    const el = document.getElementById('p_h' + h + '_l' + l);
+    if (el) el.textContent = getPressureFor(h, l);
+  });
+}
+
+// Attach listeners to phase A & B inputs
+['h50','h100','h150','l50','l100','l150'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', updatePredictions);
+});
+
+// ── SUBMIT OPTION SELECTOR ──
+function selectOpt(el, type) {
+  document.querySelectorAll('.submit-opt').forEach(o => o.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ── SHOW TOAST ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// ── COLLECT ALL DATA ──
+function collectData() {
+  return {
+    student: {
+      name: document.getElementById('s-name').value,
+      period: document.getElementById('s-period').value,
+      date: document.getElementById('s-date').value,
+    },
+    controlled: {
+      temp: document.getElementById('cv-temp').value + ' K',
+      width: document.getElementById('cv-vol').value + ' nm',
+    },
+    phaseA: {
+      heavy50:  document.getElementById('h50').value,
+      heavy100: document.getElementById('h100').value,
+      heavy150: document.getElementById('h150').value,
+    },
+    phaseB: {
+      light50:  document.getElementById('l50').value,
+      light100: document.getElementById('l100').value,
+      light150: document.getElementById('l150').value,
+    },
+    phaseC: {
+      h50_l50:   document.getElementById('m_h50_l50').value,
+      h50_l100:  document.getElementById('m_h50_l100').value,
+      h50_l150:  document.getElementById('m_h50_l150').value,
+      h100_l50:  document.getElementById('m_h100_l50').value,
+      h100_l100: document.getElementById('m_h100_l100').value,
+      h100_l150: document.getElementById('m_h100_l150').value,
+      h150_l50:  document.getElementById('m_h150_l50').value,
+      h150_l100: document.getElementById('m_h150_l100').value,
+      h150_l150: document.getElementById('m_h150_l150').value,
+    },
+    questions: {
+      q1:    document.getElementById('q1').value,
+      q2:    document.getElementById('q2').value,
+      q3:    document.getElementById('q3').value,
+      q4:    document.getElementById('q4').value,
+      q5:    document.getElementById('q5').value,
+      calc:  document.getElementById('q-calc').value,
+      bonus: document.getElementById('q-bonus').value,
+    }
+  };
+}
+
+// ── DOWNLOAD .TXT ──
+function downloadAnswers() {
+  const d = collectData();
+  let txt = '';
+  txt += '═══════════════════════════════════════════════════\n';
+  txt += '  DALTON\'S LAW OF PARTIAL PRESSURES — PHET LAB\n';
+  txt += '  San Tan Charter School · Chemistry\n';
+  txt += '═══════════════════════════════════════════════════\n\n';
+  txt += `Student: ${d.student.name}\n`;
+  txt += `Period:  ${d.student.period}\n`;
+  txt += `Date:    ${d.student.date}\n\n`;
+
+  txt += '─── CONTROLLED VARIABLES ───────────────────────────\n';
+  txt += `Temperature:     ${d.controlled.temp}\n`;
+  txt += `Container Width: ${d.controlled.width}\n\n`;
+
+  txt += '─── PHASE A: HEAVY PARTICLES ONLY ──────────────────\n';
+  txt += `P(50 heavy)  = ${d.phaseA.heavy50} atm\n`;
+  txt += `P(100 heavy) = ${d.phaseA.heavy100} atm\n`;
+  txt += `P(150 heavy) = ${d.phaseA.heavy150} atm\n\n`;
+
+  txt += '─── PHASE B: LIGHT PARTICLES ONLY ──────────────────\n';
+  txt += `P(50 light)  = ${d.phaseB.light50} atm\n`;
+  txt += `P(100 light) = ${d.phaseB.light100} atm\n`;
+  txt += `P(150 light) = ${d.phaseB.light150} atm\n\n`;
+
+  txt += '─── PHASE C: MIXED GAS MEASUREMENTS (measured) ─────\n';
+  txt += `P(50H  + 50L)  = ${d.phaseC.h50_l50} atm\n`;
+  txt += `P(50H  + 100L) = ${d.phaseC.h50_l100} atm\n`;
+  txt += `P(50H  + 150L) = ${d.phaseC.h50_l150} atm\n`;
+  txt += `P(100H + 50L)  = ${d.phaseC.h100_l50} atm\n`;
+  txt += `P(100H + 100L) = ${d.phaseC.h100_l100} atm\n`;
+  txt += `P(100H + 150L) = ${d.phaseC.h100_l150} atm\n`;
+  txt += `P(150H + 50L)  = ${d.phaseC.h150_l50} atm\n`;
+  txt += `P(150H + 100L) = ${d.phaseC.h150_l100} atm\n`;
+  txt += `P(150H + 150L) = ${d.phaseC.h150_l150} atm\n\n`;
+
+  txt += '─── ANALYSIS QUESTIONS ─────────────────────────────\n\n';
+  txt += `Q1 — Pattern Recognition:\n${d.questions.q1}\n\n`;
+  txt += `Q2 — Mass & Pressure:\n${d.questions.q2}\n\n`;
+  txt += `Q3 — KMT Connection:\n${d.questions.q3}\n\n`;
+  txt += `Q4 — Dalton's Law in Words:\n${d.questions.q4}\n\n`;
+  txt += `Q5 — Sources of Error:\n${d.questions.q5}\n\n`;
+  txt += '─── APPLICATION PROBLEM ────────────────────────────\n\n';
+  txt += `Calculation:\n${d.questions.calc}\n\n`;
+  txt += `Bonus — Mole Fraction:\n${d.questions.bonus}\n\n`;
+  txt += '═══════════════════════════════════════════════════\n';
+
+  const blob = new Blob([txt], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `DaltonsLaw_Lab_${d.student.name.replace(/\s+/g,'_') || 'Student'}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Lab answers downloaded!');
+}
+
+// ── EXPORT WORD-STYLE HTML AS .DOC ──
+function exportWordDoc() {
+  const d = collectData();
+
+  // Build Dalton's Law predicted values for Phase C table
+  function pred(h, l) {
+    const hv = parseFloat(d.phaseA['heavy'+h]);
+    const lv = parseFloat(d.phaseB['light'+l]);
+    if (!isNaN(hv) && !isNaN(lv)) return (hv+lv).toFixed(2)+' atm (predicted)';
+    return '—';
+  }
+
+  const html = `
+<html xmlns:o='urn:schemas-microsoft-com:office:office'
+      xmlns:w='urn:schemas-microsoft-com:office:word'
+      xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+<meta charset="UTF-8">
+<title>Dalton's Law Lab</title>
+<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml><![endif]-->
+<style>
+  body { font-family: Calibri, sans-serif; font-size: 11pt; margin: 1in; color: #1A1A2E; }
+  h1 { font-size: 18pt; color: #0D1B3E; margin-bottom: 4pt; }
+  h2 { font-size: 13pt; color: #1B8A8F; border-bottom: 1.5pt solid #1B8A8F; padding-bottom: 3pt; margin-top: 16pt; margin-bottom: 8pt; }
+  h3 { font-size: 11pt; color: #0D1B3E; margin-top: 12pt; margin-bottom: 4pt; }
+  .header-block { background: #0D1B3E; color: white; padding: 14pt; margin-bottom: 16pt; }
+  .header-block h1 { color: white; }
+  .header-block p { color: rgba(255,255,255,0.75); font-size: 10pt; }
+  table { border-collapse: collapse; width: 100%; margin: 8pt 0; }
+  th { background: #0D1B3E; color: white; padding: 7pt 10pt; font-size: 10pt; border: 1pt solid #aaa; text-align:center; }
+  th.teal { background: #1B8A8F; }
+  td { border: 1pt solid #ccc; padding: 6pt 10pt; font-size: 10pt; text-align:center; }
+  td.label { background: #eee; font-weight: bold; text-align:left; }
+  td.pred { color: #1B8A8F; font-style: italic; font-size: 9pt; }
+  .answer-box { border: 1pt solid #1B8A8F; min-height: 60pt; padding: 8pt; margin: 6pt 0; background: #f9f9f9; font-size: 10.5pt; white-space: pre-wrap; }
+  .formula { font-size: 14pt; color: #1B8A8F; text-align: center; font-weight: bold; margin: 12pt; }
+  .given-box { background: #f0f4f4; border-left: 3pt solid #1B8A8F; padding: 8pt 12pt; font-family: Courier New; font-size: 10pt; }
+  .q-label { font-weight: bold; color: #E8682A; font-size: 10pt; margin-top: 10pt; }
+</style>
+</head>
+<body>
+<div class="header-block">
+  <h1>Dalton's Law of Partial Pressures — PhET Virtual Lab</h1>
+  <p>San Tan Charter School · Chemistry · Unit: Gas Laws (Chapter 14) · AZSci HS-PS1-7</p>
+</div>
+
+<table style="margin-bottom:14pt;">
+  <tr>
+    <td class="label"><b>Student:</b> ${d.student.name || '_______________'}</td>
+    <td class="label"><b>Period:</b> ${d.student.period || '_______________'}</td>
+    <td class="label"><b>Date:</b> ${d.student.date || '_______________'}</td>
+  </tr>
+</table>
+
+<div class="formula">P<sub>total</sub> = P<sub>1</sub> + P<sub>2</sub> + P<sub>3</sub> + ...</div>
+
+<h2>Part 1 — Controlled Variables</h2>
+<table>
+  <tr><td class="label">Temperature (T)</td><td>${d.controlled.temp}</td></tr>
+  <tr><td class="label">Container Width</td><td>${d.controlled.width}</td></tr>
+</table>
+
+<h2>Part 2 — Data Tables</h2>
+
+<h3>Phase A — Heavy Particles Only</h3>
+<table>
+  <tr><th>Particles</th><th class="teal">50 Heavy</th><th class="teal">100 Heavy</th><th class="teal">150 Heavy</th></tr>
+  <tr>
+    <td class="label">P<sub>heavy</sub> (atm)</td>
+    <td>${d.phaseA.heavy50 || '—'}</td>
+    <td>${d.phaseA.heavy100 || '—'}</td>
+    <td>${d.phaseA.heavy150 || '—'}</td>
+  </tr>
+</table>
+
+<h3>Phase B — Light Particles Only</h3>
+<table>
+  <tr><th>Particles</th><th class="teal">50 Light</th><th class="teal">100 Light</th><th class="teal">150 Light</th></tr>
+  <tr>
+    <td class="label">P<sub>light</sub> (atm)</td>
+    <td>${d.phaseB.light50 || '—'}</td>
+    <td>${d.phaseB.light100 || '—'}</td>
+    <td>${d.phaseB.light150 || '—'}</td>
+  </tr>
+</table>
+
+<h3>Phase C — Mixed Gas (measured atm / Dalton's Law predicted)</h3>
+<table>
+  <tr>
+    <th>Heavy ↓ / Light →</th>
+    <th class="teal">50 Light</th><th class="teal">100 Light</th><th class="teal">150 Light</th>
+  </tr>
+  <tr>
+    <td class="label">50 Heavy — measured</td>
+    <td>${d.phaseC.h50_l50||'—'}</td><td>${d.phaseC.h50_l100||'—'}</td><td>${d.phaseC.h50_l150||'—'}</td>
+  </tr>
+  <tr>
+    <td class="label" style="color:#1B8A8F; font-size:9pt;">50 Heavy — predicted</td>
+    <td class="pred">${pred('50','50')}</td><td class="pred">${pred('50','100')}</td><td class="pred">${pred('50','150')}</td>
+  </tr>
+  <tr>
+    <td class="label">100 Heavy — measured</td>
+    <td>${d.phaseC.h100_l50||'—'}</td><td>${d.phaseC.h100_l100||'—'}</td><td>${d.phaseC.h100_l150||'—'}</td>
+  </tr>
+  <tr>
+    <td class="label" style="color:#1B8A8F; font-size:9pt;">100 Heavy — predicted</td>
+    <td class="pred">${pred('100','50')}</td><td class="pred">${pred('100','100')}</td><td class="pred">${pred('100','150')}</td>
+  </tr>
+  <tr>
+    <td class="label">150 Heavy — measured</td>
+    <td>${d.phaseC.h150_l50||'—'}</td><td>${d.phaseC.h150_l100||'—'}</td><td>${d.phaseC.h150_l150||'—'}</td>
+  </tr>
+  <tr>
+    <td class="label" style="color:#1B8A8F; font-size:9pt;">150 Heavy — predicted</td>
+    <td class="pred">${pred('150','50')}</td><td class="pred">${pred('150','100')}</td><td class="pred">${pred('150','150')}</td>
+  </tr>
+</table>
+
+<h2>Part 3 — Analysis Questions</h2>
+
+<div class="q-label">Q1 — Pattern Recognition</div>
+<div class="answer-box">${d.questions.q1 || '(no answer entered)'}</div>
+
+<div class="q-label">Q2 — Mass &amp; Pressure</div>
+<div class="answer-box">${d.questions.q2 || '(no answer entered)'}</div>
+
+<div class="q-label">Q3 — KMT Connection</div>
+<div class="answer-box">${d.questions.q3 || '(no answer entered)'}</div>
+
+<div class="q-label">Q4 — Dalton's Law in Words</div>
+<div class="answer-box">${d.questions.q4 || '(no answer entered)'}</div>
+
+<div class="q-label">Q5 — Sources of Error</div>
+<div class="answer-box">${d.questions.q5 || '(no answer entered)'}</div>
+
+<h2>Part 4 — Application Problem</h2>
+<div class="given-box">
+P(N₂) = 0.30 atm &nbsp;|&nbsp; P(O₂) = 0.25 atm &nbsp;|&nbsp; P(total) = 1.00 atm &nbsp;|&nbsp; Find: P(Ar) = ?
+</div>
+<div class="q-label">Calculation — Work Shown</div>
+<div class="answer-box">${d.questions.calc || '(no answer entered)'}</div>
+
+<div class="q-label">Bonus — Mole Fraction of N₂</div>
+<div class="answer-box">${d.questions.bonus || '(no answer entered)'}</div>
+
+</body>
+</html>`;
+
+  const blob = new Blob([html], { type: 'application/msword' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const name = document.getElementById('s-name').value.replace(/\s+/g,'_') || 'Student';
+  a.download = `DaltonsLaw_Lab_${name}.doc`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Word doc exported! Upload to Google Classroom.');
+}
+
+// ── PRINT ──
+function printLab() {
+  window.print();
+}
+
+// ── INIT ──
+updateProgress();
+</script>
+
+</body>
+</html>
