@@ -1,0 +1,1760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AP Chemistry — Virtual Calorimetry Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ─── RESET & BASE ─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy:    #1B3A5C;
+  --teal:    #2A7F7F;
+  --gold:    #C49A2A;
+  --cream:   #FAFAF7;
+  --offwht:  #F4F1EC;
+  --warm:    #EDE8DF;
+  --dkgray:  #2C2C2C;
+  --midgray: #6B6B6B;
+  --ltgray:  #D8D4CC;
+  --red:     #B22222;
+  --green:   #1A6B3C;
+  --hotclr:  #C0392B;
+  --coldclr: #2980B9;
+  --radius:  8px;
+  --shadow:  0 2px 12px rgba(27,58,92,0.10);
+  --shadow-lg: 0 8px 32px rgba(27,58,92,0.14);
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--cream);
+  color: var(--dkgray);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ─── TYPOGRAPHY ───────────────────────────────────────────── */
+h1, h2, h3 { font-family: 'Source Serif 4', Georgia, serif; }
+h1 { font-size: 2rem; font-weight: 700; color: var(--navy); }
+h2 { font-size: 1.35rem; font-weight: 600; color: var(--navy); margin-bottom: 0.5rem; }
+h3 { font-size: 1.05rem; font-weight: 600; color: var(--teal); margin-bottom: 0.4rem; }
+p { margin-bottom: 0.75rem; font-size: 0.95rem; }
+code { font-family: 'JetBrains Mono', monospace; background: var(--warm); padding: 2px 6px; border-radius: 3px; font-size: 0.88rem; color: var(--navy); }
+strong { color: var(--navy); }
+
+/* ─── HEADER ───────────────────────────────────────────────── */
+header {
+  background: var(--navy);
+  color: white;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+.header-gold-bar { height: 6px; background: var(--gold); }
+.header-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 2rem 1.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+.header-badge {
+  background: var(--gold);
+  color: var(--navy);
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  font-size: 0.75rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 4px;
+  white-space: nowrap;
+  margin-top: 0.35rem;
+  letter-spacing: 0.05em;
+}
+.header-text h1 { color: white; font-size: 1.8rem; }
+.header-text .subtitle { color: rgba(255,255,255,0.7); font-size: 0.9rem; margin: 0.25rem 0 0; }
+.header-meta {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255,255,255,0.15);
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.6);
+}
+.header-meta span { display: flex; align-items: center; gap: 0.4rem; }
+.header-meta strong { color: rgba(255,255,255,0.9); }
+
+/* ─── LAYOUT ───────────────────────────────────────────────── */
+.container { max-width: 960px; margin: 0 auto; padding: 0 2rem 4rem; }
+
+/* ─── NAV TABS ─────────────────────────────────────────────── */
+.tab-nav {
+  display: flex;
+  gap: 0;
+  background: var(--navy);
+  border-bottom: 3px solid var(--gold);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.tab-btn {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.6);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 0.9rem 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.03em;
+  position: relative;
+  white-space: nowrap;
+}
+.tab-btn:hover { color: white; background: rgba(255,255,255,0.06); }
+.tab-btn.active {
+  color: var(--gold);
+  font-weight: 600;
+}
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 0; right: 0;
+  height: 3px;
+  background: var(--gold);
+}
+.tab-btn.completed::before {
+  content: '✓ ';
+  color: #4CAF50;
+  font-size: 0.75rem;
+}
+
+/* ─── SECTIONS ─────────────────────────────────────────────── */
+.section { display: none; padding-top: 2rem; }
+.section.active { display: block; }
+
+/* ─── CARDS ────────────────────────────────────────────────── */
+.card {
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-left: 4px solid var(--teal);
+}
+.card.gold { border-left-color: var(--gold); }
+.card.red  { border-left-color: var(--red); }
+.card.navy { border-left-color: var(--navy); }
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--ltgray);
+}
+.card-title h2 { margin: 0; }
+.card-icon {
+  width: 32px; height: 32px;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+.icon-teal { background: var(--teal); }
+.icon-gold { background: var(--gold); }
+.icon-navy { background: var(--navy); }
+
+/* ─── INFO BOXES ───────────────────────────────────────────── */
+.info-box {
+  background: #E8F4F8;
+  border: 1px solid #B0D4E4;
+  border-radius: var(--radius);
+  padding: 1rem 1.2rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+.info-box.warning {
+  background: #FEF9E7;
+  border-color: #F9E07A;
+}
+.info-box.formula {
+  background: var(--offwht);
+  border-color: var(--ltgray);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+  text-align: center;
+  color: var(--navy);
+  font-weight: 600;
+}
+.info-box-title {
+  font-weight: 600;
+  color: var(--navy);
+  font-size: 0.82rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+
+/* ─── OBJECTIVE TABLE ──────────────────────────────────────── */
+.obj-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+.obj-table th {
+  background: var(--navy);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.obj-table td { padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--ltgray); vertical-align: top; }
+.obj-table tr:last-child td { border-bottom: none; }
+.obj-table tr:nth-child(even) td { background: var(--offwht); }
+.ced-tag {
+  display: inline-block;
+  background: var(--teal);
+  color: white;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  padding: 1px 6px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+/* ─── SIMULATION ───────────────────────────────────────────── */
+.sim-wrapper {
+  background: linear-gradient(135deg, #0D1B2A 0%, #1B3A5C 100%);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+.sim-wrapper::before {
+  content: '';
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: rgba(196,154,42,0.07);
+}
+.sim-title {
+  color: var(--gold);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+.sim-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  gap: 1rem;
+  align-items: center;
+}
+.beaker-area { text-align: center; }
+.beaker-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+.beaker-container {
+  position: relative;
+  display: inline-block;
+  width: 90px;
+  height: 110px;
+}
+.beaker-svg { width: 90px; height: 110px; }
+.temp-badge {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: white;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  pointer-events: none;
+}
+
+.arrow-area { text-align: center; }
+.mix-arrow {
+  font-size: 1.8rem;
+  opacity: 0.6;
+  color: white;
+}
+
+.thermometer-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+.therm-outer {
+  width: 24px;
+  height: 120px;
+  background: rgba(255,255,255,0.1);
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 12px 12px 0 0;
+  position: relative;
+  overflow: hidden;
+}
+.therm-inner {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: linear-gradient(to top, #E74C3C, #F39C12);
+  transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 0 0 0 0;
+}
+.therm-bulb {
+  width: 24px; height: 24px;
+  background: #E74C3C;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.3);
+}
+.therm-temp {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: white;
+}
+.therm-label {
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sim-controls {
+  margin-top: 1.2rem;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ─── CONTROLS ─────────────────────────────────────────────── */
+.ctrl-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  color: rgba(255,255,255,0.8);
+}
+.ctrl-group label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+}
+.ctrl-group input[type="range"] {
+  width: 120px;
+  accent-color: var(--gold);
+}
+.ctrl-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+  color: var(--gold);
+}
+
+/* ─── BUTTONS ──────────────────────────────────────────────── */
+.btn {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.55rem 1.2rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.02em;
+}
+.btn-primary {
+  background: var(--gold);
+  color: var(--navy);
+}
+.btn-primary:hover { background: #B8890F; transform: translateY(-1px); }
+.btn-primary:active { transform: translateY(0); }
+.btn-secondary {
+  background: rgba(255,255,255,0.12);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.25);
+}
+.btn-secondary:hover { background: rgba(255,255,255,0.2); }
+.btn-teal {
+  background: var(--teal);
+  color: white;
+}
+.btn-teal:hover { background: #236B6B; }
+.btn-navy {
+  background: var(--navy);
+  color: white;
+}
+.btn-navy:hover { background: #122A45; }
+.btn-outline {
+  background: transparent;
+  color: var(--navy);
+  border: 2px solid var(--navy);
+}
+.btn-outline:hover { background: var(--navy); color: white; }
+.btn-lg { padding: 0.8rem 2rem; font-size: 0.95rem; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none !important; }
+
+/* ─── DATA TABLE ───────────────────────────────────────────── */
+.data-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-bottom: 1rem; }
+.data-table th {
+  background: var(--navy);
+  color: white;
+  padding: 0.6rem 0.8rem;
+  text-align: left;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.data-table td {
+  padding: 0.5rem 0.8rem;
+  border-bottom: 1px solid var(--ltgray);
+  vertical-align: middle;
+}
+.data-table tr:nth-child(even) td { background: var(--offwht); }
+.data-table .param { font-weight: 600; color: var(--navy); font-size: 0.85rem; }
+.data-table .unit { color: var(--midgray); font-size: 0.8rem; font-style: italic; }
+.data-table input[type="number"], .data-table input[type="text"] {
+  width: 120px;
+  padding: 0.3rem 0.5rem;
+  border: 2px solid var(--ltgray);
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.88rem;
+  color: var(--navy);
+  transition: border-color 0.2s;
+  background: white;
+}
+.data-table input:focus {
+  outline: none;
+  border-color: var(--teal);
+}
+.data-table .calculated {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--green);
+  background: #F0FAF5;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  display: inline-block;
+  min-width: 80px;
+}
+.data-table .calculated.pending { color: var(--midgray); background: var(--offwht); font-weight: 400; font-style: italic; }
+
+/* ─── FORMULA BOX ──────────────────────────────────────────── */
+.formula-display {
+  background: var(--navy);
+  color: white;
+  border-radius: var(--radius);
+  padding: 1rem 1.5rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1rem;
+  text-align: center;
+  margin: 1rem 0;
+  letter-spacing: 0.02em;
+}
+.formula-display .highlight { color: var(--gold); font-weight: 600; }
+
+/* ─── QUESTIONS ────────────────────────────────────────────── */
+.question-block {
+  background: white;
+  border-radius: var(--radius);
+  border: 1px solid var(--ltgray);
+  padding: 1.2rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow);
+}
+.question-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px; height: 26px;
+  background: var(--teal);
+  color: white;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-right: 0.5rem;
+  flex-shrink: 0;
+}
+.question-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+.question-text { font-size: 0.92rem; line-height: 1.5; }
+.question-pts {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: var(--midgray);
+  white-space: nowrap;
+  font-family: 'JetBrains Mono', monospace;
+  background: var(--offwht);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+.answer-area {
+  width: 100%;
+  min-height: 90px;
+  padding: 0.6rem 0.8rem;
+  border: 2px solid var(--ltgray);
+  border-radius: 6px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  color: var(--dkgray);
+  resize: vertical;
+  transition: border-color 0.2s;
+  line-height: 1.5;
+}
+.answer-area:focus { outline: none; border-color: var(--teal); }
+.answer-area::placeholder { color: var(--ltgray); font-style: italic; }
+.calc-answer {
+  width: 100%;
+  padding: 0.55rem 0.8rem;
+  border: 2px solid var(--ltgray);
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.92rem;
+  color: var(--navy);
+  transition: border-color 0.2s;
+}
+.calc-answer:focus { outline: none; border-color: var(--teal); }
+
+/* ─── PROGRESS ─────────────────────────────────────────────── */
+.progress-bar-wrap {
+  background: var(--warm);
+  border-radius: 99px;
+  height: 8px;
+  overflow: hidden;
+  margin: 0.5rem 0 1rem;
+}
+.progress-bar-inner {
+  height: 100%;
+  background: linear-gradient(90deg, var(--teal), var(--gold));
+  border-radius: 99px;
+  transition: width 0.5s ease;
+}
+.progress-label {
+  font-size: 0.8rem;
+  color: var(--midgray);
+  margin-bottom: 0.25rem;
+}
+
+/* ─── STEP TRACKER ─────────────────────────────────────────── */
+.steps {
+  display: flex;
+  gap: 0;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+.steps::before {
+  content: '';
+  position: absolute;
+  top: 16px; left: 16px; right: 16px;
+  height: 2px;
+  background: var(--ltgray);
+  z-index: 0;
+}
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+.step-dot {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--ltgray);
+  background: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--ltgray);
+  transition: all 0.3s;
+}
+.step.done .step-dot { background: var(--green); border-color: var(--green); color: white; }
+.step.active .step-dot { background: var(--teal); border-color: var(--teal); color: white; }
+.step-label { font-size: 0.7rem; color: var(--midgray); margin-top: 0.3rem; text-align: center; max-width: 80px; }
+.step.active .step-label { color: var(--teal); font-weight: 600; }
+.step.done .step-label { color: var(--green); }
+
+/* ─── RESULTS BOX ──────────────────────────────────────────── */
+.result-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.result-tile {
+  background: var(--navy);
+  border-radius: var(--radius);
+  padding: 1rem;
+  text-align: center;
+}
+.result-tile .label { font-size: 0.72rem; color: rgba(255,255,255,0.55); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.3rem; }
+.result-tile .value { font-family: 'JetBrains Mono', monospace; font-size: 1.3rem; font-weight: 700; color: var(--gold); }
+.result-tile .sub { font-size: 0.7rem; color: rgba(255,255,255,0.45); margin-top: 0.2rem; }
+
+/* ─── PROCEDURE ────────────────────────────────────────────── */
+.proc-list { list-style: none; counter-reset: proc-counter; }
+.proc-list li {
+  counter-increment: proc-counter;
+  padding: 0.6rem 0.75rem 0.6rem 2.8rem;
+  position: relative;
+  border-bottom: 1px solid var(--ltgray);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.proc-list li:last-child { border-bottom: none; }
+.proc-list li::before {
+  content: counter(proc-counter);
+  position: absolute;
+  left: 0.5rem;
+  top: 0.6rem;
+  width: 22px; height: 22px;
+  background: var(--teal);
+  color: white;
+  border-radius: 50%;
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ─── SAFETY ───────────────────────────────────────────────── */
+.safety-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+}
+.safety-item {
+  background: #FFF9E6;
+  border: 1px solid #F9E07A;
+  border-radius: 6px;
+  padding: 0.6rem;
+  text-align: center;
+  font-size: 0.8rem;
+}
+.safety-item .emoji { font-size: 1.4rem; display: block; margin-bottom: 0.3rem; }
+
+/* ─── SUBMIT / EXPORT ──────────────────────────────────────── */
+.export-card {
+  background: linear-gradient(135deg, var(--navy) 0%, #2A5080 100%);
+  border-radius: var(--radius);
+  padding: 2rem;
+  text-align: center;
+  color: white;
+  margin-top: 2rem;
+}
+.export-card h2 { color: var(--gold); font-size: 1.5rem; margin-bottom: 0.5rem; }
+.export-card p { color: rgba(255,255,255,0.7); font-size: 0.9rem; margin-bottom: 1.5rem; }
+
+/* ─── PRINT / PDF STYLES ───────────────────────────────────── */
+@media print {
+  .tab-nav, .sim-wrapper, .sim-controls, .btn, .btn-primary, .btn-secondary,
+  .btn-teal, .btn-navy, .btn-outline, .btn-lg, .export-card, header .header-meta,
+  .section:not(.active), .no-print { display: none !important; }
+
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  body { background: white; font-size: 11pt; }
+  .section { display: block !important; padding-top: 0; }
+  .container { max-width: 100%; padding: 0; }
+
+  .print-header {
+    display: block !important;
+    text-align: center;
+    border-bottom: 3px solid #1B3A5C;
+    padding-bottom: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .print-header h1 { font-size: 18pt; color: #1B3A5C; }
+  .print-header .meta { font-size: 9pt; color: #666; margin-top: 0.3rem; }
+
+  .card { box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; margin-bottom: 1rem; }
+  .question-block { page-break-inside: avoid; }
+  .result-tile { background: #1B3A5C !important; }
+  .section-print-title {
+    font-size: 14pt;
+    font-weight: bold;
+    color: #1B3A5C;
+    border-bottom: 2px solid #2A7F7F;
+    padding-bottom: 4px;
+    margin: 1.5rem 0 0.75rem;
+    page-break-after: avoid;
+  }
+
+  h2 { font-size: 13pt; }
+  .answer-area, .calc-answer { border: 1px solid #999; background: white; }
+  .formula-display { background: #1B3A5C !important; }
+}
+
+.print-header { display: none; }
+
+/* ─── MISC ─────────────────────────────────────────────────── */
+.divider { height: 1px; background: var(--ltgray); margin: 1.5rem 0; }
+.tag {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 99px;
+  letter-spacing: 0.04em;
+}
+.tag-teal { background: #D0EEEE; color: var(--teal); }
+.tag-gold { background: #FAF0D0; color: #8B6500; }
+.tag-red  { background: #FDECEA; color: var(--red); }
+.student-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.field-group { display: flex; flex-direction: column; gap: 0.3rem; }
+.field-group label { font-size: 0.8rem; font-weight: 600; color: var(--navy); text-transform: uppercase; letter-spacing: 0.04em; }
+.field-group input {
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--ltgray);
+  border-radius: 6px;
+  font-size: 0.92rem;
+  font-family: 'Inter', sans-serif;
+  transition: border-color 0.2s;
+}
+.field-group input:focus { outline: none; border-color: var(--teal); }
+
+/* Notification */
+.notif {
+  position: fixed;
+  bottom: 1.5rem; right: 1.5rem;
+  background: var(--green);
+  color: white;
+  padding: 0.75rem 1.2rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-lg);
+  z-index: 999;
+  transform: translateY(100px);
+  opacity: 0;
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.notif.show { transform: translateY(0); opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- ─── NOTIFICATION ──────────────────────────────────────── -->
+<div class="notif" id="notif">✓ Data recorded!</div>
+
+<!-- ─── HEADER ────────────────────────────────────────────── -->
+<header>
+  <div class="header-gold-bar"></div>
+  <div class="header-inner">
+    <div class="header-badge">LAB 4 · UNIT 6</div>
+    <div class="header-text">
+      <h1>Virtual Calorimetry Lab</h1>
+      <p class="subtitle">Heat Transfer, Specific Heat Capacity &amp; Enthalpy of Solution</p>
+    </div>
+  </div>
+  <div class="header-inner" style="padding-top:0; padding-bottom:1rem;">
+    <div class="header-meta">
+      <span>📅 <strong>Date:</strong> April 11, 2026</span>
+      <span>⏱ <strong>Time:</strong> 55 minutes</span>
+      <span>🎯 <strong>CED:</strong> Topics 6.1, 6.3, 6.4, 6.6</span>
+      <span>👨‍🔬 <strong>Mr. Dickey is absent — work independently</strong></span>
+    </div>
+  </div>
+</header>
+
+<!-- Print-only header -->
+<div class="print-header" id="printHeader">
+  <h1>AP Chemistry — Virtual Calorimetry Lab</h1>
+  <div class="meta">Unit 6: Thermochemistry · Topics 6.1, 6.3, 6.4, 6.6 · San Tan Charter School · April 11, 2026</div>
+  <div class="meta" id="printStudentName" style="margin-top:4px; font-weight:bold;"></div>
+</div>
+
+<!-- ─── TAB NAV ────────────────────────────────────────────── -->
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="showTab('intro',this)">📋 Introduction</button>
+  <button class="tab-btn" onclick="showTab('exp1',this)">🧪 Exp 1: Hot &amp; Cold Water</button>
+  <button class="tab-btn" onclick="showTab('exp2',this)">⚗️ Exp 2: Heat of Solution</button>
+  <button class="tab-btn" onclick="showTab('analysis',this)">📊 Analysis &amp; Questions</button>
+  <button class="tab-btn" onclick="showTab('submit',this)">📄 Download Report</button>
+</nav>
+
+<div class="container">
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 0 — INTRODUCTION
+══════════════════════════════════════════════════════════ -->
+<div class="section active" id="sec-intro">
+  <div class="print-header" style="display:none">
+    <h1 class="section-print-title">Introduction</h1>
+  </div>
+
+  <!-- Student info -->
+  <div class="card gold">
+    <div class="card-title">
+      <div class="card-icon icon-gold">🧑</div>
+      <h2>Student Information</h2>
+    </div>
+    <div class="student-header">
+      <div class="field-group">
+        <label>Full Name</label>
+        <input type="text" id="studentName" placeholder="First Last" oninput="updatePrintName()">
+      </div>
+      <div class="field-group">
+        <label>Date</label>
+        <input type="text" id="labDate" value="April 11, 2026">
+      </div>
+    </div>
+  </div>
+
+  <!-- Safety -->
+  <div class="card red">
+    <div class="card-title">
+      <div class="card-icon icon-navy">⚠️</div>
+      <h2>Safety Notes — Read Before Starting</h2>
+    </div>
+    <div class="info-box warning">
+      <div class="info-box-title">⚠️ Note</div>
+      This is a <strong>virtual simulation</strong>. No actual chemicals are used. However, understanding these hazards is part of your lab training and may appear on the AP exam.
+    </div>
+    <div class="safety-grid">
+      <div class="safety-item"><span class="emoji">🥽</span>Always wear goggles when working with NaOH or CaCl₂</div>
+      <div class="safety-item"><span class="emoji">🧤</span>NaOH is caustic — wear gloves; rinse immediately if contact occurs</div>
+      <div class="safety-item"><span class="emoji">🌡️</span>Hot water above 70°C can cause burns</div>
+      <div class="safety-item"><span class="emoji">🚿</span>Know location of eyewash station before starting any real lab</div>
+      <div class="safety-item"><span class="emoji">🗑️</span>Dispose of salt solutions in the sink — dilute with water</div>
+    </div>
+  </div>
+
+  <!-- Background -->
+  <div class="card">
+    <div class="card-title">
+      <div class="card-icon icon-teal">📖</div>
+      <h2>Background &amp; Theory</h2>
+    </div>
+    <p>A <strong>calorimeter</strong> is a device used to measure the heat transferred during a physical or chemical process. In this lab you will use a simple coffee cup calorimeter — two nested styrofoam cups with a lid — which approximates an isolated system at constant pressure.</p>
+
+    <div class="formula-display">
+      <span class="highlight">q = mcΔT</span><br>
+      <span style="font-size:0.78rem; opacity:0.7;">q = heat (J) &nbsp;|&nbsp; m = mass (g) &nbsp;|&nbsp; c = specific heat capacity (J/g·°C) &nbsp;|&nbsp; ΔT = T<sub>final</sub> − T<sub>initial</sub> (°C)</span>
+    </div>
+
+    <p>The <strong>specific heat capacity of water</strong> is <code>4.184 J/g·°C</code>. For dilute aqueous solutions, we assume the same value. By the law of conservation of energy:</p>
+    <div class="formula-display">
+      q<span class="highlight">system</span> = −q<span class="highlight">surroundings</span>
+    </div>
+    <p>An <strong>exothermic</strong> process releases heat to the surroundings (ΔT > 0, q < 0 for system). An <strong>endothermic</strong> process absorbs heat from the surroundings (ΔT < 0, q < 0 for surroundings).</p>
+
+    <div class="info-box">
+      <div class="info-box-title">🔬 Real vs. Ideal Calorimeter</div>
+      A real calorimeter absorbs some heat itself — this is the <strong>calorimeter constant</strong> (C<sub>cal</sub>), measured in J/°C. Experiment 1 will help you determine C<sub>cal</sub> for your virtual calorimeter. In Experiment 2, you will account for it in your calculations.
+    </div>
+  </div>
+
+  <!-- Learning objectives -->
+  <div class="card navy">
+    <div class="card-title">
+      <div class="card-icon icon-gold">🎯</div>
+      <h2>Learning Objectives</h2>
+    </div>
+    <table class="obj-table">
+      <thead><tr><th>Learning Objective</th><th>CED Alignment</th><th>Science Practice</th></tr></thead>
+      <tbody>
+        <tr><td>Calculate the heat absorbed or released using q = mcΔT</td><td><span class="ced-tag">ENE-2.D</span></td><td>SP 5.F</td></tr>
+        <tr><td>Determine the calorimeter constant from a mixing experiment</td><td><span class="ced-tag">6.4</span></td><td>SP 2.C, 5.F</td></tr>
+        <tr><td>Calculate the molar enthalpy of solution (ΔH<sub>soln</sub>) for a salt</td><td><span class="ced-tag">ENE-2.F</span></td><td>SP 5.F, 6.B</td></tr>
+        <tr><td>Classify dissolution as endothermic or exothermic with evidence</td><td><span class="ced-tag">6.1</span></td><td>SP 6.B, 6.F</td></tr>
+        <tr><td>Identify sources of experimental error and their effect on results</td><td><span class="ced-tag">6.3</span></td><td>SP 6.F</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">
+      <div class="card-icon icon-teal">🗂️</div>
+      <h2>Lab Overview — Your 55-Minute Plan</h2>
+    </div>
+    <table class="obj-table">
+      <thead><tr><th>Time</th><th>Activity</th></tr></thead>
+      <tbody>
+        <tr><td><strong>0–5 min</strong></td><td>Read introduction, enter your name, review safety and background</td></tr>
+        <tr><td><strong>5–20 min</strong></td><td>Experiment 1 — Hot &amp; Cold Water mixing; record data and calculate C<sub>cal</sub></td></tr>
+        <tr><td><strong>20–40 min</strong></td><td>Experiment 2 — Heat of Solution; run all three trials and record data</td></tr>
+        <tr><td><strong>40–52 min</strong></td><td>Analysis &amp; Post-Lab Questions (complete all written responses)</td></tr>
+        <tr><td><strong>52–55 min</strong></td><td>Download PDF and submit to Google Classroom</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="text-align:center; margin-top:1.5rem;">
+    <button class="btn btn-primary btn-lg" onclick="showTab('exp1', document.querySelectorAll('.tab-btn')[1])">
+      Begin Experiment 1 →
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 1 — EXPERIMENT 1: HOT & COLD WATER
+══════════════════════════════════════════════════════════ -->
+<div class="section" id="sec-exp1">
+
+  <div class="card">
+    <div class="card-title">
+      <div class="card-icon icon-navy">🧊</div>
+      <h2>Experiment 1: Mixing Hot &amp; Cold Water</h2>
+      <span class="tag tag-teal">CED 6.3, 6.4</span>
+    </div>
+    <p><strong>Purpose:</strong> When hot and cold water are mixed, energy is transferred until thermal equilibrium is reached. By comparing the theoretical final temperature (assuming a perfect calorimeter) with the actual measured temperature, we can determine how much energy the calorimeter itself absorbed — the <strong>calorimeter constant, C<sub>cal</sub></strong>.</p>
+    <div class="info-box">
+      <div class="info-box-title">🧠 Key Concept</div>
+      In a <em>perfect</em> calorimeter: q<sub>hot lost</sub> = q<sub>cold gained</sub>. In reality, the calorimeter absorbs some energy too:<br>
+      <strong>q<sub>hot</sub> + q<sub>cold</sub> + q<sub>cal</sub> = 0</strong>, so <strong>C<sub>cal</sub> = −(q<sub>hot</sub> + q<sub>cold</sub>) / ΔT<sub>cal</sub></strong>
+    </div>
+    <div class="info-box warning">
+      <div class="info-box-title">📋 Step-by-Step Procedure — Follow These Exactly</div>
+      <div style="font-size:0.88rem; line-height:1.9;">
+        <div style="margin-bottom:0.5rem; padding:0.3rem 0;"><strong>STEP 1.</strong> The simulation is already set up with the correct values. Do NOT touch the sliders.<br>&nbsp;&nbsp;&nbsp;&nbsp;→ Hot water: <strong>50.0 g at 80.0°C</strong> &nbsp;|&nbsp; Cold water: <strong>50.0 g at 20.0°C</strong></div>
+        <div style="margin-bottom:0.5rem; padding:0.3rem 0;"><strong>STEP 2.</strong> Click <strong>"▶ Run Mixing Simulation"</strong>. Watch the thermometer move to the measured final temperature.</div>
+        <div style="margin-bottom:0.5rem; padding:0.3rem 0;"><strong>STEP 3.</strong> Click <strong>"✓ Record Data to Table"</strong>. The data table below will automatically fill in.</div>
+        <div style="margin-bottom:0.5rem; padding:0.3rem 0;"><strong>STEP 4.</strong> Using the formula provided, calculate <strong>T<sub>f,theory</sub></strong> and type it into the data table. Show your work in Calculation Box 1A.</div>
+        <div style="padding:0.3rem 0;"><strong>STEP 5.</strong> Calculate <strong>q<sub>hot</sub>, q<sub>cold</sub>, ΔT<sub>cal</sub>, and C<sub>cal</sub></strong> and enter each in the Calorimeter Constant table. Show all work in Calculation Box 1B.</div>
+        <div style="background:#FEF3CD; border-radius:4px; padding:0.5rem 0.7rem; margin-top:0.6rem;">⚠️ <strong>Do not move to Experiment 2 until C<sub>cal</sub> is calculated.</strong> You will need it.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIMULATION 1 -->
+  <div class="sim-wrapper">
+    <div class="sim-title">▶ SIMULATION — Coffee Cup Calorimeter</div>
+    <div class="sim-grid">
+      <!-- Hot water beaker -->
+      <div class="beaker-area">
+        <div class="beaker-label" style="color:#FF8A80;">🔴 Hot Water</div>
+        <div class="beaker-container">
+          <svg class="beaker-svg" viewBox="0 0 90 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="10" y="20" width="70" height="80" rx="4" fill="rgba(192,57,43,0.25)" stroke="rgba(255,255,255,0.4)" stroke-width="2"/>
+            <rect x="15" y="25" width="60" height="70" rx="2" id="hotWater" fill="rgba(192,57,43,0.6)"/>
+            <line x1="10" y1="20" x2="80" y2="20" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
+            <rect x="5" y="10" width="80" height="12" rx="3" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+          </svg>
+          <div class="temp-badge" id="hotTempBadge">75°C</div>
+        </div>
+      </div>
+
+      <!-- Arrow -->
+      <div class="arrow-area">
+        <div class="mix-arrow" id="mixArrow">+</div>
+      </div>
+
+      <!-- Cold water beaker -->
+      <div class="beaker-area">
+        <div class="beaker-label" style="color:#82B1FF;">🔵 Cold Water</div>
+        <div class="beaker-container">
+          <svg class="beaker-svg" viewBox="0 0 90 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="10" y="20" width="70" height="80" rx="4" fill="rgba(41,128,185,0.25)" stroke="rgba(255,255,255,0.4)" stroke-width="2"/>
+            <rect x="15" y="25" width="60" height="70" rx="2" id="coldWater" fill="rgba(41,128,185,0.6)"/>
+            <line x1="10" y1="20" x2="80" y2="20" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
+            <rect x="5" y="10" width="80" height="12" rx="3" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+          </svg>
+          <div class="temp-badge" id="coldTempBadge">15°C</div>
+        </div>
+      </div>
+
+      <!-- Arrow -->
+      <div class="arrow-area">
+        <div class="mix-arrow">→</div>
+      </div>
+
+      <!-- Result thermometer -->
+      <div class="thermometer-wrap">
+        <div class="therm-outer">
+          <div class="therm-inner" id="thermInner" style="height:40%"></div>
+        </div>
+        <div class="therm-bulb"></div>
+        <div class="therm-temp" id="thermTemp">—</div>
+        <div class="therm-label">T<sub>final</sub></div>
+      </div>
+    </div>
+
+    <!-- Controls - LOCKED for this experiment -->
+    <div class="sim-controls">
+      <div class="ctrl-group">
+        <label>Hot water mass (g) — <span style="color:var(--gold);">FIXED</span></label>
+        <input type="range" id="hotMass" min="50" max="50" value="50" disabled style="opacity:0.4; cursor:not-allowed;">
+        <span class="ctrl-val" id="hotMassVal">50.0 g</span>
+      </div>
+      <div class="ctrl-group">
+        <label>Hot water temp (°C) — <span style="color:var(--gold);">FIXED</span></label>
+        <input type="range" id="hotTemp" min="80" max="80" value="80" disabled style="opacity:0.4; cursor:not-allowed;">
+        <span class="ctrl-val" id="hotTempVal">80.0°C</span>
+      </div>
+      <div class="ctrl-group">
+        <label>Cold water mass (g) — <span style="color:var(--gold);">FIXED</span></label>
+        <input type="range" id="coldMass" min="50" max="50" value="50" disabled style="opacity:0.4; cursor:not-allowed;">
+        <span class="ctrl-val" id="coldMassVal">50.0 g</span>
+      </div>
+      <div class="ctrl-group">
+        <label>Cold water temp (°C) — <span style="color:var(--gold);">FIXED</span></label>
+        <input type="range" id="coldTemp" min="20" max="20" value="20" disabled style="opacity:0.4; cursor:not-allowed;">
+        <span class="ctrl-val" id="coldTempVal">20.0°C</span>
+      </div>
+    </div>
+    <div class="sim-controls" style="margin-top:0.75rem;">
+      <button class="btn btn-primary" id="runBtn1" onclick="runExp1()">▶ Run Mixing Simulation</button>
+      <button class="btn btn-secondary" onclick="resetExp1()">↺ Reset</button>
+      <button class="btn btn-teal" id="recordBtn1" onclick="recordExp1()" disabled>✓ Record Data to Table</button>
+    </div>
+  </div>
+
+  <!-- Data Table 1 -->
+  <div class="card">
+    <div class="card-title">
+      <div class="card-icon icon-teal">📊</div>
+      <h2>Data Table 1 — Hot &amp; Cold Water Mixing</h2>
+    </div>
+    <table class="data-table">
+      <thead><tr><th>Parameter</th><th>Symbol</th><th>Value</th><th>Unit</th></tr></thead>
+      <tbody>
+        <tr><td class="param">Mass of hot water</td><td><code>m<sub>hot</sub></code></td><td><span class="calculated pending" id="d1_mhot">—</span></td><td class="unit">g</td></tr>
+        <tr><td class="param">Initial temperature of hot water</td><td><code>T<sub>hot,i</sub></code></td><td><span class="calculated pending" id="d1_Thot">—</span></td><td class="unit">°C</td></tr>
+        <tr><td class="param">Mass of cold water</td><td><code>m<sub>cold</sub></code></td><td><span class="calculated pending" id="d1_mcold">—</span></td><td class="unit">g</td></tr>
+        <tr><td class="param">Initial temperature of cold water</td><td><code>T<sub>cold,i</sub></code></td><td><span class="calculated pending" id="d1_Tcold">—</span></td><td class="unit">°C</td></tr>
+        <tr><td class="param">Measured final temperature (sim)</td><td><code>T<sub>f,measured</sub></code></td><td><span class="calculated pending" id="d1_Tf">—</span></td><td class="unit">°C</td></tr>
+        <tr><td class="param">Theoretical final temperature <em>(calculated below)</em></td><td><code>T<sub>f,theory</sub></code></td><td><input type="number" step="0.01" id="d1_Tftheory" placeholder="calculate"></td><td class="unit">°C</td></tr>
+        <tr><td class="param">Specific heat capacity of water</td><td><code>c</code></td><td><span class="calculated" style="color:var(--navy);">4.184</span></td><td class="unit">J/g·°C</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box">
+      <div class="info-box-title">📐 Calculation 1A — Theoretical T<sub>final</sub></div>
+      Assuming a <em>perfect</em> calorimeter (no heat loss), derive T<sub>f,theory</sub> from conservation of energy:<br>
+      <strong>m<sub>hot</sub> · c · (T<sub>f</sub> − T<sub>hot</sub>) + m<sub>cold</sub> · c · (T<sub>f</sub> − T<sub>cold</sub>) = 0</strong><br>
+      Solve for T<sub>f</sub> algebraically, then plug in your values. Enter your answer in the table above.
+    </div>
+    <div class="question-block" style="border-left:4px solid var(--navy);">
+      <div class="question-header">
+        <span class="question-num" style="background:var(--navy);">A</span>
+        <div class="question-text">Show your work for calculating T<sub>f,theory</sub>. Include the algebraic setup, substitution of values, and final answer with correct units and sig figs.</div>
+        <span class="question-pts">[4 pts]</span>
+      </div>
+      <textarea class="answer-area" id="calc1a" placeholder="Write out your full calculation here. Show the formula, substituted values, and result..."></textarea>
+    </div>
+  </div>
+
+  <!-- Calorimeter Constant Calculation -->
+  <div class="card">
+    <div class="card-title">
+      <div class="card-icon icon-gold">🔢</div>
+      <h2>Calculating the Calorimeter Constant</h2>
+    </div>
+    <div class="formula-display">
+      C<sub>cal</sub> = −(q<sub>hot</sub> + q<sub>cold</sub>) / ΔT<sub>cal</sub><br>
+      <span style="font-size:0.78rem; opacity:0.7;">where ΔT<sub>cal</sub> = T<sub>f,measured</sub> − T<sub>f,theory</sub></span>
+    </div>
+    <table class="data-table">
+      <thead><tr><th>Quantity</th><th>Formula</th><th>Your Calculated Value</th><th>Unit</th></tr></thead>
+      <tbody>
+        <tr><td class="param">q<sub>hot</sub></td><td><code>m<sub>hot</sub> · c · (T<sub>f,meas</sub> − T<sub>hot,i</sub>)</code></td><td><input type="number" step="0.1" id="d1_qhot" placeholder="calculate"></td><td class="unit">J</td></tr>
+        <tr><td class="param">q<sub>cold</sub></td><td><code>m<sub>cold</sub> · c · (T<sub>f,meas</sub> − T<sub>cold,i</sub>)</code></td><td><input type="number" step="0.1" id="d1_qcold" placeholder="calculate"></td><td class="unit">J</td></tr>
+        <tr><td class="param">ΔT<sub>cal</sub></td><td><code>T<sub>f,meas</sub> − T<sub>f,theory</sub></code></td><td><input type="number" step="0.01" id="d1_dTcal" placeholder="calculate"></td><td class="unit">°C</td></tr>
+        <tr><td class="param"><strong>C<sub>cal</sub> (calorimeter constant)</strong></td><td><code>−(q<sub>hot</sub> + q<sub>cold</sub>) / ΔT<sub>cal</sub></code></td><td><input type="number" step="0.1" id="d1_Ccal" placeholder="calculate"></td><td class="unit">J/°C</td></tr>
+      </tbody>
+    </table>
+    <div class="question-block" style="border-left:4px solid var(--navy);">
+      <div class="question-header">
+        <span class="question-num" style="background:var(--navy);">B</span>
+        <div class="question-text">Show your full calculation work for q<sub>hot</sub>, q<sub>cold</sub>, and C<sub>cal</sub>. Be sure to track signs carefully — which q is positive and which is negative? Explain what the sign means physically.</div>
+        <span class="question-pts">[5 pts]</span>
+      </div>
+      <textarea class="answer-area" id="calc1b" placeholder="Show full work for each quantity. Discuss sign conventions..."></textarea>
+    </div>
+  </div>
+
+  <div style="display:flex; justify-content:flex-end; gap:1rem; margin-top:1rem;">
+    <button class="btn btn-outline" onclick="showTab('intro', document.querySelectorAll('.tab-btn')[0])">← Back</button>
+    <button class="btn btn-primary btn-lg" onclick="showTab('exp2', document.querySelectorAll('.tab-btn')[2])">Continue to Experiment 2 →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 2 — EXPERIMENT 2: HEAT OF SOLUTION
+══════════════════════════════════════════════════════════ -->
+<div class="section" id="sec-exp2">
+
+  <div class="card">
+    <div class="card-title">
+      <div class="card-icon icon-navy">⚗️</div>
+      <h2>Experiment 2: Heat of Solution</h2>
+      <span class="tag tag-teal">CED 6.1, 6.6</span>
+    </div>
+    <p><strong>Purpose:</strong> When an ionic solid dissolves in water, energy is either released or absorbed. You will measure the temperature change when three different salts dissolve in water, calculate q<sub>soln</sub> for each, and determine the molar enthalpy of solution (ΔH<sub>soln</sub>) in kJ/mol.</p>
+
+    <div class="info-box">
+      <div class="info-box-title">🧮 Key Formula</div>
+      <strong>ΔH<sub>soln</sub> (J/mol) = −q<sub>soln</sub> / n</strong><br>
+      where q<sub>soln</sub> = (m<sub>water</sub> + m<sub>salt</sub>) × c × ΔT &nbsp;and&nbsp; n = moles of salt dissolved<br>
+      (Include the calorimeter correction: q<sub>total</sub> = q<sub>soln</sub> + C<sub>cal</sub> × ΔT)
+    </div>
+
+    <div class="info-box warning">
+      <div class="info-box-title">📋 Step-by-Step Procedure — Read Before Touching Anything</div>
+      <div style="font-size:0.88rem; line-height:1.9;">
+        <div style="background:#E8F4E8; border-left:3px solid #1A6B3C; padding:0.5rem 0.7rem; border-radius:0 4px 4px 0; margin-bottom:0.75rem;">
+          ✅ <strong>You will run exactly 3 trials — one for each salt — in the order listed below.</strong><br>
+          The mass is fixed at <strong>4.0 g</strong> for all three trials. Do not change the mass slider.
+        </div>
+
+        <div style="font-weight:700; color:#1B3A5C; margin-bottom:0.3rem;">— TRIAL 1: NaOH (sodium hydroxide) —</div>
+        <div style="margin-bottom:0.3rem; padding-left:0.5rem;"><strong>1.</strong> In the simulation panel, make sure <strong>"NaOH (sodium hydroxide)"</strong> is selected in the salt dropdown.</div>
+        <div style="margin-bottom:0.3rem; padding-left:0.5rem;"><strong>2.</strong> Confirm the mass slider reads <strong>4.0 g</strong>. Do not change it.</div>
+        <div style="margin-bottom:0.3rem; padding-left:0.5rem;"><strong>3.</strong> Click <strong>"▶ Run Dissolution"</strong>. Observe the temperature change on the thermometer.</div>
+        <div style="margin-bottom:0.3rem; padding-left:0.5rem;"><strong>4.</strong> Read the T<sub>final</sub> and ΔT values displayed. Then click <strong>"✓ Record to Data Table"</strong>.</div>
+        <div style="margin-bottom:0.75rem; padding-left:0.5rem;"><strong>5.</strong> In Data Table 2, manually calculate moles, q<sub>soln</sub>, and ΔH<sub>soln</sub> for NaOH and enter those values.</div>
+
+        <div style="font-weight:700; color:#1B3A5C; margin-bottom:0.3rem;">— TRIAL 2: NH₄NO₃ (ammonium nitrate) —</div>
+        <div style="margin-bottom:0.3rem; padding-left:0.5rem;"><strong>6.</strong> In the dropdown, select <strong>"NH₄NO₃ (ammonium nitrate)"</strong>.</div>
+        <div style="margin-bottom:0.3rem; padding-left:0.5rem;"><strong>7.</strong> Confirm mass is still <strong>4.0 g</strong>. Click <strong>"▶ Run Dissolution"</strong>.</div>
+        <div style="margin-bottom:0.3rem; padding-left:0.5rem;"><strong>8.</strong> Click <strong>"✓ Record to Data Table"</strong> after the simulation finishes.</div>
+        <div style="margin-bottom:0.75rem; padding-left:0.5rem;"><strong>9.</strong> Calculate and enter moles, q<sub>soln</sub>, and ΔH<sub>soln</sub> for NH₄NO₃ in the table.</div>
+
+        <div style="font-weight:700; color:#1B3A5C; margin-bottom:0.3rem;">— TRIAL 3: CaCl₂ (calcium chloride) —</div>
+        <div style="margin-bottom:0.3rem; padding-left:0.5rem;"><strong>10.</strong> In the dropdown, select <strong>"CaCl₂ (calcium chloride)"</strong>.</div>
+        <div style="margin-bottom:0.3rem; padding-left:0.5rem;"><strong>11.</strong> Confirm mass is still <strong>4.0 g</strong>. Click <strong>"▶ Run Dissolution"</strong>.</div>
+        <div style="margin-bottom:0.3rem; padding-left:0.5rem;"><strong>12.</strong> Click <strong>"✓ Record to Data Table"</strong> after the simulation finishes.</div>
+        <div style="margin-bottom:0.75rem; padding-left:0.5rem;"><strong>13.</strong> Calculate and enter moles, q<sub>soln</sub>, and ΔH<sub>soln</sub> for CaCl₂ in the table.</div>
+
+        <div style="background:#FEF3CD; border-radius:4px; padding:0.5rem 0.7rem;">
+          ⚠️ <strong>Important reminders:</strong> T<sub>initial</sub> = 22.0°C for all trials. Mass of water = 100.0 g for all trials.
+          Include the calorimeter correction (C<sub>cal</sub> × ΔT) in your q<sub>soln</sub> calculation.
+          Your C<sub>cal</sub> value comes from Experiment 1 — make sure you completed it first.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIMULATION 2 -->
+  <div class="sim-wrapper">
+    <div class="sim-title">▶ SIMULATION — Dissolving Salt in Water</div>
+    <div style="display:flex; gap:2rem; align-items:flex-start; flex-wrap:wrap;">
+      <!-- Beaker visual -->
+      <div style="flex:1; min-width:200px; text-align:center;">
+        <svg width="140" height="160" viewBox="0 0 140 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Beaker -->
+          <rect x="15" y="30" width="110" height="120" rx="6" fill="rgba(42,127,127,0.2)" stroke="rgba(255,255,255,0.4)" stroke-width="2.5"/>
+          <rect x="20" y="35" width="100" height="110" rx="3" id="solutionFill" fill="rgba(42,127,127,0.5)"/>
+          <rect x="8" y="18" width="124" height="15" rx="4" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+          <!-- Stir animation dots -->
+          <circle id="stir1" cx="70" cy="90" r="4" fill="rgba(196,154,42,0.8)" opacity="0"/>
+          <circle id="stir2" cx="90" cy="75" r="3" fill="rgba(196,154,42,0.8)" opacity="0"/>
+          <circle id="stir3" cx="50" cy="100" r="3.5" fill="rgba(196,154,42,0.8)" opacity="0"/>
+          <circle id="stir4" cx="85" cy="108" r="2.5" fill="rgba(196,154,42,0.8)" opacity="0"/>
+          <!-- Label -->
+          <text x="70" y="93" text-anchor="middle" fill="white" font-size="11" font-family="monospace" font-weight="600" id="beakerLabel">H₂O</text>
+        </svg>
+        <div style="color:rgba(255,255,255,0.7); font-size:0.78rem; margin-top:0.3rem;">100 mL water</div>
+      </div>
+
+      <!-- Thermometer + readout -->
+      <div style="flex:1; min-width:200px; display:flex; flex-direction:column; align-items:center; gap:0.75rem;">
+        <div style="color:rgba(255,255,255,0.6); font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em;">Temperature Readout</div>
+        <div style="display:flex; align-items:flex-end; gap:1rem;">
+          <div class="thermometer-wrap">
+            <div class="therm-outer" style="height:130px;">
+              <div class="therm-inner" id="thermInner2" style="height:40%"></div>
+            </div>
+            <div class="therm-bulb"></div>
+            <div class="therm-temp" id="thermTemp2" style="font-size:1.1rem;">—</div>
+            <div class="therm-label">T<sub>final</sub></div>
+          </div>
+          <div style="color:rgba(255,255,255,0.5); font-size:1.5rem; margin-bottom:2rem;">→</div>
+          <div style="text-align:left;">
+            <div style="color:rgba(255,255,255,0.5); font-size:0.72rem; margin-bottom:0.2rem;">T<sub>initial</sub></div>
+            <div style="font-family:monospace; color:white; font-size:1.1rem; font-weight:600;">22.0°C</div>
+            <div style="height:1rem;"></div>
+            <div style="color:rgba(255,255,255,0.5); font-size:0.72rem; margin-bottom:0.2rem;">ΔT</div>
+            <div style="font-family:monospace; font-size:1.1rem; font-weight:600;" id="deltaTDisplay">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div style="flex:1; min-width:200px; display:flex; flex-direction:column; gap:0.75rem;">
+        <div class="ctrl-group" style="color:rgba(255,255,255,0.8);">
+          <label>Select salt</label>
+          <select id="saltSelect" style="background:rgba(255,255,255,0.1); color:white; border:1px solid rgba(255,255,255,0.3); border-radius:4px; padding:0.4rem 0.6rem; font-size:0.88rem;">
+            <option value="NaOH">NaOH (sodium hydroxide)</option>
+            <option value="NH4NO3">NH₄NO₃ (ammonium nitrate)</option>
+            <option value="CaCl2">CaCl₂ (calcium chloride)</option>
+          </select>
+        </div>
+        <div class="ctrl-group" style="color:rgba(255,255,255,0.8);">
+          <label>Mass of salt (g) — <span style="color:var(--gold);">FIXED: 4.0 g</span></label>
+          <input type="range" id="saltMass" min="4" max="4" value="4" step="0.5" disabled style="opacity:0.4; cursor:not-allowed;">
+          <span class="ctrl-val" id="saltMassVal">4.0 g</span>
+        </div>
+        <div style="background:rgba(255,255,255,0.07); border-radius:6px; padding:0.6rem; font-size:0.78rem; color:rgba(255,255,255,0.55);">
+          <div>Water volume: 100.0 mL (100.0 g)</div>
+          <div style="margin-top:0.25rem;" id="molarMassDisplay">Molar mass: 40.00 g/mol</div>
+          <div style="margin-top:0.25rem;" id="molesDisplay">Moles of salt: 0.100 mol</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sim-controls" style="margin-top:1rem;">
+      <button class="btn btn-primary" id="runBtn2" onclick="runExp2()">▶ Run Dissolution</button>
+      <button class="btn btn-secondary" onclick="resetExp2()">↺ Reset</button>
+      <button class="btn btn-teal" id="recordBtn2" onclick="recordExp2()" disabled>✓ Record to Data Table</button>
+    </div>
+    <div style="margin-top:0.6rem; text-align:center; color:rgba(255,255,255,0.4); font-size:0.78rem;" id="trialStatus">Run each of the 3 salts. Trials recorded: <strong id="trialCount" style="color:var(--gold);">0</strong> / 3</div>
+  </div>
+
+  <!-- Data Table 2 -->
+  <div class="card">
+    <div class="card-title">
+      <div class="card-icon icon-teal">📊</div>
+      <h2>Data Table 2 — Heat of Solution</h2>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="data-table" id="exp2Table">
+        <thead>
+          <tr>
+            <th>Parameter</th>
+            <th>NaOH</th>
+            <th>NH₄NO₃</th>
+            <th>CaCl₂</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="param">Mass of salt (g)</td>
+            <td><span class="calculated pending" id="e2_NaOH_ms">—</span></td>
+            <td><span class="calculated pending" id="e2_NH4NO3_ms">—</span></td>
+            <td><span class="calculated pending" id="e2_CaCl2_ms">—</span></td>
+          </tr>
+          <tr><td class="param">Mass of water (g)</td>
+            <td><span class="calculated" style="color:var(--navy);">100.0</span></td>
+            <td><span class="calculated" style="color:var(--navy);">100.0</span></td>
+            <td><span class="calculated" style="color:var(--navy);">100.0</span></td>
+          </tr>
+          <tr><td class="param">T<sub>initial</sub> (°C)</td>
+            <td><span class="calculated" style="color:var(--navy);">22.0</span></td>
+            <td><span class="calculated" style="color:var(--navy);">22.0</span></td>
+            <td><span class="calculated" style="color:var(--navy);">22.0</span></td>
+          </tr>
+          <tr><td class="param">T<sub>final</sub> (°C)</td>
+            <td><span class="calculated pending" id="e2_NaOH_tf">—</span></td>
+            <td><span class="calculated pending" id="e2_NH4NO3_tf">—</span></td>
+            <td><span class="calculated pending" id="e2_CaCl2_tf">—</span></td>
+          </tr>
+          <tr><td class="param">ΔT (°C)</td>
+            <td><span class="calculated pending" id="e2_NaOH_dt">—</span></td>
+            <td><span class="calculated pending" id="e2_NH4NO3_dt">—</span></td>
+            <td><span class="calculated pending" id="e2_CaCl2_dt">—</span></td>
+          </tr>
+          <tr><td class="param">Molar mass (g/mol)</td>
+            <td><span class="calculated" style="color:var(--navy);">40.00</span></td>
+            <td><span class="calculated" style="color:var(--navy);">80.04</span></td>
+            <td><span class="calculated" style="color:var(--navy);">110.98</span></td>
+          </tr>
+          <tr><td class="param">Moles of salt (mol)</td>
+            <td><input type="number" step="0.001" id="e2_NaOH_n" placeholder="calc"></td>
+            <td><input type="number" step="0.001" id="e2_NH4NO3_n" placeholder="calc"></td>
+            <td><input type="number" step="0.001" id="e2_CaCl2_n" placeholder="calc"></td>
+          </tr>
+          <tr><td class="param">q<sub>soln</sub> (J)</td>
+            <td><input type="number" step="0.1" id="e2_NaOH_q" placeholder="calc"></td>
+            <td><input type="number" step="0.1" id="e2_NH4NO3_q" placeholder="calc"></td>
+            <td><input type="number" step="0.1" id="e2_CaCl2_q" placeholder="calc"></td>
+          </tr>
+          <tr><td class="param"><strong>ΔH<sub>soln</sub> (kJ/mol)</strong></td>
+            <td><input type="number" step="0.1" id="e2_NaOH_dH" placeholder="calc"></td>
+            <td><input type="number" step="0.1" id="e2_NH4NO3_dH" placeholder="calc"></td>
+            <td><input type="number" step="0.1" id="e2_CaCl2_dH" placeholder="calc"></td>
+          </tr>
+          <tr><td class="param">Endothermic or Exothermic?</td>
+            <td><select id="e2_NaOH_type" style="font-size:0.85rem; padding:2px 4px;"><option value="">select</option><option>Exothermic</option><option>Endothermic</option></select></td>
+            <td><select id="e2_NH4NO3_type" style="font-size:0.85rem; padding:2px 4px;"><option value="">select</option><option>Exothermic</option><option>Endothermic</option></select></td>
+            <td><select id="e2_CaCl2_type" style="font-size:0.85rem; padding:2px 4px;"><option value="">select</option><option>Exothermic</option><option>Endothermic</option></select></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">
+      <div class="card-icon icon-gold">🔢</div>
+      <h2>Calculation Work — Experiment 2</h2>
+    </div>
+    <div class="question-block" style="border-left:4px solid var(--navy);">
+      <div class="question-header">
+        <span class="question-num" style="background:var(--navy);">C</span>
+        <div class="question-text">Show your complete calculation for <strong>one</strong> of the three salts — your choice. Include: (1) calculating moles of salt, (2) calculating q<sub>soln</sub> with the calorimeter correction, and (3) calculating ΔH<sub>soln</sub> in kJ/mol. Label each step clearly.</div>
+        <span class="question-pts">[6 pts]</span>
+      </div>
+      <textarea class="answer-area" id="calc2c" style="min-height:140px;" placeholder="Choose one salt and show all three calculation steps. Label each step. Include units throughout..."></textarea>
+    </div>
+  </div>
+
+  <div style="display:flex; justify-content:flex-end; gap:1rem; margin-top:1rem;">
+    <button class="btn btn-outline" onclick="showTab('exp1', document.querySelectorAll('.tab-btn')[1])">← Back</button>
+    <button class="btn btn-primary btn-lg" onclick="showTab('analysis', document.querySelectorAll('.tab-btn')[3])">Continue to Analysis →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 3 — ANALYSIS & QUESTIONS
+══════════════════════════════════════════════════════════ -->
+<div class="section" id="sec-analysis">
+
+  <div class="card">
+    <div class="card-title">
+      <div class="card-icon icon-navy">📊</div>
+      <h2>Post-Lab Analysis &amp; Questions</h2>
+    </div>
+    <div class="info-box warning">
+      <div class="info-box-title">📋 Instructions</div>
+      Answer all questions in complete sentences unless a calculation is requested. AP-style answers should include evidence from your data, proper chemical reasoning, and correct scientific vocabulary. Graded questions are marked with point values.
+    </div>
+  </div>
+
+  <!-- Results Summary -->
+  <div class="card navy">
+    <h3 style="color:var(--gold); margin-bottom:1rem;">Your Experimental Results Summary</h3>
+    <div class="result-grid" id="resultGrid">
+      <div class="result-tile"><div class="label">C<sub>cal</sub> determined</div><div class="value" id="res_Ccal">—</div><div class="sub">J/°C</div></div>
+      <div class="result-tile"><div class="label">ΔH<sub>soln</sub> NaOH</div><div class="value" id="res_NaOH">—</div><div class="sub">kJ/mol</div></div>
+      <div class="result-tile"><div class="label">ΔH<sub>soln</sub> NH₄NO₃</div><div class="value" id="res_NH4NO3">—</div><div class="sub">kJ/mol</div></div>
+      <div class="result-tile"><div class="label">ΔH<sub>soln</sub> CaCl₂</div><div class="value" id="res_CaCl2">—</div><div class="sub">kJ/mol</div></div>
+    </div>
+    <button class="btn btn-secondary" onclick="updateResultsSummary()" style="margin-top:0.75rem;">↻ Refresh Summary</button>
+  </div>
+
+  <!-- Questions -->
+  <div class="question-block">
+    <div class="question-header">
+      <span class="question-num">1</span>
+      <div class="question-text">Define <em>calorimeter constant</em> in your own words. What does it physically represent about the calorimeter, and why is it important to account for it in precise thermochemical measurements?</div>
+      <span class="question-pts">[3 pts]</span>
+    </div>
+    <textarea class="answer-area" id="q1" placeholder="Define, explain physical meaning, and explain why it matters..."></textarea>
+  </div>
+
+  <div class="question-block">
+    <div class="question-header">
+      <span class="question-num">2</span>
+      <div class="question-text">For each salt, state whether the dissolution was endothermic or exothermic and provide evidence from your data. Explain what a positive vs. negative ΔH<sub>soln</sub> means in terms of bond breaking and bond forming at the particulate level.</div>
+      <span class="question-pts">[6 pts]</span>
+    </div>
+    <textarea class="answer-area" id="q2" style="min-height:120px;" placeholder="Discuss all three salts. Connect sign of ΔH to ΔT observed. Explain the particulate-level energy story for at least one salt..."></textarea>
+  </div>
+
+  <div class="question-block">
+    <div class="question-header">
+      <span class="question-num">3</span>
+      <div class="question-text">The accepted value for the molar enthalpy of solution of NaOH is −44.5 kJ/mol. Calculate the percent error between your experimental value and the accepted value. Then identify <em>two specific</em> sources of experimental error that could explain any discrepancy.</div>
+      <span class="question-pts">[5 pts]</span>
+    </div>
+    <div style="margin-bottom:0.6rem;">
+      <input type="text" class="calc-answer" id="q3calc" placeholder="Percent error calculation: |experimental − accepted| / accepted × 100% = ____%">
+    </div>
+    <textarea class="answer-area" id="q3" placeholder="State your % error, then describe two specific sources of error. For each: what causes it, what direction it shifts your result (high or low), and whether it is systematic or random..."></textarea>
+  </div>
+
+  <div class="question-block">
+    <div class="question-header">
+      <span class="question-num">4</span>
+      <div class="question-text">The dissolution of NaOH can be represented as: NaOH(s) → Na⁺(aq) + OH⁻(aq). Based on your ΔH<sub>soln</sub> value and Hess's Law, explain whether the energy required to separate the NaOH lattice is greater or less than the energy released when the ions are hydrated by water molecules. Use the concept of lattice energy vs. hydration enthalpy in your answer.</div>
+      <span class="question-pts">[4 pts]</span>
+    </div>
+    <textarea class="answer-area" id="q4" placeholder="Reference lattice energy and hydration enthalpy. Use your sign of ΔH to draw conclusions about which process dominates energetically..."></textarea>
+  </div>
+
+  <div class="question-block">
+    <div class="question-header">
+      <span class="question-num">5</span>
+      <div class="question-text">A student claims that using a foam coffee cup instead of a perfect insulated calorimeter doesn't affect the calculated ΔH<sub>soln</sub> because "any heat lost to the cup is too small to matter." Do you agree or disagree? Support your answer using your C<sub>cal</sub> value from Experiment 1 and a specific example calculation.</div>
+      <span class="question-pts">[4 pts]</span>
+    </div>
+    <textarea class="answer-area" id="q5" placeholder="Agree or disagree, and defend with numbers from your data. Calculate how much heat was absorbed by the calorimeter in one of your trials to make the argument concrete..."></textarea>
+  </div>
+
+  <div class="question-block">
+    <div class="question-header">
+      <span class="question-num">6</span>
+      <div class="question-text"><strong>(AP-Style)</strong> A 5.00 g sample of KNO₃ (molar mass = 101.10 g/mol) is dissolved in 95.00 g of water at 22.0°C. The final temperature of the solution is 19.1°C. The calorimeter constant is 10.5 J/°C. Calculate ΔH<sub>soln</sub> for KNO₃ in kJ/mol. Show all work.</div>
+      <span class="question-pts">[6 pts]</span>
+    </div>
+    <div style="margin-bottom:0.6rem;">
+      <input type="text" class="calc-answer" id="q6calc" placeholder="Show: moles KNO₃, q total (with C_cal), ΔH_soln in kJ/mol">
+    </div>
+    <textarea class="answer-area" id="q6" placeholder="Full calculation work here. Label every step. Use correct sig figs and units throughout..."></textarea>
+  </div>
+
+  <div style="display:flex; justify-content:flex-end; gap:1rem; margin-top:1rem;">
+    <button class="btn btn-outline" onclick="showTab('exp2', document.querySelectorAll('.tab-btn')[2])">← Back</button>
+    <button class="btn btn-primary btn-lg" onclick="showTab('submit', document.querySelectorAll('.tab-btn')[4])">Finalize &amp; Download →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 4 — SUBMIT / DOWNLOAD
+══════════════════════════════════════════════════════════ -->
+<div class="section" id="sec-submit">
+
+  <div class="card">
+    <div class="card-title">
+      <div class="card-icon icon-gold">✅</div>
+      <h2>Lab Completion Checklist</h2>
+    </div>
+    <div id="checklist" style="display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1rem;"></div>
+    <div class="progress-label">Completion</div>
+    <div class="progress-bar-wrap"><div class="progress-bar-inner" id="completionBar" style="width:0%"></div></div>
+    <button class="btn btn-outline" onclick="updateChecklist()" style="margin-top:0.5rem;">↻ Refresh Checklist</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">
+      <div class="card-icon icon-teal">📝</div>
+      <h2>Final Reflection</h2>
+    </div>
+    <div class="question-block" style="border-left:4px solid var(--teal);">
+      <div class="question-header">
+        <span class="question-num" style="background:var(--teal);">R</span>
+        <div class="question-text">In 3–5 sentences, reflect on what you learned today about calorimetry and energy transfer. What concept was most challenging? What will you do differently on the AP exam when you see a calorimetry problem?</div>
+      </div>
+      <textarea class="answer-area" id="reflection" placeholder="Write your reflection here..."></textarea>
+    </div>
+  </div>
+
+  <div class="export-card">
+    <h2>Ready to Download Your Lab Report?</h2>
+    <p>Your answers are embedded in the page. When you click the button below, your browser will open a print dialog — <strong>select "Save as PDF"</strong> as the destination. This saves your complete lab report as a PDF.</p>
+    <p style="font-size:0.82rem; color:rgba(255,255,255,0.5);">Make sure your name is filled in at the top of the Introduction tab before downloading.</p>
+    <button class="btn btn-primary btn-lg" onclick="downloadPDF()" style="font-size:1rem; padding:0.9rem 2.5rem;">
+      📄 Download Lab Report as PDF
+    </button>
+    <div style="margin-top:1rem; font-size:0.8rem; color:rgba(255,255,255,0.4);">
+      Then upload the PDF to Google Classroom before the end of class.
+    </div>
+  </div>
+
+</div>
+
+</div><!-- end .container -->
+
+<script>
+// ─── STATE ──────────────────────────────────────────────────────
+let sim1Ran = false;
+let sim1Data = {};
+let sim2Data = { NaOH: null, NH4NO3: null, CaCl2: null };
+let trialCount = 0;
+let currentSim2Running = false;
+
+// Salt data (ΔH_soln in J/g for 4g in 100g water, plus noise)
+const saltData = {
+  NaOH:   { mm: 40.00,  dH_kJmol: -44.5,  color: '#C0392B', label: 'NaOH dissolved' },
+  NH4NO3: { mm: 80.04,  dH_kJmol: +25.7,  color: '#2980B9', label: 'NH₄NO₃ dissolved' },
+  CaCl2:  { mm: 110.98, dH_kJmol: -81.3,  color: '#8E44AD', label: 'CaCl₂ dissolved' },
+};
+
+// ─── TAB NAVIGATION ─────────────────────────────────────────────
+function showTab(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(id === 'analysis') updateResultsSummary();
+  if(id === 'submit') updateChecklist();
+  window.scrollTo(0,0);
+}
+
+// ─── NOTIFICATION ────────────────────────────────────────────────
+function showNotif(msg='✓ Data recorded!') {
+  const n = document.getElementById('notif');
+  n.textContent = msg;
+  n.classList.add('show');
+  setTimeout(()=>n.classList.remove('show'), 2500);
+}
+
+// ─── STUDENT NAME ────────────────────────────────────────────────
+function updatePrintName() {
+  const name = document.getElementById('studentName').value;
+  document.getElementById('printStudentName').textContent = name ? 'Student: ' + name : '';
+}
+
+// ─── SIM 1 CONTROLS ─────────────────────────────────────────────
+function updateSim1Controls() {
+  document.getElementById('hotMassVal').textContent  = document.getElementById('hotMass').value  + ' g';
+  document.getElementById('hotTempVal').textContent  = document.getElementById('hotTemp').value  + '°C';
+  document.getElementById('coldMassVal').textContent = document.getElementById('coldMass').value + ' g';
+  document.getElementById('coldTempVal').textContent = document.getElementById('coldTemp').value + '°C';
+  document.getElementById('hotTempBadge').textContent  = document.getElementById('hotTemp').value  + '°C';
+  document.getElementById('coldTempBadge').textContent = document.getElementById('coldTemp').value + '°C';
+  document.getElementById('thermTemp').textContent = '—';
+  document.getElementById('thermInner').style.height = '40%';
+  sim1Ran = false;
+  document.getElementById('recordBtn1').disabled = true;
+  document.getElementById('runBtn1').disabled = false;
+}
+
+function runExp1() {
+  // Fixed experimental values — all students get the same data set
+  const mh = 50.0;
+  const Th = 80.0;
+  const mc = 50.0;
+  const Tc = 20.0;
+  const c  = 4.184;
+
+  // Theoretical Tf (perfect calorimeter)
+  const Tf_theory = (mh * Th + mc * Tc) / (mh + mc);
+
+  // Simulate calorimeter absorbing some heat — Ccal ~12 J/°C (slight noise so it feels real)
+  const Ccal_sim = 12.0 + (Math.random() * 2 - 1); // 11–13 J/°C
+  // Tf_measured = solve: mh*c*(Tf-Th) + mc*c*(Tf-Tc) + Ccal*(Tf-Tf_theory) = 0
+  // → Tf*(mh*c + mc*c + Ccal) = mh*c*Th + mc*c*Tc + Ccal*Tf_theory
+  const Tf_meas = (mh*c*Th + mc*c*Tc + Ccal_sim*Tf_theory) / (mh*c + mc*c + Ccal_sim);
+  const Tf_meas_r = Math.round(Tf_meas * 10) / 10;
+
+  sim1Data = { mh, Th, mc, Tc, Tf_theory: Math.round(Tf_theory*100)/100, Tf_meas: Tf_meas_r, Ccal_sim };
+
+  // Animate thermometer
+  const minT = 5, maxT = 90;
+  const pct = ((Tf_meas_r - minT) / (maxT - minT)) * 100;
+  document.getElementById('thermInner').style.height = Math.max(5, Math.min(95, pct)) + '%';
+  document.getElementById('thermTemp').textContent = Tf_meas_r.toFixed(1) + '°C';
+
+  // Animate arrow
+  document.getElementById('mixArrow').textContent = '→';
+  setTimeout(()=>{ document.getElementById('mixArrow').textContent = '✓'; }, 800);
+
+  document.getElementById('runBtn1').disabled = true;
+  document.getElementById('recordBtn1').disabled = false;
+  sim1Ran = true;
+}
+
+function resetExp1() {
+  document.getElementById('mixArrow').textContent = '+';
+  document.getElementById('thermTemp').textContent = '—';
+  document.getElementById('thermInner').style.height = '40%';
+  sim1Ran = false;
+  sim1Data = {};
+  document.getElementById('runBtn1').disabled = false;
+  document.getElementById('recordBtn1').disabled = true;
+}
+
+function recordExp1() {
+  if(!sim1Ran) return;
+  document.getElementById('d1_mhot').textContent  = sim1Data.mh.toFixed(1);
+  document.getElementById('d1_Thot').textContent  = sim1Data.Th.toFixed(1);
+  document.getElementById('d1_mcold').textContent = sim1Data.mc.toFixed(1);
+  document.getElementById('d1_Tcold').textContent = sim1Data.Tc.toFixed(1);
+  document.getElementById('d1_Tf').textContent    = sim1Data.Tf_meas.toFixed(1);
+  ['d1_mhot','d1_Thot','d1_mcold','d1_Tcold','d1_Tf'].forEach(id=>{
+    document.getElementById(id).classList.remove('pending');
+  });
+  showNotif('✓ Experiment 1 data recorded!');
+  document.querySelector('.tab-btn:nth-child(2)').classList.add('completed');
+}
+
+// ─── SIM 2 CONTROLS ─────────────────────────────────────────────
+function updateSim2Controls() {
+  const mass = parseFloat(document.getElementById('saltMass').value);
+  const salt = document.getElementById('saltSelect').value;
+  const mm   = saltData[salt].mm;
+  const moles = mass / mm;
+  document.getElementById('saltMassVal').textContent   = mass.toFixed(1) + ' g';
+  document.getElementById('molarMassDisplay').textContent = 'Molar mass: ' + mm.toFixed(2) + ' g/mol';
+  document.getElementById('molesDisplay').textContent  = 'Moles of salt: ' + moles.toFixed(4) + ' mol';
+  document.getElementById('thermTemp2').textContent = '—';
+  document.getElementById('deltaTDisplay').textContent = '—';
+  document.getElementById('thermInner2').style.height = '40%';
+  document.getElementById('recordBtn2').disabled = true;
+  document.getElementById('runBtn2').disabled = false;
+  currentSim2Running = false;
+
+  // Update beaker color
+  const colorMap = { NaOH:'rgba(192,57,43,0.5)', NH4NO3:'rgba(41,128,185,0.5)', CaCl2:'rgba(142,68,173,0.5)' };
+  document.getElementById('solutionFill').setAttribute('fill', colorMap[salt]);
+}
+
+function runExp2() {
+  const salt  = document.getElementById('saltSelect').value;
+  const ms    = parseFloat(document.getElementById('saltMass').value);
+  const mw    = 100.0;
+  const Ti    = 22.0;
+  const c     = 4.184;
+  const Ccal  = sim1Data.Ccal_sim || 12.0;
+  const sd    = saltData[salt];
+  const moles = ms / sd.mm;
+
+  // Calculate Tf from ΔH_soln
+  // q_soln = -ΔH * moles = (mw + ms) * c * ΔT + Ccal * ΔT
+  // ΔT = (-ΔH * moles * 1000) / ((mw + ms) * c + Ccal)
+  const dH_J = sd.dH_kJmol * 1000; // J/mol
+  const noise = (Math.random() * 0.6 - 0.3); // small random noise
+  const dT = (-dH_J * moles) / ((mw + ms) * c + Ccal) + noise;
+  const Tf = Ti + dT;
+  const Tf_r = Math.round(Tf * 10) / 10;
+  const dT_r = Math.round(dT * 10) / 10;
+
+  // Animate thermometer
+  const minT = 5, maxT = 80;
+  const pct = ((Tf_r - minT) / (maxT - minT)) * 100;
+  document.getElementById('thermInner2').style.height = Math.max(5, Math.min(95, pct)) + '%';
+  document.getElementById('thermTemp2').textContent = Tf_r.toFixed(1) + '°C';
+  document.getElementById('deltaTDisplay').textContent = (dT_r >= 0 ? '+' : '') + dT_r.toFixed(1) + '°C';
+
+  // Stir animation
+  ['stir1','stir2','stir3','stir4'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    setTimeout(()=>{ el.style.opacity='1'; }, i * 150);
+    setTimeout(()=>{ el.style.opacity='0'; }, i * 150 + 600);
+  });
+  document.getElementById('beakerLabel').textContent = sd.label.split(' ')[0] + ' soln';
+
+  // Store result
+  sim2Data[salt] = { ms, mw, Ti, Tf: Tf_r, dT: dT_r, moles };
+  currentSim2Running = true;
+
+  document.getElementById('runBtn2').disabled = true;
+  document.getElementById('recordBtn2').disabled = false;
+  updateSim2Controls2(salt, ms, moles);
+}
+
+function updateSim2Controls2(salt, ms, moles) {
+  // Don't reset sliders, just update labels
+  document.getElementById('saltMassVal').textContent = ms.toFixed(1) + ' g';
+  document.getElementById('molesDisplay').textContent = 'Moles of salt: ' + moles.toFixed(4) + ' mol';
+}
+
+function resetExp2() {
+  document.getElementById('saltMass').value = 4;
+  document.getElementById('saltSelect').value = 'NaOH';
+  updateSim2Controls();
+}
+
+function recordExp2() {
+  const salt = document.getElementById('saltSelect').value;
+  const d = sim2Data[salt];
+  if(!d) return;
+
+  const key = salt.replace('₄','4').replace('₃','3');
+  document.getElementById('e2_'+key+'_ms').textContent = d.ms.toFixed(1);
+  document.getElementById('e2_'+key+'_tf').textContent = d.Tf.toFixed(1);
+  document.getElementById('e2_'+key+'_dt').textContent = (d.dT >= 0 ? '+' : '') + d.dT.toFixed(1);
+  ['e2_'+key+'_ms','e2_'+key+'_tf','e2_'+key+'_dt'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.classList.remove('pending');
+  });
+
+  trialCount++;
+  document.getElementById('trialCount').textContent = trialCount;
+  document.getElementById('recordBtn2').disabled = true;
+  document.getElementById('runBtn2').disabled = false;
+
+  if(trialCount >= 3) {
+    document.querySelector('.tab-btn:nth-child(3)').classList.add('completed');
+    showNotif('✓ All 3 trials recorded!');
+  } else {
+    showNotif('✓ ' + salt + ' data recorded — run next salt!');
+  }
+}
+
+// ─── RESULTS SUMMARY ────────────────────────────────────────────
+function updateResultsSummary() {
+  const Ccal = document.getElementById('d1_Ccal').value;
+  const nH   = document.getElementById('e2_NaOH_dH').value;
+  const nN   = document.getElementById('e2_NH4NO3_dH').value;
+  const nC   = document.getElementById('e2_CaCl2_dH').value;
+  document.getElementById('res_Ccal').textContent  = Ccal  ? parseFloat(Ccal).toFixed(1)  : '—';
+  document.getElementById('res_NaOH').textContent  = nH    ? parseFloat(nH).toFixed(1)    : '—';
+  document.getElementById('res_NH4NO3').textContent = nN   ? parseFloat(nN).toFixed(1)    : '—';
+  document.getElementById('res_CaCl2').textContent = nC    ? parseFloat(nC).toFixed(1)    : '—';
+}
+
+// ─── CHECKLIST ──────────────────────────────────────────────────
+function updateChecklist() {
+  const items = [
+    { label: 'Student name entered',          done: !!document.getElementById('studentName').value.trim() },
+    { label: 'Experiment 1 simulation run',   done: !!document.getElementById('d1_Tf').textContent.match(/\d/) },
+    { label: 'T_f,theory calculated (1A)',    done: !!document.getElementById('d1_Tftheory').value },
+    { label: 'Calculation work 1A written',   done: document.getElementById('calc1a').value.trim().length > 20 },
+    { label: 'q_hot, q_cold, C_cal calculated', done: !!document.getElementById('d1_Ccal').value },
+    { label: 'Calculation work 1B written',   done: document.getElementById('calc1b').value.trim().length > 20 },
+    { label: 'All 3 Exp 2 trials recorded',   done: trialCount >= 3 },
+    { label: 'Moles calculated for all salts', done: !!(document.getElementById('e2_NaOH_n').value && document.getElementById('e2_NH4NO3_n').value && document.getElementById('e2_CaCl2_n').value) },
+    { label: 'ΔH_soln calculated for all salts', done: !!(document.getElementById('e2_NaOH_dH').value && document.getElementById('e2_NH4NO3_dH').value && document.getElementById('e2_CaCl2_dH').value) },
+    { label: 'Calculation work 2C written',   done: document.getElementById('calc2c').value.trim().length > 30 },
+    { label: 'Question 1 answered',           done: document.getElementById('q1').value.trim().length > 20 },
+    { label: 'Question 2 answered',           done: document.getElementById('q2').value.trim().length > 30 },
+    { label: 'Question 3 answered',           done: document.getElementById('q3').value.trim().length > 20 },
+    { label: 'Question 4 answered',           done: document.getElementById('q4').value.trim().length > 20 },
+    { label: 'Question 5 answered',           done: document.getElementById('q5').value.trim().length > 20 },
+    { label: 'Question 6 AP problem solved',  done: document.getElementById('q6').value.trim().length > 20 },
+    { label: 'Final reflection written',      done: document.getElementById('reflection').value.trim().length > 20 },
+  ];
+
+  const done = items.filter(i=>i.done).length;
+  const pct  = Math.round((done / items.length) * 100);
+  document.getElementById('completionBar').style.width = pct + '%';
+
+  const html = items.map(i => `
+    <div style="display:flex; align-items:center; gap:0.6rem; font-size:0.88rem; color:${i.done ? 'var(--green)' : 'var(--midgray)'};">
+      <span style="font-size:1rem;">${i.done ? '✅' : '⬜'}</span>
+      <span>${i.label}</span>
+    </div>
+  `).join('');
+  document.getElementById('checklist').innerHTML = html;
+  document.querySelector('.progress-label').textContent = `Completion: ${done}/${items.length} (${pct}%)`;
+}
+
+// ─── PDF DOWNLOAD ────────────────────────────────────────────────
+function downloadPDF() {
+  updateResultsSummary();
+  // Make all sections visible for print
+  document.querySelectorAll('.section').forEach(s => {
+    s.style.display = 'block';
+  });
+  // Update print header name
+  updatePrintName();
+  window.print();
+  // Restore single-section view after print dialog
+  setTimeout(()=>{
+    document.querySelectorAll('.section').forEach(s => {
+      s.style.display = '';
+    });
+    // Re-activate the submit section
+    document.getElementById('sec-submit').classList.add('active');
+  }, 500);
+}
+
+// ─── INIT ────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  // Exp 1 locked display values
+  document.getElementById('hotTempBadge').textContent  = '80°C';
+  document.getElementById('coldTempBadge').textContent = '20°C';
+  // Exp 2
+  updateSim2Controls();
+});
+</script>
+</body>
+</html>
