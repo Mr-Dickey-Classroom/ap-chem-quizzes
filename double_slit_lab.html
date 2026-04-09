@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Double-Slit Interference Lab — San Tan Charter School</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0D1B2A;
+    --navy-mid: #1B3A5C;
+    --navy-light: #1E4D78;
+    --cyan: #00C2D4;
+    --cyan-soft: #4DD9E8;
+    --cyan-pale: #E0F7FA;
+    --gold: #F5B800;
+    --gold-pale: #FFF8E1;
+    --white: #FFFFFF;
+    --off-white: #F7FBFD;
+    --text: #0D1B2A;
+    --text-muted: #4A6072;
+    --text-light: #7A95A8;
+    --border: #D0E4EE;
+    --border-dark: #A8C4D4;
+    --surface: #FFFFFF;
+    --surface-2: #F0F6FA;
+    --surface-3: #E4EFF6;
+    --red: #D84040;
+    --green: #1A7A4A;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text);
+    background: var(--off-white);
+  }
+
+  /* ── HEADER ── */
+  .lab-header {
+    background: var(--navy);
+    color: white;
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .lab-header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -60px;
+    width: 280px; height: 280px;
+    border-radius: 50%;
+    border: 2px solid rgba(0,194,212,0.15);
+  }
+  .lab-header::after {
+    content: '';
+    position: absolute;
+    top: 10px; right: 20px;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,194,212,0.1);
+  }
+  .header-inner {
+    padding: 28px 40px 24px;
+    position: relative;
+    z-index: 1;
+  }
+  .school-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--cyan);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .lab-title {
+    font-size: 26px;
+    font-weight: 600;
+    color: white;
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+  .lab-subtitle {
+    font-size: 13px;
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 20px;
+  }
+  .sim-link-bar {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0,194,212,0.12);
+    border: 1px solid rgba(0,194,212,0.3);
+    border-radius: 6px;
+    padding: 7px 14px;
+    color: var(--cyan-soft);
+    font-size: 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .sim-link-bar:hover { background: rgba(0,194,212,0.2); }
+
+  /* ── STUDENT INFO BAR ── */
+  .student-bar {
+    background: var(--navy-mid);
+    padding: 14px 40px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .student-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 160px;
+  }
+  .student-field label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.45);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .student-field input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(255,255,255,0.25);
+    color: white;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    padding: 2px 4px;
+    flex: 1;
+    outline: none;
+    min-width: 100px;
+  }
+  .student-field input::placeholder { color: rgba(255,255,255,0.25); }
+  .student-field input:focus { border-bottom-color: var(--cyan); }
+
+  /* ── MAIN CONTENT ── */
+  .content {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 32px 40px 60px;
+  }
+
+  /* ── SECTIONS ── */
+  .section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+  }
+  .part-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    background: var(--navy);
+    color: var(--cyan);
+    white-space: nowrap;
+  }
+  .section-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .section-body {
+    padding: 20px;
+  }
+  .intro-text {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.65;
+    margin-bottom: 16px;
+    padding: 10px 14px;
+    background: var(--surface-2);
+    border-left: 3px solid var(--cyan);
+    border-radius: 0 6px 6px 0;
+  }
+
+  /* ── FORMULA BOX ── */
+  .formula-box {
+    background: var(--navy);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+  }
+  .formula-eq {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--gold);
+    text-align: center;
+    margin-bottom: 10px;
+    letter-spacing: 0.05em;
+  }
+  .formula-vars {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+  }
+  .var-chip {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    background: rgba(255,255,255,0.07);
+    color: rgba(255,255,255,0.7);
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+
+  /* ── QUESTIONS ── */
+  .question {
+    margin-bottom: 16px;
+  }
+  .question-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin-bottom: 6px;
+  }
+  .q-num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    border-radius: 50%;
+    background: var(--navy);
+    color: var(--cyan);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    margin-top: 1px;
+  }
+  .q-text {
+    font-size: 13.5px;
+    color: var(--text);
+    line-height: 1.6;
+    flex: 1;
+  }
+  .answer-box {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    background: var(--surface);
+    resize: vertical;
+    min-height: 64px;
+    outline: none;
+    transition: border-color 0.15s;
+    line-height: 1.6;
+  }
+  .answer-box:focus { border-color: var(--cyan); }
+  .answer-box.short { min-height: 40px; }
+  .answer-box.tall { min-height: 90px; }
+
+  /* ── DATA TABLES ── */
+  .data-table-wrap {
+    overflow-x: auto;
+    margin: 12px 0;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .data-table th {
+    background: var(--navy);
+    color: rgba(255,255,255,0.75);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 9px 12px;
+    text-align: left;
+    white-space: nowrap;
+  }
+  .data-table th:first-child { border-radius: 8px 0 0 0; }
+  .data-table th:last-child { border-radius: 0 8px 0 0; }
+  .data-table td {
+    padding: 0;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:nth-child(even) td { background: var(--surface-2); }
+  .data-table td.fixed {
+    padding: 8px 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+  .data-table td.color-cell {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+  .data-table td input.cell-input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 8px 12px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    outline: none;
+    min-width: 80px;
+  }
+  .data-table td input.cell-input:focus { background: #E8F7FF; }
+  .data-table td.calc-cell {
+    padding: 8px 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+    background: var(--surface-3);
+    text-align: center;
+    white-space: nowrap;
+  }
+  .color-dot {
+    display: inline-block;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    margin-right: 5px;
+    vertical-align: middle;
+  }
+  .table-note {
+    font-size: 11px;
+    color: var(--text-light);
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  /* ── LIVE CALCULATOR ── */
+  .calc-panel {
+    background: var(--navy);
+    border-radius: 8px;
+    padding: 18px 20px;
+    margin-bottom: 12px;
+  }
+  .calc-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .calc-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+    min-width: 120px;
+    letter-spacing: 0.06em;
+  }
+  .calc-row input[type=range] {
+    flex: 1;
+    accent-color: var(--cyan);
+  }
+  .calc-val {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: white;
+    min-width: 70px;
+    text-align: right;
+  }
+  .color-swatch {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.2);
+    flex-shrink: 0;
+  }
+  .readout-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin: 14px 0 12px;
+  }
+  .readout-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+    padding: 10px 12px;
+    text-align: center;
+  }
+  .readout-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .readout-val {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--gold);
+  }
+  .pattern-canvas {
+    width: 100%;
+    height: 72px;
+    border-radius: 6px;
+    display: block;
+    cursor: crosshair;
+  }
+  .pattern-label {
+    font-size: 11px;
+    color: rgba(255,255,255,0.3);
+    margin-top: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+  .warn-box {
+    background: rgba(245,184,0,0.12);
+    border: 1px solid rgba(245,184,0,0.3);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 12px;
+    color: var(--gold);
+    margin-top: 8px;
+    display: none;
+  }
+
+  /* ── FORM ROWS ── */
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .form-row.three { grid-template-columns: 1fr 1fr 1fr; }
+  .field-group label {
+    display: block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 5px;
+  }
+  .field-group input[type=text] {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 7px 10px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    background: var(--surface);
+    outline: none;
+  }
+  .field-group input[type=text]:focus { border-color: var(--cyan); }
+
+  /* ── DIVIDER ── */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 16px 0;
+  }
+
+  /* ── PDF EXPORT BUTTON ── */
+  .export-bar {
+    position: sticky;
+    bottom: 0;
+    background: white;
+    border-top: 1px solid var(--border);
+    padding: 14px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    z-index: 100;
+    max-width: 100%;
+  }
+  .export-hint {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .export-hint strong { color: var(--text); font-weight: 500; }
+  .export-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--navy);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 22px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    white-space: nowrap;
+  }
+  .export-btn:hover { background: var(--navy-mid); }
+  .export-btn:active { transform: scale(0.98); }
+  .export-btn svg { flex-shrink: 0; }
+
+  /* ── PRINT / PDF STYLES ── */
+  @media print {
+    @page {
+      size: letter;
+      margin: 0.7in 0.6in 0.7in 0.6in;
+    }
+    body { background: white; font-size: 12px; }
+    .export-bar { display: none !important; }
+    .sim-link-bar { display: none !important; }
+    .lab-header { background: var(--navy) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .student-bar { background: #1B3A5C !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .section { break-inside: avoid; page-break-inside: avoid; }
+    .formula-box { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .calc-panel { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .data-table th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .answer-box {
+      border: 1px solid #aaa !important;
+      min-height: 64px;
+      background: white !important;
+    }
+    .answer-box.short { min-height: 36px; }
+    .answer-box.tall { min-height: 90px; }
+    .content { padding: 20px 0 0; }
+    .calc-row input[type=range] { display: none; }
+    .calc-label { color: rgba(255,255,255,0.6) !important; }
+    .calc-val { color: white !important; }
+    .pattern-canvas { display: none; }
+    .pattern-label { display: none; }
+    .readout-val { color: var(--gold) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .data-table tr:nth-child(even) td { background: #f5f5f5 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .data-table td.calc-cell { background: #ececec !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .section-head { background: #f0f6fa !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    a { color: inherit; text-decoration: none; }
+    .part-badge { background: #0D1B2A !important; color: #00C2D4 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<div class="lab-header">
+  <div class="header-inner">
+    <div class="school-tag">San Tan Charter School &nbsp;·&nbsp; Physics &nbsp;·&nbsp; CK-12 Ch 14.8</div>
+    <div class="lab-title">Double-Slit Interference</div>
+    <div class="lab-subtitle">Virtual Lab — Young's Experiment &amp; Wave Properties of Light</div>
+    <a class="sim-link-bar" href="https://www.walter-fendt.de/html5/phen/doubleslit_en.htm" target="_blank">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="13" height="13" rx="2.5" stroke="currentColor" stroke-width="1.5"/><path d="M5.5 8h5M8 5.5v5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Open Simulation → walter-fendt.de/html5/phen/doubleslit_en.htm
+    </a>
+  </div>
+  <div class="student-bar">
+    <div class="student-field">
+      <label>Name</label>
+      <input type="text" id="s_name" placeholder="First Last" autocomplete="name">
+    </div>
+    <div class="student-field">
+      <label>Period</label>
+      <input type="text" id="s_period" placeholder="—" style="max-width:60px">
+    </div>
+    <div class="student-field">
+      <label>Date</label>
+      <input type="text" id="s_date" placeholder="Month Day, Year">
+    </div>
+  </div>
+</div>
+
+<!-- ── MAIN CONTENT ── -->
+<div class="content">
+
+  <!-- SETUP -->
+  <div class="section">
+    <div class="section-head">
+      <span class="part-badge">Setup</span>
+      <span class="section-title">Before You Begin</span>
+    </div>
+    <div class="section-body">
+      <p class="intro-text">Open the Walter Fendt simulation at the link above. You will adjust three parameters: <strong>Wavelength</strong> (color of light in nm), <strong>Spacing between slits</strong> (distance d in nm), and <strong>Angle</strong> (direction from center). The simulation shows the 3D wave pattern (top) and the interference pattern on a screen (bottom strip). Use the Maxima and Minima dropdowns to locate specific bright and dark fringes.</p>
+      <div class="formula-box">
+        <div class="formula-eq">d · sin α = k · λ &nbsp;&nbsp;&nbsp; (maxima) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; y = λL / d &nbsp;&nbsp;&nbsp; (fringe spacing)</div>
+        <div class="formula-vars">
+          <span class="var-chip">d = slit spacing (nm)</span>
+          <span class="var-chip">α = angle to fringe (°)</span>
+          <span class="var-chip">k = order (0, 1, 2…)</span>
+          <span class="var-chip">λ = wavelength (nm)</span>
+          <span class="var-chip">L = slit-to-screen distance</span>
+          <span class="var-chip">y = fringe spacing on screen</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PART 1 -->
+  <div class="section">
+    <div class="section-head">
+      <span class="part-badge">Part 1</span>
+      <span class="section-title">Exploration — Getting Oriented</span>
+    </div>
+    <div class="section-body">
+      <p class="intro-text">Set the simulation to default values: <strong>Wavelength = 600 nm</strong>, <strong>Spacing = 1000 nm</strong>. Click <em>Interference pattern</em> to show the screen view. Take a minute to explore before answering.</p>
+
+      <div class="question">
+        <div class="question-row">
+          <span class="q-num">1</span>
+          <span class="q-text">The bottom strip shows the interference pattern. Describe what you see — how many bright bands are visible? Are they evenly spaced? What color are they?</span>
+        </div>
+        <textarea class="answer-box" placeholder="Your answer…"></textarea>
+      </div>
+
+      <div class="question">
+        <div class="question-row">
+          <span class="q-num">2</span>
+          <span class="q-text">The simulation shows "Maxima: 0.0° (k = 0)." What do you think k = 0 means? Where is this fringe located in the pattern?</span>
+        </div>
+        <textarea class="answer-box" placeholder="Your answer…"></textarea>
+      </div>
+
+      <div class="question">
+        <div class="question-row">
+          <span class="q-num">3</span>
+          <span class="q-text">Switch to <em>Intensity profile</em>. How does this view differ from the interference pattern? What does the height of each peak represent physically?</span>
+        </div>
+        <textarea class="answer-box" placeholder="Your answer…"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- PART 2 -->
+  <div class="section">
+    <div class="section-head">
+      <span class="part-badge">Part 2</span>
+      <span class="section-title">Effect of Wavelength (Color of Light)</span>
+    </div>
+    <div class="section-body">
+      <p class="intro-text">Keep <strong>slit spacing = 1000 nm</strong>. Change the wavelength to each value below. Use the <strong>Minima dropdown</strong> to find the angle for the first minimum (k = 1) and record it. Also note whether the fringes spread out or compress compared to the 600 nm baseline.</p>
+
+      <div class="data-table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Wavelength (nm)</th>
+              <th>Color</th>
+              <th>1st Minimum angle α (°)</th>
+              <th>Pattern vs. 600 nm baseline</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="fixed">400</td>
+              <td class="color-cell"><span class="color-dot" style="background:#8000FF"></span>Violet</td>
+              <td><input class="cell-input" type="text" placeholder="°"></td>
+              <td><input class="cell-input" type="text" placeholder="wider / narrower"></td>
+            </tr>
+            <tr>
+              <td class="fixed">500</td>
+              <td class="color-cell"><span class="color-dot" style="background:#00CC44"></span>Green</td>
+              <td><input class="cell-input" type="text" placeholder="°"></td>
+              <td><input class="cell-input" type="text" placeholder="wider / narrower"></td>
+            </tr>
+            <tr>
+              <td class="fixed">600</td>
+              <td class="color-cell"><span class="color-dot" style="background:#FF9900"></span>Orange</td>
+              <td><input class="cell-input" type="text" placeholder="°"></td>
+              <td class="fixed">— baseline —</td>
+            </tr>
+            <tr>
+              <td class="fixed">700</td>
+              <td class="color-cell"><span class="color-dot" style="background:#CC0000"></span>Red</td>
+              <td><input class="cell-input" type="text" placeholder="°"></td>
+              <td><input class="cell-input" type="text" placeholder="wider / narrower"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <hr class="divider">
+
+      <div class="question">
+        <div class="question-row">
+          <span class="q-num">4</span>
+          <span class="q-text">As wavelength <em>increases</em> from violet to red, what happens to the angle of the first minimum? Does the fringe pattern spread out or compress? State the relationship clearly.</span>
+        </div>
+        <textarea class="answer-box" placeholder="Your answer…"></textarea>
+      </div>
+
+      <div class="question">
+        <div class="question-row">
+          <span class="q-num">5</span>
+          <span class="q-text">Use the formula d · sin α = (k − ½)λ to <em>predict</em> the first minimum angle for λ = 550 nm, d = 1000 nm. Show your work below, then verify your answer in the simulation.</span>
+        </div>
+        <textarea class="answer-box tall" placeholder="sin α = (0.5 × 550) / 1000 = …   →   α = …°&#10;&#10;Sim reading: ___°   Match? ___"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- PART 3 -->
+  <div class="section">
+    <div class="section-head">
+      <span class="part-badge">Part 3</span>
+      <span class="section-title">Effect of Slit Spacing</span>
+    </div>
+    <div class="section-body">
+      <p class="intro-text">Set <strong>wavelength = 600 nm</strong>. Change the slit spacing to each value below. Use the <strong>Maxima dropdown</strong> to find the angle for the first-order maximum (k = 1). The last two columns are cross-checks: sin α and λ/d should match if your sim reading is correct.</p>
+
+      <div class="data-table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Slit spacing d (nm)</th>
+              <th>1st max angle α (°)</th>
+              <th>Pattern vs. 1000 nm baseline</th>
+              <th>sin α (your calc)</th>
+              <th>λ/d (pre-calc)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="fixed">600</td>
+              <td><input class="cell-input" type="text" placeholder="°"></td>
+              <td><input class="cell-input" type="text" placeholder="wider / narrower"></td>
+              <td><input class="cell-input" type="text" placeholder="sin(α)"></td>
+              <td class="calc-cell">1.000</td>
+            </tr>
+            <tr>
+              <td class="fixed">1000</td>
+              <td><input class="cell-input" type="text" placeholder="°"></td>
+              <td class="fixed">— baseline —</td>
+              <td><input class="cell-input" type="text" placeholder="sin(α)"></td>
+              <td class="calc-cell">0.600</td>
+            </tr>
+            <tr>
+              <td class="fixed">1500</td>
+              <td><input class="cell-input" type="text" placeholder="°"></td>
+              <td><input class="cell-input" type="text" placeholder="wider / narrower"></td>
+              <td><input class="cell-input" type="text" placeholder="sin(α)"></td>
+              <td class="calc-cell">0.400</td>
+            </tr>
+            <tr>
+              <td class="fixed">2000</td>
+              <td><input class="cell-input" type="text" placeholder="°"></td>
+              <td><input class="cell-input" type="text" placeholder="wider / narrower"></td>
+              <td><input class="cell-input" type="text" placeholder="sin(α)"></td>
+              <td class="calc-cell">0.300</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="table-note">Note: for d = 600 nm with λ = 600 nm, sin α = 1.000 means the first maximum is at exactly 90° — you'll only see it just barely in the sim.</p>
+
+      <hr class="divider">
+
+      <div class="question">
+        <div class="question-row">
+          <span class="q-num">6</span>
+          <span class="q-text">As slit spacing <em>increases</em>, what happens to the angle of the first maximum? Does the fringe pattern spread out or compress? Explain using the formula d · sin α = λ.</span>
+        </div>
+        <textarea class="answer-box tall" placeholder="Your answer…"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- PART 4 -->
+  <div class="section">
+    <div class="section-head">
+      <span class="part-badge">Part 4</span>
+      <span class="section-title">Live Calculator — Predict Before You Look</span>
+    </div>
+    <div class="section-body">
+      <p class="intro-text">Use the sliders below to set your desired wavelength and slit spacing. The calculator will predict the angles for the maxima and minima, and render the expected interference pattern. Then check your predictions against the simulation.</p>
+
+      <div class="calc-panel">
+        <div class="calc-row">
+          <span class="calc-label">Wavelength λ</span>
+          <input type="range" min="380" max="750" value="600" id="sl_wl" step="10">
+          <span class="calc-val"><span id="wl_disp">600</span> nm</span>
+          <div class="color-swatch" id="wl_swatch" style="background:#FF9900"></div>
+        </div>
+        <div class="calc-row">
+          <span class="calc-label">Slit spacing d</span>
+          <input type="range" min="400" max="3000" value="1000" id="sl_d" step="50">
+          <span class="calc-val"><span id="d_disp">1000</span> nm</span>
+        </div>
+        <div class="readout-row">
+          <div class="readout-card">
+            <div class="readout-label">1st max (k=1)</div>
+            <div class="readout-val" id="r_a1">36.9°</div>
+          </div>
+          <div class="readout-card">
+            <div class="readout-label">2nd max (k=2)</div>
+            <div class="readout-val" id="r_a2">—</div>
+          </div>
+          <div class="readout-card">
+            <div class="readout-label">1st min (k=1)</div>
+            <div class="readout-val" id="r_m1">17.5°</div>
+          </div>
+        </div>
+        <canvas class="pattern-canvas" id="pCanvas"></canvas>
+        <div class="pattern-label">↑ Predicted interference pattern &nbsp;·&nbsp; dashed lines mark maxima &nbsp;·&nbsp; center = 0°, edges = ±90°</div>
+        <div class="warn-box" id="warn_2">2nd-order maximum does not exist for these settings — d must be ≥ 2λ for k = 2 to appear.</div>
+      </div>
+
+      <div class="question">
+        <div class="question-row">
+          <span class="q-num">7</span>
+          <span class="q-text">Set λ = 650 nm and d = 1200 nm. Record the predicted 1st maximum angle here, then verify in the sim. How close was your prediction?</span>
+        </div>
+        <textarea class="answer-box short" placeholder="Predicted 1st max: ___°   Sim reading: ___°   Difference: ___°"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- PART 5 -->
+  <div class="section">
+    <div class="section-head">
+      <span class="part-badge">Part 5</span>
+      <span class="section-title">Fringe Spacing Calculation (y = λL / d)</span>
+    </div>
+    <div class="section-body">
+      <p class="intro-text">Use the formula y = λL / d to find the physical distance between bright fringes on a screen. Assume the screen is <strong>L = 2.0 m</strong> from the slits. You must convert nm → m first (1 nm = 1 × 10⁻⁹ m).</p>
+
+      <div class="form-row three">
+        <div class="field-group">
+          <label>λ (convert nm → m)</label>
+          <input type="text" placeholder="e.g. 6.00 × 10⁻⁷ m">
+        </div>
+        <div class="field-group">
+          <label>d (convert nm → m)</label>
+          <input type="text" placeholder="e.g. 1.00 × 10⁻⁶ m">
+        </div>
+        <div class="field-group">
+          <label>L (m)</label>
+          <input type="text" value="2.0">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="field-group">
+          <label>Show your work for y = λL / d</label>
+          <textarea class="answer-box" placeholder="y = ( ___ ) × ( ___ ) / ( ___ )  =  ___ m"></textarea>
+        </div>
+        <div class="field-group">
+          <label>Final answer for y</label>
+          <textarea class="answer-box" placeholder="y = ___ m&#10;y = ___ mm"></textarea>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-row">
+          <span class="q-num">8</span>
+          <span class="q-text">You want to <em>double</em> the fringe spacing y. Describe two different ways you could change the experimental setup to achieve this, and explain each using the formula.</span>
+        </div>
+        <textarea class="answer-box tall" placeholder="Option 1: …&#10;&#10;Option 2: …"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANALYSIS -->
+  <div class="section">
+    <div class="section-head">
+      <span class="part-badge">Analysis</span>
+      <span class="section-title">Conclusion Questions</span>
+    </div>
+    <div class="section-body">
+
+      <div class="question">
+        <div class="question-row">
+          <span class="q-num">9</span>
+          <span class="q-text">Young performed this experiment in 1801 with sunlight. What did the striped interference pattern prove about the nature of light — and why couldn't Isaac Newton's "particle" model of light explain it?</span>
+        </div>
+        <textarea class="answer-box tall" placeholder="Your answer…"></textarea>
+      </div>
+
+      <div class="question">
+        <div class="question-row">
+          <span class="q-num">10</span>
+          <span class="q-text">Based on your data from Parts 2 and 3, complete this statement and explain: <em>"Fringe spacing increases when wavelength is ________ OR when slit spacing is ________."</em></span>
+        </div>
+        <textarea class="answer-box tall" placeholder="Your answer…"></textarea>
+      </div>
+
+      <div class="question">
+        <div class="question-row">
+          <span class="q-num">11</span>
+          <span class="q-text">CDs and DVDs show rainbow colors when white light hits them. Using what you learned in this lab, explain why different colors appear at different positions on the disc surface.</span>
+        </div>
+        <textarea class="answer-box tall" placeholder="Your answer…"></textarea>
+      </div>
+
+      <div class="question">
+        <div class="question-row">
+          <span class="q-num">12</span>
+          <span class="q-text">⭐ Challenge: A green laser (λ = 532 nm) shines through a double slit with d = 0.25 mm = 2.5 × 10⁻⁴ m. The screen is L = 3.0 m away. Calculate: (a) the angle α to the first-order maximum, and (b) the fringe spacing y.</span>
+        </div>
+        <textarea class="answer-box tall" placeholder="(a) sin α = λ/d = ( ___ ) / ( ___ ) = ___   →   α = ___°&#10;&#10;(b) y = λL/d = ( ___ × ___ ) / ___ = ___ m = ___ mm"></textarea>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /content -->
+
+<!-- ── EXPORT BAR ── -->
+<div class="export-bar" id="exportBar">
+  <div class="export-hint">
+    <strong>When finished:</strong> click Export to PDF, then submit the PDF to Google Classroom.
+  </div>
+  <button class="export-btn" onclick="exportPDF()">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <path d="M8 2v8M5 7l3 3 3-3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M2 11v2a1 1 0 001 1h10a1 1 0 001-1v-2" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    Export to PDF
+  </button>
+</div>
+
+<script>
+/* ── INTERFERENCE PATTERN CANVAS ── */
+function wlToRGB(nm) {
+  if (nm < 380) return [128,0,200];
+  if (nm < 450) { let t=(nm-380)/70; return [Math.round(128*(1-t)),0,Math.round(200+55*t)]; }
+  if (nm < 495) { let t=(nm-450)/45; return [0,Math.round(180*t),255]; }
+  if (nm < 570) { let t=(nm-495)/75; return [0,Math.round(180+50*t),Math.round(255*(1-t))]; }
+  if (nm < 590) { let t=(nm-570)/20; return [Math.round(255*t),230,0]; }
+  if (nm < 620) { let t=(nm-590)/30; return [255,Math.round(230*(1-t)),0]; }
+  if (nm < 750) { let t=(nm-620)/130; return [255,0,0]; }
+  return [180,0,0];
+}
+
+function wlToCSS(nm) {
+  if(nm<420)return'#8800FF';
+  if(nm<450)return'#5500FF';
+  if(nm<480)return'#0000FF';
+  if(nm<510)return'#0088FF';
+  if(nm<545)return'#00CC44';
+  if(nm<575)return'#88CC00';
+  if(nm<590)return'#FFCC00';
+  if(nm<620)return'#FF8800';
+  return'#DD0000';
+}
+
+function drawPattern(wl, d) {
+  const canvas = document.getElementById('pCanvas');
+  if (!canvas) return;
+  const W = canvas.offsetWidth * (window.devicePixelRatio||1);
+  const H = canvas.offsetHeight * (window.devicePixelRatio||1);
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0,0,W,H);
+
+  const rgb = wlToRGB(wl);
+  const cx = W/2;
+  const maxA = Math.PI/2;
+
+  for (let px = 0; px < W; px++) {
+    const angle = ((px - cx)/cx) * maxA;
+    const sinA = Math.sin(angle);
+    const phase = Math.PI * d * sinA / wl;
+    const intensity = Math.pow(Math.cos(phase), 2);
+    const i = Math.round(intensity * 255);
+    ctx.fillStyle = `rgb(${Math.round(rgb[0]*intensity)},${Math.round(rgb[1]*intensity)},${Math.round(rgb[2]*intensity)})`;
+    ctx.fillRect(px, 0, 1, H);
+  }
+
+  // dashed maxima markers
+  ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+  ctx.setLineDash([3,4]);
+  ctx.lineWidth = 1;
+  for (let k = -5; k <= 5; k++) {
+    const sinK = k * wl / d;
+    if (Math.abs(sinK) <= 1) {
+      const aK = Math.asin(sinK);
+      const px = cx + (aK/maxA)*cx;
+      ctx.beginPath(); ctx.moveTo(px,0); ctx.lineTo(px,H); ctx.stroke();
+    }
+  }
+}
+
+function updateCalc() {
+  const wl = parseFloat(document.getElementById('sl_wl').value);
+  const d  = parseFloat(document.getElementById('sl_d').value);
+  document.getElementById('wl_disp').textContent = wl;
+  document.getElementById('d_disp').textContent  = d;
+  document.getElementById('wl_swatch').style.background = wlToCSS(wl);
+
+  function fmt(sin, k) {
+    if (sin <= 1) return (Math.asin(sin) * 180/Math.PI).toFixed(1) + '°';
+    return '—';
+  }
+  document.getElementById('r_a1').textContent = fmt(wl/d, 1);
+  document.getElementById('r_a2').textContent = fmt(2*wl/d, 2);
+  document.getElementById('r_m1').textContent = fmt(0.5*wl/d, 1);
+
+  const warn = document.getElementById('warn_2');
+  warn.style.display = (2*wl/d > 1) ? 'block' : 'none';
+
+  drawPattern(wl, d);
+}
+
+document.getElementById('sl_wl').addEventListener('input', updateCalc);
+document.getElementById('sl_d').addEventListener('input',  updateCalc);
+window.addEventListener('load', updateCalc);
+window.addEventListener('resize', updateCalc);
+
+/* ── PDF EXPORT ── */
+function exportPDF() {
+  const name   = document.getElementById('s_name').value.trim();
+  const period = document.getElementById('s_period').value.trim();
+
+  if (!name) {
+    alert('Please enter your name before exporting.');
+    document.getElementById('s_name').focus();
+    return;
+  }
+
+  // Set document title so PDF filename includes student name
+  const orig = document.title;
+  document.title = `DoubleSlit_Lab_${name.replace(/\s+/g,'_')}${period ? '_P'+period : ''}`;
+
+  // Render final pattern before print
+  updateCalc();
+
+  window.print();
+  document.title = orig;
+}
+</script>
+</body>
+</html>
