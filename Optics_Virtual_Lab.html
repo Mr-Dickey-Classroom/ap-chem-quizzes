@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Optics Virtual Lab — Reflection & Refraction</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Barlow:wght@300;400;600;700&family=Barlow+Condensed:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0a1628;
+    --navy-mid: #102040;
+    --navy-light: #1a3060;
+    --cyan: #00c8e8;
+    --cyan-dim: #0099bb;
+    --cyan-glow: rgba(0,200,232,0.15);
+    --gold: #f5c842;
+    --gold-dim: #c8a030;
+    --white: #e8f4ff;
+    --white-dim: #a0b8cc;
+    --green: #22dd88;
+    --red: #ff5566;
+    --glass: rgba(255,255,255,0.04);
+    --border: rgba(0,200,232,0.2);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'Barlow', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ─────────────────────────── */
+  header {
+    background: linear-gradient(135deg, #071020 0%, #102244 50%, #071830 100%);
+    border-bottom: 2px solid var(--cyan);
+    padding: 24px 40px 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content:'';
+    position:absolute; top:0; left:0; right:0; bottom:0;
+    background: repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(0,200,232,0.03) 60px, rgba(0,200,232,0.03) 61px);
+    pointer-events:none;
+  }
+  .header-icon {
+    width: 52px; height: 52px;
+    background: var(--cyan-glow);
+    border: 2px solid var(--cyan);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    flex-shrink: 0;
+  }
+  .header-text h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 28px; font-weight: 800;
+    color: var(--white);
+    letter-spacing: 1px;
+    line-height: 1.1;
+  }
+  .header-text h1 span { color: var(--cyan); }
+  .header-text p {
+    color: var(--white-dim);
+    font-size: 13px;
+    font-family: 'Space Mono', monospace;
+  }
+  .school-badge {
+    margin-left: auto;
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 16px;
+    text-align: right;
+    font-size: 12px;
+    color: var(--white-dim);
+    font-family: 'Space Mono', monospace;
+    flex-shrink: 0;
+  }
+  .school-badge strong { display:block; color: var(--cyan); font-size: 13px; }
+
+  /* ── STUDENT INFO SECTION ─────────────── */
+  #student-section {
+    background: linear-gradient(135deg, var(--navy-mid), var(--navy));
+    border-bottom: 1px solid var(--border);
+    padding: 20px 40px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+  }
+  .field-group {
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .field-group label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--cyan);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .field-group input, .field-group select {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 14px;
+    color: var(--white);
+    font-family: 'Barlow', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    min-width: 200px;
+  }
+  .field-group input:focus, .field-group select:focus {
+    border-color: var(--cyan);
+    box-shadow: 0 0 0 3px var(--cyan-glow);
+  }
+  .field-group select option { background: var(--navy-mid); }
+
+  /* ── MAIN LAYOUT ─────────────────────── */
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 30px 40px 60px;
+  }
+
+  /* ── SECTION HEADERS ─────────────────── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 36px 0 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-num {
+    background: var(--cyan);
+    color: var(--navy);
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: 13px;
+    width: 32px; height: 32px;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .section-header h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 22px; font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--white);
+  }
+  .section-header .tag {
+    margin-left: auto;
+    background: var(--cyan-glow);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 3px 12px;
+    font-size: 11px;
+    color: var(--cyan);
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* ── INFO BOXES ──────────────────────── */
+  .info-box {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--cyan);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: var(--white-dim);
+    line-height: 1.6;
+  }
+  .info-box strong { color: var(--cyan); }
+  .formula-box {
+    background: rgba(245,200,66,0.08);
+    border: 1px solid rgba(245,200,66,0.3);
+    border-left: 3px solid var(--gold);
+    border-radius: 8px;
+    padding: 12px 18px;
+    margin: 12px 0;
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    color: var(--gold);
+    text-align: center;
+  }
+
+  /* ── SIMULATION CANVAS ───────────────── */
+  .sim-container {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .sim-controls {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .control-group {
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .control-group label {
+    font-size: 12px;
+    color: var(--white-dim);
+    font-family: 'Space Mono', monospace;
+  }
+  .control-group input[type="range"] {
+    -webkit-appearance: none;
+    width: 160px; height: 4px;
+    background: var(--navy-light);
+    border-radius: 2px;
+    outline: none;
+  }
+  .control-group input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px; height: 16px;
+    background: var(--cyan);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  .control-val {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--cyan);
+    font-weight: 700;
+  }
+
+  canvas {
+    display: block;
+    width: 100%;
+    border-radius: 8px;
+    background: #040e1e;
+    border: 1px solid rgba(0,200,232,0.1);
+  }
+
+  /* ── QUESTION CARDS ──────────────────── */
+  .question-card {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 14px;
+  }
+  .question-card .q-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .q-num {
+    background: var(--navy-light);
+    color: var(--cyan);
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .q-text {
+    font-size: 14px;
+    color: var(--white);
+    line-height: 1.5;
+  }
+  .q-hint {
+    font-size: 12px;
+    color: var(--white-dim);
+    margin-top: 4px;
+    font-style: italic;
+  }
+  .q-points {
+    margin-left: auto;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--gold);
+    background: rgba(245,200,66,0.1);
+    border: 1px solid rgba(245,200,66,0.3);
+    border-radius: 4px;
+    padding: 2px 8px;
+    flex-shrink: 0;
+  }
+
+  textarea {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 14px;
+    color: var(--white);
+    font-family: 'Barlow', sans-serif;
+    font-size: 14px;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    line-height: 1.5;
+  }
+  textarea:focus {
+    border-color: var(--cyan);
+    box-shadow: 0 0 0 3px var(--cyan-glow);
+  }
+  textarea::placeholder { color: rgba(160,184,204,0.5); }
+
+  input[type="number"] {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: var(--white);
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 120px;
+  }
+  input[type="number"]:focus {
+    border-color: var(--cyan);
+    box-shadow: 0 0 0 3px var(--cyan-glow);
+  }
+
+  .inline-calc {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+  .inline-calc span {
+    font-family: 'Space Mono', monospace;
+    color: var(--white-dim);
+    font-size: 13px;
+  }
+
+  /* ── DATA TABLE ──────────────────────── */
+  .data-table-wrap {
+    overflow-x: auto;
+    margin: 12px 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  th {
+    background: var(--navy-light);
+    color: var(--cyan);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 8px 14px;
+    border-bottom: 1px solid rgba(0,200,232,0.07);
+    vertical-align: middle;
+  }
+  tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+  td input[type="number"] {
+    width: 100px;
+    padding: 5px 8px;
+    font-size: 13px;
+  }
+  .table-label { color: var(--white-dim); }
+
+  /* ── OBSERVATION GRID ────────────────── */
+  .obs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 10px;
+  }
+  @media (max-width: 600px) { .obs-grid { grid-template-columns: 1fr; } }
+
+  .obs-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .obs-card label {
+    display: block;
+    font-size: 12px;
+    color: var(--white-dim);
+    margin-bottom: 6px;
+    font-family: 'Space Mono', monospace;
+  }
+  .obs-card select {
+    width: 100%;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 7px 12px;
+    color: var(--white);
+    font-family: 'Barlow', sans-serif;
+    font-size: 14px;
+    outline: none;
+  }
+  .obs-card select:focus { border-color: var(--cyan); }
+  .obs-card select option { background: var(--navy-mid); }
+
+  /* ── PRINT BUTTON ────────────────────── */
+  .actions-bar {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    margin-top: 36px;
+    padding: 20px 24px;
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 22px;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+  .btn-primary {
+    background: var(--cyan);
+    color: var(--navy);
+  }
+  .btn-primary:hover { background: #00e8ff; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(0,200,232,0.4); }
+  .btn-secondary {
+    background: transparent;
+    color: var(--white-dim);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { border-color: var(--cyan); color: var(--cyan); }
+  .actions-hint {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--white-dim);
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* ── DIVIDER ─────────────────────────── */
+  .part-divider {
+    text-align: center;
+    position: relative;
+    margin: 30px 0 0;
+  }
+  .part-divider::before {
+    content:'';
+    position:absolute; top:50%; left:0; right:0;
+    height:1px; background: var(--border);
+  }
+  .part-divider span {
+    position:relative;
+    background: var(--navy);
+    padding: 0 16px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: var(--white-dim);
+    text-transform: uppercase;
+  }
+
+  /* ── PRINT STYLES ────────────────────── */
+  @media print {
+    body { background: #fff !important; color: #000 !important; font-size: 13px; }
+    header { background: #0a1628 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    #student-section { background: #f0f4f8 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; border: 1px solid #ccc; }
+    .sim-container, .actions-bar, .sim-controls { display: none !important; }
+    .section-header h2 { color: #0a1628 !important; }
+    .section-num { background: #00c8e8 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .question-card { background: #f9fbfc !important; border: 1px solid #ccc !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; page-break-inside: avoid; }
+    .q-text { color: #111 !important; }
+    .q-hint { color: #555 !important; }
+    textarea, input[type="number"], select {
+      background: #fff !important;
+      border: 1px solid #aaa !important;
+      color: #000 !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .formula-box { background: #fffbe6 !important; border: 1px solid #c8a030 !important; color: #7a5800 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .info-box { background: #f0f8ff !important; border-left: 3px solid #00c8e8 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; color: #333 !important; }
+    th { background: #dde8f0 !important; color: #0a1628 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .obs-card { background: #f4f8fc !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .obs-card label { color: #555 !important; }
+    .data-table-wrap table { border: 1px solid #ccc; }
+    td { border-bottom: 1px solid #ddd !important; }
+    .btn { display: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-icon">🔭</div>
+  <div class="header-text">
+    <h1>Optics <span>Virtual Lab</span></h1>
+    <p>CK-12 Ch 15.1–15.3 &nbsp;|&nbsp; Reflection &amp; Refraction of Light</p>
+  </div>
+  <div class="school-badge">
+    <strong>San Tan Charter School</strong>
+    High School Physics &nbsp;|&nbsp; Spring 2026
+  </div>
+</header>
+
+<!-- STUDENT INFO -->
+<div id="student-section">
+  <div class="field-group">
+    <label>Student Name</label>
+    <input type="text" id="student-name" placeholder="First Last" />
+  </div>
+  <div class="field-group">
+    <label>Period</label>
+    <select id="student-period">
+      <option value="">— Select —</option>
+      <option>1st</option><option>2nd</option><option>3rd</option>
+      <option>4th</option><option>5th</option><option>6th</option>
+    </select>
+  </div>
+  <div class="field-group">
+    <label>Date</label>
+    <input type="text" id="student-date" />
+  </div>
+</div>
+
+<main>
+
+  <!-- ═══════════════════════════════════════
+       PART 1 — REFLECTION
+  ════════════════════════════════════════ -->
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <h2>Reflection of Light</h2>
+    <div class="tag">CK-12 Ch 15.1</div>
+  </div>
+
+  <div class="info-box">
+    <strong>Background:</strong> When light hits a smooth surface, it bounces back at the same angle it came in.
+    The <strong>Law of Reflection</strong> states that the <strong>angle of incidence (θᵢ)</strong> always equals the
+    <strong>angle of reflection (θᵣ)</strong> — both measured from the normal (a line perpendicular to the surface).
+    <br><br>
+    <strong>Regular reflection</strong> occurs on smooth mirrors (parallel rays stay parallel).
+    <strong>Diffuse reflection</strong> occurs on rough surfaces (rays scatter in all directions).
+  </div>
+
+  <div class="formula-box">Law of Reflection: &nbsp;&nbsp; θᵢ = θᵣ</div>
+
+  <!-- REFLECTION SIMULATION -->
+  <div class="sim-container">
+    <div style="font-family:'Space Mono',monospace; font-size:12px; color:var(--cyan); margin-bottom:12px; letter-spacing:1px;">⚡ INTERACTIVE SIMULATION — REFLECTION</div>
+    <div class="sim-controls">
+      <div class="control-group">
+        <label>Angle of Incidence (θᵢ)</label>
+        <input type="range" id="reflect-angle" min="5" max="85" value="40" oninput="drawReflection()">
+        <span class="control-val" id="reflect-val">40°</span>
+      </div>
+      <div class="control-group">
+        <label>Surface Type</label>
+        <select id="surface-type" onchange="drawReflection()" style="width:160px; background:rgba(255,255,255,0.06); border:1px solid var(--border); border-radius:6px; padding:6px 10px; color:var(--white); font-family:'Barlow',sans-serif; outline:none;">
+          <option value="smooth">Smooth (Mirror)</option>
+          <option value="rough">Rough (Diffuse)</option>
+        </select>
+      </div>
+    </div>
+    <canvas id="reflect-canvas" height="300"></canvas>
+  </div>
+
+  <!-- Q1 Observations -->
+  <div class="question-card">
+    <div class="q-label">
+      <div class="q-num">1</div>
+      <div>
+        <div class="q-text">Using the simulation, complete the data table below. Set each angle of incidence and record the angle of reflection you observe.</div>
+        <div class="q-hint">Drag the slider to each angle. The simulation shows the reflected ray automatically.</div>
+      </div>
+      <div class="q-points">10 pts</div>
+    </div>
+    <div class="data-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Trial</th>
+            <th>Angle of Incidence (θᵢ)</th>
+            <th>Angle of Reflection (θᵣ) — your measurement</th>
+            <th>θᵢ = θᵣ? (Yes/No)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="table-label">1</td><td>20°</td><td><input type="number" placeholder="°" min="0" max="90"></td><td><select style="background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:4px;padding:5px;color:var(--white);font-family:'Barlow',sans-serif;"><option value="">—</option><option>Yes</option><option>No</option></select></td></tr>
+          <tr><td class="table-label">2</td><td>40°</td><td><input type="number" placeholder="°" min="0" max="90"></td><td><select style="background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:4px;padding:5px;color:var(--white);font-family:'Barlow',sans-serif;"><option value="">—</option><option>Yes</option><option>No</option></select></td></tr>
+          <tr><td class="table-label">3</td><td>60°</td><td><input type="number" placeholder="°" min="0" max="90"></td><td><select style="background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:4px;padding:5px;color:var(--white);font-family:'Barlow',sans-serif;"><option value="">—</option><option>Yes</option><option>No</option></select></td></tr>
+          <tr><td class="table-label">4</td><td>75°</td><td><input type="number" placeholder="°" min="0" max="90"></td><td><select style="background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:4px;padding:5px;color:var(--white);font-family:'Barlow',sans-serif;"><option value="">—</option><option>Yes</option><option>No</option></select></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="question-card">
+    <div class="q-label">
+      <div class="q-num">2</div>
+      <div>
+        <div class="q-text">In your own words, state the Law of Reflection. What pattern did you observe in your data table?</div>
+      </div>
+      <div class="q-points">8 pts</div>
+    </div>
+    <textarea rows="3" placeholder="The Law of Reflection states that..."></textarea>
+  </div>
+
+  <div class="question-card">
+    <div class="q-label">
+      <div class="q-num">3</div>
+      <div>
+        <div class="q-text">Switch the simulation to "Rough (Diffuse)" surface. How does the reflected light change compared to the smooth mirror? Explain why this happens at the particle level.</div>
+        <div class="q-hint">Think about what the surface looks like at a microscopic scale.</div>
+      </div>
+      <div class="q-points">8 pts</div>
+    </div>
+    <textarea rows="3" placeholder="When the surface is rough, the reflected rays..."></textarea>
+  </div>
+
+  <div class="question-card">
+    <div class="q-label">
+      <div class="q-num">4</div>
+      <div>
+        <div class="q-text">A light ray hits a mirror at 35° from the mirror's surface (not from the normal). What is the angle of reflection? Show your reasoning.</div>
+        <div class="q-hint">Careful — angles are measured from the normal, not the surface. If the ray is 35° from the surface, it is __° from the normal.</div>
+      </div>
+      <div class="q-points">8 pts</div>
+    </div>
+    <textarea rows="3" placeholder="Step 1: The angle from the normal = 90° − 35° = ..."></textarea>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       PART 2 — REFRACTION
+  ════════════════════════════════════════ -->
+  <div class="part-divider"><span>Part 2</span></div>
+
+  <div class="section-header" style="margin-top:28px;">
+    <div class="section-num">2</div>
+    <h2>Refraction of Light</h2>
+    <div class="tag">CK-12 Ch 15.2–15.3</div>
+  </div>
+
+  <div class="info-box">
+    <strong>Background:</strong> When light travels from one medium to another, it changes speed — and if it hits the boundary at an angle, it <strong>bends</strong>. This bending is called <strong>refraction</strong>.
+    <br><br>
+    The <strong>index of refraction (n)</strong> tells us how much a material slows light down compared to a vacuum.
+    A higher <em>n</em> means slower light and more bending. <strong>Snell's Law</strong> lets us calculate exactly how much the ray bends.
+  </div>
+
+  <div class="formula-box">
+    Snell's Law: &nbsp; n₁ sin(θ₁) = n₂ sin(θ₂) &nbsp;&nbsp;|&nbsp;&nbsp; Index of Refraction: &nbsp; n = c / v
+  </div>
+
+  <div class="info-box" style="margin-top:12px;">
+    <strong>Common Indices of Refraction:</strong> &nbsp;
+    Vacuum = 1.000 &nbsp;|&nbsp; Air ≈ 1.000 &nbsp;|&nbsp; Water = 1.333 &nbsp;|&nbsp; Glass = 1.500 &nbsp;|&nbsp; Diamond = 2.417
+  </div>
+
+  <!-- REFRACTION SIMULATION -->
+  <div class="sim-container">
+    <div style="font-family:'Space Mono',monospace; font-size:12px; color:var(--cyan); margin-bottom:12px; letter-spacing:1px;">⚡ INTERACTIVE SIMULATION — REFRACTION</div>
+    <div class="sim-controls">
+      <div class="control-group">
+        <label>Angle of Incidence (θ₁)</label>
+        <input type="range" id="refract-angle" min="0" max="80" value="40" oninput="drawRefraction()">
+        <span class="control-val" id="refract-val">40°</span>
+      </div>
+      <div class="control-group">
+        <label>Medium 2 (lower)</label>
+        <select id="medium2" onchange="drawRefraction()" style="width:160px; background:rgba(255,255,255,0.06); border:1px solid var(--border); border-radius:6px; padding:6px 10px; color:var(--white); font-family:'Barlow',sans-serif; outline:none;">
+          <option value="1.333">Water (n=1.333)</option>
+          <option value="1.500">Glass (n=1.500)</option>
+          <option value="2.417">Diamond (n=2.417)</option>
+          <option value="1.0003">Air (n=1.000)</option>
+        </select>
+      </div>
+    </div>
+    <canvas id="refract-canvas" height="360"></canvas>
+    <div style="margin-top:10px; font-size:12px; color:var(--white-dim); font-family:'Space Mono',monospace;" id="refract-readout"></div>
+  </div>
+
+  <div class="question-card">
+    <div class="q-label">
+      <div class="q-num">5</div>
+      <div>
+        <div class="q-text">Complete the table below using the refraction simulation. Record the angle of refraction (θ₂) for each combination shown. Medium 1 is always Air (n = 1.000).</div>
+      </div>
+      <div class="q-points">12 pts</div>
+    </div>
+    <div class="data-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Trial</th>
+            <th>θ₁ (Air)</th>
+            <th>Medium 2</th>
+            <th>n₂</th>
+            <th>θ₂ observed</th>
+            <th>Bent toward or away from normal?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="table-label">1</td><td>30°</td><td>Water</td><td>1.333</td><td><input type="number" placeholder="°" min="0" max="90"></td><td><select style="background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:4px;padding:5px;color:var(--white);font-family:'Barlow',sans-serif;"><option value="">—</option><option>Toward</option><option>Away</option></select></td></tr>
+          <tr><td class="table-label">2</td><td>45°</td><td>Water</td><td>1.333</td><td><input type="number" placeholder="°" min="0" max="90"></td><td><select style="background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:4px;padding:5px;color:var(--white);font-family:'Barlow',sans-serif;"><option value="">—</option><option>Toward</option><option>Away</option></select></td></tr>
+          <tr><td class="table-label">3</td><td>45°</td><td>Glass</td><td>1.500</td><td><input type="number" placeholder="°" min="0" max="90"></td><td><select style="background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:4px;padding:5px;color:var(--white);font-family:'Barlow',sans-serif;"><option value="">—</option><option>Toward</option><option>Away</option></select></td></tr>
+          <tr><td class="table-label">4</td><td>45°</td><td>Diamond</td><td>2.417</td><td><input type="number" placeholder="°" min="0" max="90"></td><td><select style="background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:4px;padding:5px;color:var(--white);font-family:'Barlow',sans-serif;"><option value="">—</option><option>Toward</option><option>Away</option></select></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="question-card">
+    <div class="q-label">
+      <div class="q-num">6</div>
+      <div>
+        <div class="q-text">What pattern do you notice between the index of refraction (n₂) and how much the light bends? Write a rule in your own words.</div>
+      </div>
+      <div class="q-points">8 pts</div>
+    </div>
+    <textarea rows="3" placeholder="As the index of refraction increases, the light..."></textarea>
+  </div>
+
+  <div class="question-card">
+    <div class="q-label">
+      <div class="q-num">7</div>
+      <div>
+        <div class="q-text">Use Snell's Law to calculate the angle of refraction when light travels from air (n₁ = 1.000) into glass (n₂ = 1.500) at an angle of incidence of 30°. <em>sin(30°) = 0.500. Round to the nearest degree.</em></div>
+        <div class="q-hint">Hint: Solve for sin(θ₂) first, then find θ₂.</div>
+      </div>
+      <div class="q-points">10 pts</div>
+    </div>
+    <textarea rows="5" placeholder="Given: n₁ = 1.000, n₂ = 1.500, θ₁ = 30°
+Step 1: Write Snell's Law → n₁ sin(θ₁) = n₂ sin(θ₂)
+Step 2: Plug in values → 
+Step 3: Solve for sin(θ₂) → 
+Step 4: Find θ₂ → θ₂ ≈ ___°"></textarea>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       PART 3 — TOTAL INTERNAL REFLECTION
+  ════════════════════════════════════════ -->
+  <div class="part-divider"><span>Part 3</span></div>
+
+  <div class="section-header" style="margin-top:28px;">
+    <div class="section-num">3</div>
+    <h2>Total Internal Reflection</h2>
+    <div class="tag">CK-12 Ch 15.3</div>
+  </div>
+
+  <div class="info-box">
+    <strong>Background:</strong> When light travels from a <em>denser</em> medium to a <em>less dense</em> medium (like water → air),
+    and the angle of incidence is large enough, the light <strong>cannot escape</strong> — it reflects entirely back into the denser medium.
+    This is called <strong>Total Internal Reflection (TIR)</strong>. The minimum angle at which this occurs is called the
+    <strong>critical angle (θc)</strong>. Fiber optic cables rely entirely on this principle!
+  </div>
+
+  <div class="question-card">
+    <div class="q-label">
+      <div class="q-num">8</div>
+      <div>
+        <div class="q-text">Using the refraction simulation, change Medium 2 to "Air" and increase the incidence angle slowly from 0° to 80°. At what angle does the refracted ray disappear? Record your observations.</div>
+        <div class="q-hint">When light goes from a denser medium (like water or glass) to air, set n₁ = denser material mentally.</div>
+      </div>
+      <div class="q-points">8 pts</div>
+    </div>
+    <div class="obs-grid">
+      <div class="obs-card">
+        <label>At low angles (0°–30°), the refracted ray is:</label>
+        <select><option value="">— choose —</option><option>visible and bends away from normal</option><option>visible and bends toward normal</option><option>not visible</option></select>
+      </div>
+      <div class="obs-card">
+        <label>As angle increases, the refracted ray:</label>
+        <select><option value="">— choose —</option><option>bends closer to the surface (larger angle)</option><option>bends closer to the normal (smaller angle)</option><option>stays the same</option></select>
+      </div>
+      <div class="obs-card">
+        <label>At the critical angle, the refracted ray:</label>
+        <select><option value="">— choose —</option><option>travels along the boundary (90°)</option><option>reflects straight back</option><option>passes through unchanged</option></select>
+      </div>
+      <div class="obs-card">
+        <label>Past the critical angle, the light:</label>
+        <select><option value="">— choose —</option><option>totally internally reflects (no refraction)</option><option>partially refracts and partially reflects</option><option>disappears completely</option></select>
+      </div>
+    </div>
+  </div>
+
+  <div class="question-card">
+    <div class="q-label">
+      <div class="q-num">9</div>
+      <div>
+        <div class="q-text">Explain in your own words how fiber optic cables use total internal reflection to transmit light signals over long distances. What must be true about the angle of light inside the cable?</div>
+      </div>
+      <div class="q-points">8 pts</div>
+    </div>
+    <textarea rows="4" placeholder="Fiber optic cables work by..."></textarea>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       PART 4 — ANALYSIS & CONCLUSIONS
+  ════════════════════════════════════════ -->
+  <div class="part-divider"><span>Part 4</span></div>
+
+  <div class="section-header" style="margin-top:28px;">
+    <div class="section-num">4</div>
+    <h2>Analysis &amp; Conclusions</h2>
+    <div class="tag">6 pts each</div>
+  </div>
+
+  <div class="question-card">
+    <div class="q-label">
+      <div class="q-num">10</div>
+      <div>
+        <div class="q-text">A spear fisherman sees a fish underwater. Should they aim directly at the fish to spear it? Why or why not? Use what you know about refraction in your answer.</div>
+        <div class="q-hint">Think about the direction light travels from fish → water → air → your eye. Is the fish actually where it appears?</div>
+      </div>
+      <div class="q-points">8 pts</div>
+    </div>
+    <textarea rows="4" placeholder="Due to refraction, the light from the fish bends as it exits the water, so..."></textarea>
+  </div>
+
+  <div class="question-card">
+    <div class="q-label">
+      <div class="q-num">11</div>
+      <div>
+        <div class="q-text">Compare and contrast reflection and refraction. Include: (a) what happens to the light ray in each case, (b) what type of surface or boundary causes each, and (c) one real-world example of each.</div>
+      </div>
+      <div class="q-points">10 pts</div>
+    </div>
+    <textarea rows="6" placeholder="Reflection occurs when...
+Refraction occurs when...
+A key difference is...
+Example of reflection: ...
+Example of refraction: ..."></textarea>
+  </div>
+
+  <div class="question-card">
+    <div class="q-label">
+      <div class="q-num">12</div>
+      <div>
+        <div class="q-text">What is one thing from this lab that surprised you or that you found most interesting? Explain why.</div>
+      </div>
+      <div class="q-points">4 pts</div>
+    </div>
+    <textarea rows="3" placeholder="I was most surprised by..."></textarea>
+  </div>
+
+  <!-- SAVE AS PDF -->
+  <div class="actions-bar">
+    <button class="btn btn-primary" onclick="savePDF()">⬇ Save as PDF</button>
+    <button class="btn btn-secondary" onclick="clearForm()">↺ Clear All</button>
+    <div class="actions-hint">Save PDF to submit to your teacher.</div>
+  </div>
+
+</main>
+
+<!-- ── SCRIPTS ──────────────────────────── -->
+<script>
+// Set today's date
+document.getElementById('student-date').value = new Date().toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'});
+
+// ── REFLECTION SIMULATION ──────────────
+function drawReflection() {
+  const canvas = document.getElementById('reflect-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.clientWidth;
+  canvas.height = 300;
+
+  const W = canvas.width, H = canvas.height;
+  const cx = W / 2, cy = H / 2;
+  const angle = parseInt(document.getElementById('reflect-angle').value);
+  document.getElementById('reflect-val').textContent = angle + '°';
+  const surface = document.getElementById('surface-type').value;
+
+  ctx.clearRect(0,0,W,H);
+
+  // Background
+  ctx.fillStyle = '#040e1e';
+  ctx.fillRect(0,0,W,H);
+
+  // Grid lines
+  ctx.strokeStyle = 'rgba(0,200,232,0.05)';
+  ctx.lineWidth = 1;
+  for(let x=0; x<W; x+=40) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+  for(let y=0; y<H; y+=40) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+
+  // Mirror surface
+  const surfaceY = cy + 20;
+  if(surface === 'smooth') {
+    ctx.strokeStyle = '#00c8e8';
+    ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(40, surfaceY); ctx.lineTo(W-40, surfaceY); ctx.stroke();
+    // Hatch below
+    ctx.strokeStyle = 'rgba(0,200,232,0.2)';
+    ctx.lineWidth = 1;
+    for(let x=40; x<W-40; x+=12) {
+      ctx.beginPath(); ctx.moveTo(x, surfaceY); ctx.lineTo(x-8, surfaceY+14); ctx.stroke();
+    }
+  } else {
+    // Rough surface
+    ctx.strokeStyle = '#00c8e8';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    for(let x=40; x<W-40; x+=10) {
+      const jitter = (Math.sin(x*0.3)*4 + Math.cos(x*0.7)*3);
+      if(x===40) ctx.moveTo(x, surfaceY + jitter);
+      else ctx.lineTo(x, surfaceY + jitter);
+    }
+    ctx.stroke();
+    ctx.strokeStyle = 'rgba(0,200,232,0.15)';
+    ctx.lineWidth = 1;
+    for(let x=40; x<W-40; x+=8) {
+      ctx.beginPath(); ctx.moveTo(x, surfaceY+6); ctx.lineTo(x-5, surfaceY+14); ctx.stroke();
+    }
+  }
+
+  // Normal line
+  ctx.setLineDash([6,5]);
+  ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(cx, surfaceY-130); ctx.lineTo(cx, surfaceY+40); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // "Normal" label
+  ctx.fillStyle = 'rgba(255,255,255,0.35)';
+  ctx.font = '11px Space Mono, monospace';
+  ctx.fillText('Normal', cx+6, surfaceY-120);
+
+  const rad = angle * Math.PI / 180;
+  const rayLen = 160;
+
+  // Incident ray (coming from upper left at angle from normal)
+  const ix = cx - rayLen * Math.sin(rad);
+  const iy = surfaceY - rayLen * Math.cos(rad);
+  drawArrow(ctx, ix, iy, cx, surfaceY, '#f5c842', 2.5);
+
+  // Label angle of incidence
+  ctx.fillStyle = '#f5c842';
+  ctx.font = 'bold 13px Barlow, sans-serif';
+  ctx.fillText('θᵢ=' + angle + '°', cx - 70, surfaceY - 30);
+
+  if(surface === 'smooth') {
+    // Reflected ray (symmetric about normal)
+    const rx = cx + rayLen * Math.sin(rad);
+    const ry = surfaceY - rayLen * Math.cos(rad);
+    drawArrow(ctx, cx, surfaceY, rx, ry, '#22dd88', 2.5);
+    ctx.fillStyle = '#22dd88';
+    ctx.font = 'bold 13px Barlow, sans-serif';
+    ctx.fillText('θᵣ=' + angle + '°', cx + 14, surfaceY - 30);
+  } else {
+    // Multiple scattered rays
+    const scatterAngles = [-40,-20,0,20,40,60,-60];
+    scatterAngles.forEach((sa, i) => {
+      const srad = (sa) * Math.PI / 180;
+      const sx = cx + 100 * Math.sin(srad);
+      const sy = surfaceY - 100 * Math.cos(srad);
+      const alpha = 0.4 + (i % 3)*0.15;
+      ctx.strokeStyle = `rgba(34,221,136,${alpha})`;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(cx, surfaceY); ctx.lineTo(sx, sy); ctx.stroke();
+      // arrowhead
+      const nx = sx - cx, ny = sy - surfaceY;
+      const len = Math.sqrt(nx*nx+ny*ny);
+      const ux = nx/len, uy = ny/len;
+      const ax = sx-ux*8, ay = sy-uy*8;
+      ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(ax-uy*4,ay+ux*4); ctx.lineTo(ax+uy*4,ay-ux*4); ctx.closePath();
+      ctx.fillStyle = `rgba(34,221,136,${alpha})`; ctx.fill();
+    });
+    ctx.fillStyle = '#22dd88';
+    ctx.font = 'bold 13px Barlow, sans-serif';
+    ctx.fillText('Diffuse reflection', cx + 10, surfaceY - 80);
+  }
+
+  // Labels
+  ctx.fillStyle = 'rgba(0,200,232,0.7)';
+  ctx.font = '12px Barlow, sans-serif';
+  ctx.fillText('Incident ray', ix - 10, iy - 6);
+  if(surface==='smooth') ctx.fillText('Reflected ray', cx + rayLen*Math.sin(rad) - 10, surfaceY - rayLen*Math.cos(rad) - 6);
+
+  // Surface label
+  ctx.fillStyle = 'rgba(0,200,232,0.5)';
+  ctx.font = '11px Space Mono, monospace';
+  ctx.fillText(surface === 'smooth' ? 'Mirror Surface' : 'Rough Surface', 44, surfaceY + 24);
+}
+
+function drawArrow(ctx, x1, y1, x2, y2, color, width) {
+  ctx.strokeStyle = color;
+  ctx.lineWidth = width;
+  ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+  const dx = x2-x1, dy = y2-y1;
+  const len = Math.sqrt(dx*dx+dy*dy);
+  const ux = dx/len, uy = dy/len;
+  const ax = x2-ux*10, ay = y2-uy*10;
+  ctx.beginPath(); ctx.moveTo(x2,y2); ctx.lineTo(ax-uy*5,ay+ux*5); ctx.lineTo(ax+uy*5,ay-ux*5); ctx.closePath();
+  ctx.fillStyle = color; ctx.fill();
+}
+
+// ── REFRACTION SIMULATION ──────────────
+function drawRefraction() {
+  const canvas = document.getElementById('refract-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.clientWidth;
+  canvas.height = 360;
+
+  const W = canvas.width, H = canvas.height;
+  const cx = W / 2;
+  const boundaryY = H / 2 - 10;
+  const angle = parseInt(document.getElementById('refract-angle').value);
+  const n2 = parseFloat(document.getElementById('medium2').value);
+  const n1 = 1.0;
+  document.getElementById('refract-val').textContent = angle + '°';
+
+  ctx.clearRect(0,0,W,H);
+
+  // Upper medium (air - dark)
+  ctx.fillStyle = '#040e1e';
+  ctx.fillRect(0,0,W,boundaryY);
+
+  // Lower medium (colored by n)
+  let mediumColor;
+  if(n2 > 2) mediumColor = 'rgba(30,10,60,1)';
+  else if(n2 > 1.4) mediumColor = 'rgba(8,28,60,1)';
+  else if(n2 > 1.1) mediumColor = 'rgba(4,24,50,1)';
+  else mediumColor = 'rgba(4,14,30,1)';
+  ctx.fillStyle = mediumColor;
+  ctx.fillRect(0, boundaryY, W, H-boundaryY);
+
+  // Grid
+  ctx.strokeStyle = 'rgba(0,200,232,0.04)';
+  ctx.lineWidth = 1;
+  for(let x=0; x<W; x+=40) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+  for(let y=0; y<H; y+=40) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+
+  // Medium labels
+  ctx.fillStyle = 'rgba(0,200,232,0.5)';
+  ctx.font = '12px Space Mono, monospace';
+  ctx.fillText('Air  (n₁ = 1.000)', 20, 28);
+  const med2Label = document.getElementById('medium2').options[document.getElementById('medium2').selectedIndex].text;
+  ctx.fillText(med2Label, 20, boundaryY + 24);
+
+  // Boundary line
+  ctx.strokeStyle = '#00c8e8';
+  ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.moveTo(20,boundaryY); ctx.lineTo(W-20,boundaryY); ctx.stroke();
+
+  // Normal line
+  ctx.setLineDash([6,5]);
+  ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(cx,20); ctx.lineTo(cx, H-20); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = 'rgba(255,255,255,0.35)';
+  ctx.font = '11px Space Mono, monospace';
+  ctx.fillText('Normal', cx+6, 28);
+
+  const rad1 = angle * Math.PI / 180;
+  const sinT2 = (n1 * Math.sin(rad1)) / n2;
+  const rayLen = 150;
+
+  // Incident ray
+  const ix = cx - rayLen * Math.sin(rad1);
+  const iy = boundaryY - rayLen * Math.cos(rad1);
+  drawArrow(ctx, ix, iy, cx, boundaryY, '#f5c842', 2.5);
+
+  // Angle of incidence arc and label
+  ctx.fillStyle = '#f5c842';
+  ctx.font = 'bold 13px Barlow, sans-serif';
+  ctx.fillText('θ₁=' + angle + '°', cx - 90, boundaryY - 24);
+
+  if(sinT2 <= 1) {
+    const rad2 = Math.asin(sinT2);
+    const deg2 = Math.round(rad2 * 180 / Math.PI);
+    const rx = cx + rayLen * Math.sin(rad2);
+    const ry = boundaryY + rayLen * Math.cos(rad2);
+    drawArrow(ctx, cx, boundaryY, rx, ry, '#22dd88', 2.5);
+    ctx.fillStyle = '#22dd88';
+    ctx.font = 'bold 13px Barlow, sans-serif';
+    ctx.fillText('θ₂=' + deg2 + '°', cx + 14, boundaryY + 36);
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.font = '12px Barlow, sans-serif';
+    ctx.fillText('Refracted ray', rx - 10, ry + 14);
+
+    document.getElementById('refract-readout').innerHTML =
+      `<span style="color:var(--gold)">θ₁ = ${angle}°</span> &nbsp;→&nbsp; <span style="color:var(--green)">θ₂ ≈ ${deg2}°</span> &nbsp;|&nbsp; n₁ sin(${angle}°) = n₂ sin(${deg2}°) &nbsp;|&nbsp; ${(n1*Math.sin(rad1)).toFixed(4)} ≈ ${(n2*Math.sin(rad2)).toFixed(4)} ✓`;
+  } else {
+    // TIR — total internal reflection
+    const reflRad = rad1;
+    const refRx = cx + rayLen * Math.sin(reflRad);
+    const refRy = boundaryY - rayLen * Math.cos(reflRad);
+    drawArrow(ctx, cx, boundaryY, refRx, refRy, '#ff5566', 2.5);
+    ctx.fillStyle = '#ff5566';
+    ctx.font = 'bold 13px Barlow, sans-serif';
+    ctx.fillText('⚠ Total Internal Reflection', cx - 60, boundaryY - 70);
+    document.getElementById('refract-readout').innerHTML =
+      `<span style="color:var(--red)">⚠ sin(θ₂) would be > 1 — Total Internal Reflection occurs! Light cannot escape into the less-dense medium.</span>`;
+  }
+
+  // Incident label
+  ctx.fillStyle = 'rgba(245,200,66,0.7)';
+  ctx.font = '12px Barlow, sans-serif';
+  ctx.fillText('Incident ray', ix - 14, iy - 6);
+}
+
+// ── INIT ───────────────────────────────
+window.addEventListener('load', () => {
+  drawReflection();
+  drawRefraction();
+});
+window.addEventListener('resize', () => {
+  drawReflection();
+  drawRefraction();
+});
+
+// ── SAVE AS PDF ────────────────────────
+function savePDF() {
+  const name = document.getElementById('student-name').value.trim() || 'Student';
+  const period = document.getElementById('student-period').value || '';
+  const origTitle = document.title;
+  document.title = `Optics_Lab_${name.replace(/\s+/g,'_')}${period ? '_P' + period : ''}`;
+  window.print();
+  document.title = origTitle;
+}
+
+// ── CLEAR FORM ─────────────────────────
+function clearForm() {
+  if(!confirm('Clear all your answers? This cannot be undone.')) return;
+  document.querySelectorAll('textarea').forEach(t => t.value = '');
+  document.querySelectorAll('td input[type="number"]').forEach(i => i.value = '');
+  document.querySelectorAll('.question-card select, .obs-card select').forEach(s => s.selectedIndex = 0);
+  document.getElementById('student-name').value = '';
+  document.getElementById('student-period').selectedIndex = 0;
+}
+</script>
+</body>
+</html>
