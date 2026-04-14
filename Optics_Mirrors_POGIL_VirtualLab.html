@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Optics Virtual Lab — Mirrors | San Tan Charter School Physics</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --navy: #0B1E3D;
+    --navy-mid: #132848;
+    --navy-light: #1C3A61;
+    --cyan: #00C8E8;
+    --cyan-dim: #0099B8;
+    --gold: #F5C842;
+    --gold-dim: #C9A030;
+    --white: #F0F6FF;
+    --muted: #8BA8C8;
+    --surface: #162035;
+    --surface2: #1E2E4A;
+    --border: rgba(0,200,232,0.2);
+    --green: #4AE89A;
+    --red: #FF6B6B;
+    --orange: #FF9F43;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* PRINT STYLES */
+  @media print {
+    body { background: white; color: #111; }
+    .no-print { display: none !important; }
+    .sim-frame-container { display: none !important; }
+    .print-only { display: block !important; }
+    .section { break-inside: avoid; page-break-inside: avoid; }
+    .page-header { background: white; color: #111; border-bottom: 3px solid #0B1E3D; }
+    .student-info { background: #f5f5f5; }
+    table { border-collapse: collapse; }
+    td, th { border: 1px solid #aaa; padding: 8px; color: #111; }
+    .section-header { background: #0B1E3D; color: white; }
+    .key-box { background: #e8f4ff; border: 2px solid #0B1E3D; color: #111; }
+    .answer-line { border-bottom: 1px solid #aaa; min-height: 24px; display: block; margin: 8px 0; }
+    .part-label { color: #0B1E3D; font-weight: 700; }
+    .question-text { color: #111; }
+    textarea, input[type="text"] { 
+      border: 1px solid #aaa; 
+      background: white; 
+      color: #111;
+      resize: none;
+    }
+    .submit-btn { display: none; }
+  }
+
+  .print-only { display: none; }
+
+  /* HEADER */
+  .page-header {
+    background: linear-gradient(135deg, var(--navy-mid) 0%, var(--navy-light) 100%);
+    border-bottom: 3px solid var(--cyan);
+    padding: 24px 32px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    border: 2px solid rgba(0,200,232,0.15);
+  }
+
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .school-badge {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--cyan);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .page-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.2;
+  }
+
+  .page-header h1 span {
+    color: var(--cyan);
+  }
+
+  .header-meta {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+
+  .print-btn {
+    background: var(--gold);
+    color: var(--navy);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .print-btn:hover { background: var(--gold-dim); }
+
+  /* STUDENT INFO */
+  .student-info {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    margin: 20px 32px;
+    padding: 16px 24px;
+    border-radius: 10px;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 16px;
+  }
+
+  .info-field label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--cyan);
+    margin-bottom: 4px;
+  }
+
+  .info-field input[type="text"] {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    color: var(--white);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    padding: 4px 0;
+    outline: none;
+  }
+
+  .info-field input[type="text"]:focus {
+    border-bottom-color: var(--cyan);
+  }
+
+  /* LEARNING OBJECTIVES */
+  .objectives-bar {
+    background: var(--surface2);
+    border-left: 4px solid var(--gold);
+    margin: 0 32px 20px;
+    padding: 14px 20px;
+    border-radius: 0 8px 8px 0;
+  }
+
+  .objectives-bar h3 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+
+  .objectives-bar ul {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .objectives-bar li {
+    font-size: 12px;
+    color: var(--muted);
+    background: rgba(245,200,66,0.08);
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid rgba(245,200,66,0.2);
+  }
+
+  /* SECTION */
+  .section {
+    margin: 0 32px 28px;
+  }
+
+  .section-header {
+    background: var(--navy-light);
+    border: 1px solid var(--border);
+    border-radius: 10px 10px 0 0;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-num {
+    background: var(--cyan);
+    color: var(--navy);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .section-title {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .section-subtitle {
+    font-size: 12px;
+    color: var(--muted);
+    margin-left: auto;
+    font-style: italic;
+  }
+
+  .section-body {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    padding: 20px 24px;
+  }
+
+  /* KEY BOX */
+  .key-box {
+    background: var(--surface2);
+    border: 1px solid var(--gold);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+  }
+
+  .key-box-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+
+  .key-box p {
+    font-size: 14px;
+    color: var(--white);
+    line-height: 1.6;
+  }
+
+  /* DATA TABLE */
+  .data-table-wrap {
+    overflow-x: auto;
+    margin: 16px 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  th {
+    background: var(--navy-light);
+    color: var(--cyan);
+    padding: 10px 12px;
+    text-align: left;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 1px solid var(--border);
+    font-weight: 600;
+  }
+
+  td {
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    color: var(--white);
+    vertical-align: top;
+  }
+
+  tr:nth-child(even) td {
+    background: rgba(255,255,255,0.02);
+  }
+
+  td.fill-in {
+    background: rgba(0,200,232,0.04);
+    min-width: 160px;
+  }
+
+  td.fill-in textarea {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--white);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    resize: none;
+    min-height: 36px;
+    outline: none;
+    line-height: 1.5;
+  }
+
+  /* QUESTIONS */
+  .question-block {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(0,200,232,0.1);
+  }
+
+  .question-block:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+
+  .q-label {
+    display: inline-block;
+    background: var(--cyan);
+    color: var(--navy);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .q-label.gold { background: var(--gold); }
+  .q-label.green { background: var(--green); }
+
+  .question-text {
+    font-size: 14px;
+    color: var(--white);
+    line-height: 1.6;
+    margin-bottom: 10px;
+  }
+
+  .question-text em {
+    color: var(--cyan);
+    font-style: normal;
+  }
+
+  .answer-box {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--white);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    padding: 10px 14px;
+    resize: none;
+    outline: none;
+    min-height: 60px;
+    line-height: 1.5;
+    transition: border-color 0.2s;
+  }
+
+  .answer-box:focus {
+    border-color: var(--cyan);
+  }
+
+  /* SIM FRAME */
+  .sim-section {
+    margin: 0 32px 28px;
+  }
+
+  .sim-header {
+    background: var(--navy-light);
+    border: 1px solid var(--border);
+    border-radius: 10px 10px 0 0;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .sim-badge {
+    background: var(--green);
+    color: var(--navy);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .sim-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .sim-frame-container {
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    overflow: hidden;
+    background: #000;
+  }
+
+  .sim-frame-container iframe {
+    width: 100%;
+    height: 540px;
+    border: none;
+    display: block;
+  }
+
+  /* CONCEPT CHECK TILES */
+  .concept-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 16px 0;
+  }
+
+  .concept-tile {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    text-align: center;
+  }
+
+  .concept-tile .icon {
+    font-size: 28px;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .concept-tile .label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--cyan);
+    margin-bottom: 4px;
+  }
+
+  .concept-tile .desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  /* DIAGRAM LABELS */
+  .diagram-box {
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px 0;
+    text-align: center;
+  }
+
+  .diagram-box p {
+    font-size: 12px;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  /* RAY DIAGRAM DRAWING */
+  .draw-hint {
+    background: rgba(0,200,232,0.06);
+    border: 1px dashed var(--cyan-dim);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--muted);
+    margin: 12px 0;
+    line-height: 1.5;
+  }
+
+  /* PART LABELS */
+  .part-header {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--cyan);
+    margin: 20px 0 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .part-header::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 16px;
+    background: var(--cyan);
+    border-radius: 2px;
+  }
+
+  /* MIRROR DIAGRAM SVG SECTION */
+  .diagram-strip {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin: 16px 0;
+  }
+
+  .diagram-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+  }
+
+  .diagram-card svg {
+    width: 100%;
+    height: 120px;
+  }
+
+  .diagram-card .dlabel {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--cyan);
+    margin-top: 6px;
+  }
+
+  /* FOOTER */
+  .page-footer {
+    text-align: center;
+    padding: 20px 32px 32px;
+    color: var(--muted);
+    font-size: 12px;
+    border-top: 1px solid var(--border);
+    margin-top: 12px;
+  }
+
+  .page-footer span { color: var(--cyan); }
+
+  /* SUBMIT */
+  .submit-section {
+    margin: 0 32px 32px;
+    text-align: center;
+  }
+
+  .submit-btn {
+    background: var(--cyan);
+    color: var(--navy);
+    border: none;
+    padding: 14px 40px;
+    border-radius: 8px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.03em;
+  }
+
+  .submit-btn:hover { background: var(--cyan-dim); }
+
+  .submit-note {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+
+  /* MC CHOICES */
+  .mc-choices {
+    list-style: none;
+    margin-top: 8px;
+  }
+
+  .mc-choices li {
+    font-size: 14px;
+    color: var(--white);
+    padding: 6px 0;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    cursor: pointer;
+  }
+
+  .mc-choices li input[type="radio"] {
+    accent-color: var(--cyan);
+    cursor: pointer;
+  }
+
+  .mc-choices li label {
+    cursor: pointer;
+    line-height: 1.5;
+  }
+
+  /* AZ SCI BADGE */
+  .az-badge {
+    display: inline-block;
+    font-size: 10px;
+    background: rgba(245,200,66,0.15);
+    color: var(--gold);
+    border: 1px solid rgba(245,200,66,0.3);
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-left: 8px;
+    font-weight: 500;
+    vertical-align: middle;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  @media (max-width: 700px) {
+    .student-info { grid-template-columns: 1fr; }
+    .concept-grid { grid-template-columns: 1fr; }
+    .diagram-strip { grid-template-columns: 1fr; }
+    .section, .sim-section, .submit-section { margin-left: 16px; margin-right: 16px; }
+    .student-info { margin-left: 16px; margin-right: 16px; }
+    .objectives-bar { margin-left: 16px; margin-right: 16px; }
+    .page-header { padding: 20px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="page-header">
+  <div class="header-top">
+    <div>
+      <div class="school-badge">San Tan Charter School · High School Physics · Spring 2026</div>
+      <h1>Optics: <span>Mirrors Virtual Lab</span></h1>
+      <div class="header-meta">POGIL Activity · CK-12 Ch 15.1, 15.4, 15.5, 15.6 · PhET Geometric Optics Simulation</div>
+    </div>
+    <button class="print-btn no-print" onclick="window.print()">⎙ Print / Export PDF</button>
+  </div>
+</div>
+
+<!-- STUDENT INFO -->
+<div class="student-info">
+  <div class="info-field">
+    <label>Name</label>
+    <input type="text" placeholder="First Last">
+  </div>
+  <div class="info-field">
+    <label>Period</label>
+    <input type="text" placeholder="">
+  </div>
+  <div class="info-field">
+    <label>Date</label>
+    <input type="text" placeholder="">
+  </div>
+</div>
+
+<!-- LEARNING OBJECTIVES -->
+<div class="objectives-bar">
+  <h3>Learning Objectives</h3>
+  <ul>
+    <li>State the law of reflection</li>
+    <li>Compare plane, concave &amp; convex mirrors</li>
+    <li>Identify real vs. virtual images</li>
+    <li>Sketch ray diagrams for curved mirrors</li>
+    <li>Describe how object distance affects image properties</li>
+  </ul>
+</div>
+
+<!-- PHET SIM -->
+<div class="sim-section no-print">
+  <div class="sim-header">
+    <span class="sim-badge">Live Simulation</span>
+    <span class="sim-title">PhET — Geometric Optics</span>
+    <span style="font-size:12px;color:var(--muted);margin-left:auto;">Use the sim to answer the questions below</span>
+  </div>
+  <div class="sim-frame-container">
+    <iframe 
+      src="https://phet.colorado.edu/sims/html/geometric-optics/latest/geometric-optics_all.html"
+      allowfullscreen>
+    </iframe>
+  </div>
+</div>
+
+<!-- SECTION 1: BACKGROUND -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <div class="section-title">Background — What Do You Already Know?</div>
+    <div class="section-subtitle">POGIL: Prior Knowledge</div>
+  </div>
+  <div class="section-body">
+    <div class="key-box">
+      <div class="key-box-title">Key Vocabulary</div>
+      <p>
+        <strong style="color:var(--cyan)">Normal line</strong> — an imaginary line perpendicular (90°) to a mirror surface at the point where light hits it.<br>
+        <strong style="color:var(--cyan)">Angle of incidence (θᵢ)</strong> — angle between incoming ray and the normal.<br>
+        <strong style="color:var(--cyan)">Angle of reflection (θᵣ)</strong> — angle between outgoing (reflected) ray and the normal.<br>
+        <strong style="color:var(--cyan)">Focal point (F)</strong> — the point where parallel rays converge after reflecting off a curved mirror.
+      </p>
+    </div>
+
+    <div class="question-block">
+      <span class="q-label">Q1</span>
+      <p class="question-text">You look in a flat bathroom mirror and your reflection appears to be the same distance behind the mirror as you are in front. In your own words, why does this happen? <span class="az-badge">HS+Phy.P4U1.6</span></p>
+      <textarea class="answer-box" rows="3" placeholder="Write your answer here..."></textarea>
+    </div>
+
+    <div class="question-block">
+      <span class="q-label">Q2</span>
+      <p class="question-text">Look at the three mirror shapes below. Before doing any investigation, predict: Which mirror do you think will <em>spread out</em> reflected light? Which will <em>focus</em> it?</p>
+      <div class="diagram-strip">
+        <div class="diagram-card">
+          <svg viewBox="0 0 140 100" xmlns="http://www.w3.org/2000/svg">
+            <line x1="70" y1="10" x2="70" y2="90" stroke="#00C8E8" stroke-width="3"/>
+            <line x1="30" y1="50" x2="65" y2="50" stroke="#F5C842" stroke-width="1.5" marker-end="url(#arrowG)"/>
+            <line x1="75" y1="50" x2="115" y2="50" stroke="#F5C842" stroke-width="1.5" marker-end="url(#arrowG)"/>
+            <defs>
+              <marker id="arrowG" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="#F5C842"/>
+              </marker>
+            </defs>
+            <text x="70" y="98" text-anchor="middle" font-size="10" fill="#8BA8C8">Plane mirror</text>
+          </svg>
+          <textarea class="answer-box" rows="2" placeholder="Your prediction..." style="font-size:12px;min-height:48px;"></textarea>
+        </div>
+        <div class="diagram-card">
+          <svg viewBox="0 0 140 100" xmlns="http://www.w3.org/2000/svg">
+            <path d="M70,10 Q50,50 70,90" stroke="#00C8E8" stroke-width="3" fill="none"/>
+            <line x1="20" y1="30" x2="65" y2="40" stroke="#F5C842" stroke-width="1.5" marker-end="url(#arrowH)"/>
+            <line x1="20" y1="50" x2="65" y2="50" stroke="#F5C842" stroke-width="1.5" marker-end="url(#arrowH)"/>
+            <line x1="20" y1="70" x2="65" y2="60" stroke="#F5C842" stroke-width="1.5" marker-end="url(#arrowH)"/>
+            <defs>
+              <marker id="arrowH" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="#F5C842"/>
+              </marker>
+            </defs>
+            <text x="70" y="98" text-anchor="middle" font-size="10" fill="#8BA8C8">Concave mirror</text>
+          </svg>
+          <textarea class="answer-box" rows="2" placeholder="Your prediction..." style="font-size:12px;min-height:48px;"></textarea>
+        </div>
+        <div class="diagram-card">
+          <svg viewBox="0 0 140 100" xmlns="http://www.w3.org/2000/svg">
+            <path d="M70,10 Q90,50 70,90" stroke="#00C8E8" stroke-width="3" fill="none"/>
+            <line x1="20" y1="30" x2="65" y2="40" stroke="#F5C842" stroke-width="1.5" marker-end="url(#arrowI)"/>
+            <line x1="20" y1="50" x2="65" y2="50" stroke="#F5C842" stroke-width="1.5" marker-end="url(#arrowI)"/>
+            <line x1="20" y1="70" x2="65" y2="60" stroke="#F5C842" stroke-width="1.5" marker-end="url(#arrowI)"/>
+            <defs>
+              <marker id="arrowI" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="#F5C842"/>
+              </marker>
+            </defs>
+            <text x="70" y="98" text-anchor="middle" font-size="10" fill="#8BA8C8">Convex mirror</text>
+          </svg>
+          <textarea class="answer-box" rows="2" placeholder="Your prediction..." style="font-size:12px;min-height:48px;"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: LAW OF REFLECTION -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <div class="section-title">Part A — The Law of Reflection</div>
+    <div class="section-subtitle">EXPLORE using the sim</div>
+  </div>
+  <div class="section-body">
+    <div class="key-box">
+      <div class="key-box-title">Simulation Setup</div>
+      <p>Open the PhET simulation above. Select <strong>"Mirror"</strong> from the top-left menu. Set the mirror type to <strong>Flat (Plane)</strong>. Place an object arrow in front of the mirror. Use the Guides tool to observe angle of incidence and angle of reflection.</p>
+    </div>
+
+    <div class="part-header">Observation Table — Plane Mirror</div>
+    <div class="data-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Trial</th>
+            <th>Angle of Incidence (approx.)</th>
+            <th>Angle of Reflection (approx.)</th>
+            <th>Image Location (same side / behind mirror)</th>
+            <th>Image Size vs. Object</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td class="fill-in"><textarea rows="1" placeholder="°"></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder="°"></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder=""></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder="larger / same / smaller"></textarea></td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td class="fill-in"><textarea rows="1" placeholder="°"></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder="°"></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder=""></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder="larger / same / smaller"></textarea></td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td class="fill-in"><textarea rows="1" placeholder="°"></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder="°"></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder=""></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder="larger / same / smaller"></textarea></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="question-block" style="margin-top:16px;">
+      <span class="q-label">Q3</span>
+      <p class="question-text">Based on your three trials, complete the Law of Reflection in your own words: "The angle of incidence is always ____________ the angle of reflection." <span class="az-badge">HS+Phy.P4U1.6</span></p>
+      <textarea class="answer-box" rows="2" placeholder="Fill in the blank and explain what this means physically..."></textarea>
+    </div>
+
+    <div class="question-block">
+      <span class="q-label">Q4</span>
+      <p class="question-text">Is the image formed by a plane mirror <em>real</em> or <em>virtual</em>? How do you know? (Hint: can you project it onto a screen?)</p>
+      <ul class="mc-choices">
+        <li><input type="radio" name="q4" id="q4a"><label for="q4a">Real — light rays actually pass through the image point</label></li>
+        <li><input type="radio" name="q4" id="q4b"><label for="q4b">Virtual — light rays only <em>appear</em> to come from the image point behind the mirror</label></li>
+        <li><input type="radio" name="q4" id="q4c"><label for="q4c">Neither — plane mirrors don't form images</label></li>
+      </ul>
+      <textarea class="answer-box" rows="2" placeholder="Explain your choice..." style="margin-top:8px;"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: CONCAVE MIRRORS -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <div class="section-title">Part B — Concave (Converging) Mirrors</div>
+    <div class="section-subtitle">EXPLORE + EXPLAIN</div>
+  </div>
+  <div class="section-body">
+    <div class="key-box">
+      <div class="key-box-title">Simulation Setup</div>
+      <p>In the PhET sim, switch to a <strong>Concave (curved)</strong> mirror. Set the radius of curvature using the slider. Move the object to <em>at least 4 different positions</em>: very far away, beyond F, at F, and between F and the mirror. Record what happens to the image each time.</p>
+    </div>
+
+    <div class="part-header">Concave Mirror — Image Data Table</div>
+    <div class="data-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Object Position</th>
+            <th>Image Location<br><small>(in front / behind mirror)</small></th>
+            <th>Image Orientation<br><small>(upright / inverted)</small></th>
+            <th>Image Size<br><small>(larger / same / smaller)</small></th>
+            <th>Real or Virtual?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Very far away (∞)</td>
+            <td class="fill-in"><textarea rows="1" placeholder=""></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder=""></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder=""></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder=""></textarea></td>
+          </tr>
+          <tr>
+            <td>Beyond focal point (do &gt; f)</td>
+            <td class="fill-in"><textarea rows="1" placeholder=""></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder=""></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder=""></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder=""></textarea></td>
+          </tr>
+          <tr>
+            <td>At the focal point (do = f)</td>
+            <td class="fill-in"><textarea rows="1" placeholder=""></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder=""></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder=""></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder=""></textarea></td>
+          </tr>
+          <tr>
+            <td>Between F and mirror (do &lt; f)</td>
+            <td class="fill-in"><textarea rows="1" placeholder=""></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder=""></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder=""></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder=""></textarea></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="question-block" style="margin-top:16px;">
+      <span class="q-label">Q5</span>
+      <p class="question-text">When the object is beyond the focal point (do &gt; f), is the image real or virtual? What happens that tells you this? <span class="az-badge">HS+Phy.P4U1.6</span></p>
+      <textarea class="answer-box" rows="3" placeholder="Describe where the image forms and how you identified it..."></textarea>
+    </div>
+
+    <div class="question-block">
+      <span class="q-label">Q6</span>
+      <p class="question-text">What happens to the image when you move the object exactly to the focal point? Why do you think this happens — where do the reflected rays go?</p>
+      <textarea class="answer-box" rows="3" placeholder="Describe what you observed and explain why..."></textarea>
+    </div>
+
+    <div class="question-block">
+      <span class="q-label">Q7</span>
+      <p class="question-text">When the object is between F and the mirror (inside the focal length), what type of image forms? Is it magnified or reduced? Name a real-world device that uses this setup.</p>
+      <textarea class="answer-box" rows="3" placeholder="Type of image, size, and real-world example..."></textarea>
+    </div>
+
+    <div class="part-header">Real-World Connection</div>
+    <div class="concept-grid">
+      <div class="concept-tile">
+        <span class="icon">🔦</span>
+        <div class="label">Flashlight / Headlight</div>
+        <div class="desc">Object placed at focal point → parallel reflected beam. Makes directed light.</div>
+      </div>
+      <div class="concept-tile">
+        <span class="icon">🔭</span>
+        <div class="label">Reflecting Telescope</div>
+        <div class="desc">Very distant objects → image forms at focal point. Collects light from stars.</div>
+      </div>
+      <div class="concept-tile">
+        <span class="icon">💄</span>
+        <div class="label">Makeup / Shaving Mirror</div>
+        <div class="desc">Object inside F → magnified upright virtual image. Face appears larger.</div>
+      </div>
+    </div>
+
+    <div class="question-block" style="margin-top:16px;">
+      <span class="q-label gold">Q8 — Apply</span>
+      <p class="question-text">A dentist holds a small concave mirror inside a patient's mouth to see teeth more clearly. Based on your sim observations, where must the dentist position the mirror relative to the focal point to get a magnified upright image? Explain your reasoning.</p>
+      <textarea class="answer-box" rows="4" placeholder="Use your data table to justify your answer..."></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: CONVEX MIRRORS -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <div class="section-title">Part C — Convex (Diverging) Mirrors</div>
+    <div class="section-subtitle">EXPLORE + EXPLAIN</div>
+  </div>
+  <div class="section-body">
+    <div class="key-box">
+      <div class="key-box-title">Simulation Setup</div>
+      <p>Switch the mirror to <strong>Convex</strong>. Move the object to at least 3 different positions — close, medium distance, and far away. Observe the image in each case.</p>
+    </div>
+
+    <div class="part-header">Convex Mirror — Image Data Table</div>
+    <div class="data-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Object Position</th>
+            <th>Image Location</th>
+            <th>Image Orientation</th>
+            <th>Image Size</th>
+            <th>Real or Virtual?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Close to mirror</td>
+            <td class="fill-in"><textarea rows="1" placeholder=""></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder=""></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder=""></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder=""></textarea></td>
+          </tr>
+          <tr>
+            <td>Medium distance</td>
+            <td class="fill-in"><textarea rows="1" placeholder=""></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder=""></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder=""></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder=""></textarea></td>
+          </tr>
+          <tr>
+            <td>Far away</td>
+            <td class="fill-in"><textarea rows="1" placeholder=""></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder=""></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder=""></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder=""></textarea></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="question-block" style="margin-top:16px;">
+      <span class="q-label">Q9</span>
+      <p class="question-text">No matter where you placed the object, what two characteristics of the convex mirror image <em>never changed</em>? <span class="az-badge">HS+Phy.P4U1.6</span></p>
+      <textarea class="answer-box" rows="2" placeholder="Name both constant characteristics..."></textarea>
+    </div>
+
+    <div class="question-block">
+      <span class="q-label">Q10</span>
+      <p class="question-text">Convex mirrors are used as security mirrors in stores and on blind corners of roads. Based on your data, why is a convex mirror better for this purpose than a plane mirror?</p>
+      <textarea class="answer-box" rows="3" placeholder="Think about field of view and image size..."></textarea>
+    </div>
+
+    <div class="question-block">
+      <span class="q-label">Q11</span>
+      <p class="question-text">Passenger-side car mirrors often say "Objects in mirror are closer than they appear." Using your convex mirror data, explain <em>why</em> this warning is necessary.</p>
+      <textarea class="answer-box" rows="3" placeholder="Connect your observation to driver safety..."></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: SYNTHESIS -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">5</div>
+    <div class="section-title">Synthesis — Making Sense of It All</div>
+    <div class="section-subtitle">EXPLAIN + ELABORATE</div>
+  </div>
+  <div class="section-body">
+
+    <div class="part-header">Summary Comparison Table</div>
+    <div class="data-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Mirror Type</th>
+            <th>Shape</th>
+            <th>Image Always Real/Virtual?</th>
+            <th>Image Always Upright/Inverted?</th>
+            <th>Image Always Larger/Smaller?</th>
+            <th>Common Use</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Plane</strong></td>
+            <td class="fill-in"><textarea rows="1" placeholder="flat"></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder=""></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder=""></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder=""></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder=""></textarea></td>
+          </tr>
+          <tr>
+            <td><strong>Concave</strong></td>
+            <td class="fill-in"><textarea rows="1" placeholder="curves inward"></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder="depends on position"></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder="depends on position"></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder="depends on position"></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder=""></textarea></td>
+          </tr>
+          <tr>
+            <td><strong>Convex</strong></td>
+            <td class="fill-in"><textarea rows="1" placeholder="curves outward"></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder="always virtual"></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder="always upright"></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder="always smaller"></textarea></td>
+            <td class="fill-in"><textarea rows="1" placeholder=""></textarea></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="question-block" style="margin-top:20px;">
+      <span class="q-label green">Q12 — Big Picture</span>
+      <p class="question-text">A friend says: "I don't understand why a concave mirror sometimes makes things look bigger and sometimes smaller. It's just random." Using what you discovered in Parts B and C, write a 2–3 sentence explanation that clears up this confusion. Use the word "focal point" in your answer. <span class="az-badge">HS.P4U1.10</span></p>
+      <textarea class="answer-box" rows="5" placeholder="Write your explanation here. Be specific about what object position controls the image type..."></textarea>
+    </div>
+
+    <div class="question-block">
+      <span class="q-label green">Q13 — Extension</span>
+      <p class="question-text">A solar cooker uses a large curved mirror to focus sunlight and cook food. (a) What type of mirror does it use? (b) Where should the food be placed? (c) What type of image does the sun form at the cooking point — real or virtual? How do you know?</p>
+      <textarea class="answer-box" rows="5" placeholder="(a) Mirror type: ...\n(b) Food placement: ...\n(c) Image type and reasoning: ..."></textarea>
+    </div>
+
+    <div class="question-block">
+      <span class="q-label gold">Q14 — Check Your Understanding (MC)</span>
+      <p class="question-text">Which of the following is always true about the image formed by a convex mirror, regardless of where the object is placed?</p>
+      <ul class="mc-choices">
+        <li><input type="radio" name="q14" id="q14a"><label for="q14a">A) The image is real and inverted</label></li>
+        <li><input type="radio" name="q14" id="q14b"><label for="q14b">B) The image is virtual, upright, and smaller than the object</label></li>
+        <li><input type="radio" name="q14" id="q14c"><label for="q14c">C) The image is real, upright, and larger than the object</label></li>
+        <li><input type="radio" name="q14" id="q14d"><label for="q14d">D) The image location depends on the focal length only</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <span class="q-label gold">Q15 — Check Your Understanding (MC)</span>
+      <p class="question-text">A student places an object inside the focal length of a concave mirror. What will the student observe? <span class="az-badge">HS+Phy.P4U1.6</span></p>
+      <ul class="mc-choices">
+        <li><input type="radio" name="q15" id="q15a"><label for="q15a">A) A real, inverted, enlarged image on the same side as the object</label></li>
+        <li><input type="radio" name="q15" id="q15b"><label for="q15b">B) No image — parallel rays don't meet</label></li>
+        <li><input type="radio" name="q15" id="q15c"><label for="q15c">C) A virtual, upright, enlarged image appearing behind the mirror</label></li>
+        <li><input type="radio" name="q15" id="q15d"><label for="q15d">D) A virtual, inverted, smaller image behind the mirror</label></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 6: REFLECTION -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">6</div>
+    <div class="section-title">Reflection — Exit Ticket</div>
+    <div class="section-subtitle">EVALUATE</div>
+  </div>
+  <div class="section-body">
+    <div class="question-block">
+      <span class="q-label">Exit Q1</span>
+      <p class="question-text">What is the most surprising thing you discovered about mirrors today? Why did it surprise you?</p>
+      <textarea class="answer-box" rows="3" placeholder="Be specific — reference something from the simulation..."></textarea>
+    </div>
+    <div class="question-block">
+      <span class="q-label">Exit Q2</span>
+      <p class="question-text">On a scale of 1–4, how confident are you in identifying whether a mirror image is real or virtual? Explain what still feels fuzzy to you.</p>
+      <ul class="mc-choices">
+        <li><input type="radio" name="conf" id="c1"><label for="c1">1 — Still pretty confused</label></li>
+        <li><input type="radio" name="conf" id="c2"><label for="c2">2 — Getting there but need more practice</label></li>
+        <li><input type="radio" name="conf" id="c3"><label for="c3">3 — Mostly confident, minor gaps</label></li>
+        <li><input type="radio" name="conf" id="c4"><label for="c4">4 — Solid — could explain it to someone else</label></li>
+      </ul>
+      <textarea class="answer-box" rows="2" placeholder="What would help you feel more confident?" style="margin-top:8px;"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- SUBMIT / PRINT -->
+<div class="submit-section no-print">
+  <button class="submit-btn" onclick="window.print()">⎙ Save as PDF to Submit</button>
+  <p class="submit-note">Use Ctrl+P (Cmd+P on Mac) → Save as PDF → Upload to Google Classroom</p>
+</div>
+
+<!-- FOOTER -->
+<div class="page-footer">
+  <strong>San Tan Charter School · High School Physics · Spring 2026</strong><br>
+  CK-12 Physics FlexBook 2.0 · Chapter 15 Optics · 
+  Standards: <span>HS+Phy.P4U1.6 · HS.P4U1.10</span>
+</div>
+
+</body>
+</html>
